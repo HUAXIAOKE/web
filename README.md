@@ -14,7 +14,7 @@ todo：
 7. 当期活动
 8. 直播资讯
 9. 活动相关组件（新声歌会投稿！！！急急急）
-10. 不会写layout，component；；
+10. 不会写layout，component
 
 目前组件解释：
 1. public太弱智不解释了
