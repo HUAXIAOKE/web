@@ -1,0 +1,58 @@
+<div id="main">
+            <div id="click-section">
+                <div id="drawerboxes">
+                    <div class="drawerbox active">
+                        <button class="drawer-btn active" onclick="slideTo(1)">Orange<span
+                                class="drawer-head">1</span></button>
+                    </div>
+                    <div class="drawerbox">
+                        <button class="drawer-btn" onclick="slideTo(2)">媒体喵<span class="drawer-head">2</span></button>
+                    </div>
+                    <div class="drawerbox">
+                        <button class="drawer-btn" onclick="slideTo(3)">来玩喵<span class="drawer-head">3</span></button>
+                    </div>
+                    <div class="drawerbox">
+                        <button class="drawer-btn" onclick="slideTo(4)">好玩喵<span class="drawer-head">4</span></button>
+                    </div>
+                </div>
+            </div>
+            <div id="slide-section">
+                <div id="slide-bar">
+                    <div id="bar"></div>
+                </div>
+                <div id="card-section">
+                    <div id="card1" class="card">
+                        <div class="card-small-title">Media</div>
+                        <div class="card-title">Fuck Zaoba</div>
+                        <div class="card-content">你知道的，我其实一直都不喜欢上早八的，每次上早八我的身上就好像有虫子在爬，每次起床就像要死了一样。</div>
+                        <div class="card-img">
+                            <img src="../img/17.gif" alt="">
+                        </div>
+                    </div>
+                    <div id="card2" class="card">
+                        <div class="card-small-title">Us</div>
+                        <div class="card-title">塞北的雪</div>
+                        <div class="card-content">发明大学物理的都他娘的是神人，每次在那个破教室一坐我就想死，真的想死。</div>
+                        <div class="card-img">
+                            <img src="../img/08.gif" alt="">
+                        </div>
+                    </div>
+                    <div id="card3" class="card">
+                        <div class="card-small-title">Lucky</div>
+                        <div class="card-title">Play and Sleep</div>
+                        <div class="card-content">老子这辈子最幸福的事情就是死在宿舍睡觉和玩电脑，没有比这个还幸福的事情了，他奶奶的。</div>
+                        <div class="card-img">
+                            <img src="../img/03.gif" alt="">
+                        </div>
+                    </div>
+                    <div id="card4" class="card">
+                        <div class="card-small-title">End</div>
+                        <div class="card-title">May you happy</div>
+                        <div class="card-content">来的来了，记得要玩得开心哦！</div>
+                        <div class="card-img">
+                            <img src="../img/06.gif" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>

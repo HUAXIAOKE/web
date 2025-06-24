@@ -26,6 +26,14 @@ body {
     overflow: hidden;
 }
 
+/* 卡片相关样式 */
+.partTwo {
+    min-block-size: 100%;
+    display: grid;
+    place-content: center;
+    padding-bottom: 30dvh;
+}
+
 .box {
     position: absolute;
     display: flex;
@@ -230,4 +238,12 @@ canvas {
     height: 100%;
     z-index: -11;
     /* 确保 canvas 在所有内容的下方 */
+}
+
+@keyframes slide-fade-in {
+    from {
+        opacity: 0;
+        box-shadow: none;
+        transform: scale(.8) translateY(15vh);
+    }
 }
