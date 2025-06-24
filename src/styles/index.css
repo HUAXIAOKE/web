@@ -26,75 +26,6 @@ body {
     overflow: hidden;
 }
 
-.partTwo {
-    min-block-size: 100%;
-    display: grid;
-    place-content: center;
-    padding-bottom: 30dvh;
-}
-
-@keyframes slide-fade-in {
-    from {
-        opacity: 0;
-        box-shadow: none;
-        transform: scale(.8) translateY(15vh);
-    }
-}
-
-.cards {
-    display: grid;
-    left: 50%;
-    gap: 2rem;
-    /* 自动排列 */
-    grid-auto-flow: dense;
-    grid-template-columns: repeat(4, 30ch);
-}
-
-.card {
-    animation: slide-fade-in both;
-    /* 使用浏览器的视图时间线,允许动画根据视口的变化进行同步 */
-    animation-timeline: view();
-    /* 定义动画时间范围 */
-    animation-range: contain 0% contain 50%;
-    border-radius: 10px;
-    line-height: 6;
-    box-shadow: 0px 8px 20px #00000022;
-    font-size: 32px;
-    letter-spacing: 5px;
-    color: #fff;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-image: linear-gradient(to bottom right,
-            #f1f9fd,
-            #ccdef8,
-            #e5fafd,
-            #f8ecfc,
-            #fde6f3,
-            #fdeaef);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.card img {
-    width: 100%;
-    height: 100%;
-}
-
-.card:nth-of-type(4n) {
-    grid-column: span 2;
-}
-
-
-.card:nth-of-type(5n) {
-    grid-column: span 2;
-}
-
-.card:nth-of-type(7n) {
-    grid-row: span 2;
-}
-
 .box {
     position: absolute;
     display: flex;
@@ -105,142 +36,6 @@ body {
     left: 50%;
     top: 20%;
     transform: translate(-50%, -50%);
-}
-
-.Music {
-    position: fixed;
-    left: 20px;
-    top: 20px;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    background: linear-gradient(135deg, #cfd7fc 0%, #ccb6e2 100%);
-    border-radius: 40px;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    overflow: hidden;
-    z-index: 1000;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-}
-
-/* 专辑封面容器 */
-.album-cover-container {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    overflow: hidden;
-    transition: all 0.4s ease;
-    z-index: 10;
-    flex-shrink: 0;
-}
-
-.album-cover-container img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    animation: rotate 8s linear infinite;
-    transition: all 0.4s ease;
-}
-
-/* 旋转动画 */
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.tbox {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 80px;
-    padding: 0;
-    margin: 0;
-    border-radius: 40px;
-    position: relative;
-    transition: all 0.3s ease;
-    color: #fff;
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.tbox i {
-    font-size: 22px;
-    transition: all 0.3s ease;
-    z-index: 2;
-    margin-right: 0;
-}
-
-.tbox span {
-    position: absolute;
-    left: 50px;
-    font-weight: 500;
-    font-size: 14px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    white-space: nowrap;
-    z-index: 2;
-    pointer-events: none;
-    transform: translateX(0);
-}
-
-.Music:hover {
-    width: 420px;
-    height: 80px;
-    border-radius: 40px;
-    padding: 0 15px;
-    justify-content: space-between;
-    /* 改为均匀分布 */
-}
-
-.Music:hover .tbox {
-    width: 75px;
-    min-width: 75px;
-    padding: 0 8px;
-    margin: 0;
-    justify-content: center;
-    /* 保持图标居中 */
-}
-
-.Music:hover .tbox i {
-    margin-right: 0;
-    /* 移除右边距 */
-}
-
-.Music:hover .tbox span {
-    opacity: 1;
-    position: absolute;
-    left: 50%;
-    /* 改为相对于按钮中心定位 */
-    top: -25px;
-    /* 放在按钮上方 */
-    transform: translateX(-50%);
-    /* 水平居中 */
-    background: rgba(0, 0, 0, 0.8);
-    padding: 2px 6px;
-    border-radius: 4px;
-    white-space: nowrap;
-}
-
-.tbox:hover {
-    background-color: rgba(150, 145, 145, 0.2);
-    border-radius: 25px;
-    transform: scale(1.05);
-}
-
-.tbox:hover i {
-    transform: scale(1.1);
 }
 
 .box2 {
@@ -277,28 +72,16 @@ body {
     width: 200px;
     border-radius: 50%;
     position: relative;
-    /* 为球的背景添加径向渐变，渐变中心在 77% 水平、30% 垂直位置 */
     background: radial-gradient(circle at 77% 30%,
-            /* 渐变起点颜色为白色，半径为 5 像素 */
             white 5px,
-            /* 渐变颜色从白色平滑过渡到淡蓝色，半径为 8% */
             aqua 8%,
-            /* 渐变颜色从淡蓝色平滑过渡到深蓝色，半径为 60% */
             rgb(84, 84, 179) 60%,
-            /* 渐变颜色从深蓝色平滑过渡到淡蓝色，半径为 100% */
             aqua 100%);
-    /* 为球添加多重内阴影效果 */
-    /* 内部白色阴影，宽度 20 像素 */
     box-shadow: inset 0 0 20px #fff,
-        /* 内部淡蓝色阴影，位置偏右 10 像素，宽度 46 像素 */
         inset 10px 0 46px #eaf5fc,
-        /* 内部浅蓝色阴影，位置偏右 88 像素，宽度 60 像素 */
         inset 88px 0px 60px #c2d8fe,
-        /* 内部淡橙色阴影，位置偏左上方，宽度 100 像素 */
         inset -20px -60px 100px #fde9ea,
-        /* 内部淡橙色阴影，位置偏下方，宽度 140 像素 */
         inset 0 50px 140px #fde9ea,
-        /* 外部白色阴影，宽度 90 像素 */
         0 0 110px #fff;
 }
 

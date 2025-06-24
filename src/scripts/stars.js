@@ -1,7 +1,7 @@
 const STAR_COLOR = "#fff";
 
 // 定义星星的大小
-const STAR_SIZE = 3.5;
+const STAR_SIZE = 3.8;
 
 // 定义星星的最小缩放比例
 const STAR_MIN_SCALE = 0.2;
@@ -50,8 +50,6 @@ step();
 window.onresize = resize;
 
 canvas.onmousemove = onmousemove;
-
-canvas.ontouchmove = ontouchmove;
 
 canvas.ontouchend = onmouseleave;
 

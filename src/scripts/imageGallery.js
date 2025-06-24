@@ -20,6 +20,7 @@ function setCardSize(img, card) {
     // 设置图片的对象适配
     img.style.objectFit = 'cover';
     img.style.objectPosition = 'center';
+
 }
 
 // 动态生成卡片
