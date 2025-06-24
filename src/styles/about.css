@@ -1,162 +1,249 @@
 .about {
-    #main {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        height: 100vh;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+#main {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+#click-section {
+    width: 25%;
+    height: 100%;
+    padding: 20px 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#drawerboxes {
+    margin-left: 10%;
+    width: 100%;
+    height: 80%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+#drawerboxes::before {
+    content: "";
+    width: 8px;
+    height: 94%;
+    position: absolute;
+    left: -10px;
+    top: 3%;
+    z-index: 120;
+    background: linear-gradient(to bottom,
+            rgba(175, 190, 255, 0.3),
+            rgba(175, 190, 255, 0.8),
+            rgba(175, 190, 255, 0.3));
+}
+
+.drawerbox {
+    height: calc(100% / 4.5);
+    width: 70%;
+    position: relative;
+    z-index: 100;
+    transform: translateX(-70%);
+    transition: transform 0.5s ease-in-out;
+    margin: 5px 0;
+}
+
+.drawerbox.active {
+    transform: translateX(0);
+}
+
+.drawer-btn {
+    width: 100%;
+    height: 100%;
+    font-weight: 900;
+    font-size: clamp(16px, 2vw, 30px);
+    background-color: rgb(191, 202, 250);
+    border: none;
+    border-radius: 8px;
+    transition: all 0.5s ease-in-out;
+    color: transparent;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(157, 166, 206, 0.3);
+}
+
+.drawer-btn.active {
+    background-image: url(../img/bg.jpg);
+    background-size: cover;
+    background-position: center;
+    color: rgb(255, 255, 255);
+    box-shadow: 0 6px 20px rgba(202, 208, 224, 0.4);
+}
+
+.drawer-btn:hover {
+    cursor: pointer;
+    transform: translateX(5px);
+    box-shadow: 0 6px 25px rgba(175, 190, 255, 0.5);
+}
+
+#slide-section {
+    position: relative;
+    height: 100%;
+    width: 45%;
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+    background: linear-gradient(to right bottom,
+            rgba(255, 255, 255, 0.6),
+            rgba(255, 255, 255, 0.3),
+            rgba(255, 255, 255, 0.2));
+    backdrop-filter: blur(11px);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+#slide-bar {
+    position: absolute;
+    top: 10%;
+    left: 40px;
+    height: 80%;
+    width: 2px;
+    background-color: rgba(223, 223, 223, 0.5);
+    border-radius: 1px;
+}
+
+#bar {
+    position: absolute;
+    height: calc(100% / 4);
+    width: 6px;
+    top: 0;
+    left: -2px;
+    background: linear-gradient(to bottom, rgb(175, 190, 255), rgb(70, 100, 180));
+    border-radius: 3px;
+    transition: transform 0.5s ease-in-out;
+    box-shadow: 0 2px 10px rgba(175, 190, 255, 0.5);
+}
+
+#card-section {
+    height: 100%;
+    width: calc(100% - 60px);
+    overflow: hidden;
+    margin-left: 60px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    padding: 5% 0;
+    color: white;
+    transition: transform 0.5s ease-in-out;
+    justify-content: space-between;
+}
+
+.card-small-title {
+    font-size: clamp(16px, 2vw, 30px);
+    font-weight: 600;
+    padding-bottom: 10px;
+    color: rgb(70, 100, 180);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.card-title {
+    font-size: clamp(32px, 6vw, 80px);
+    font-weight: 700;
+    padding-bottom: 20px;
+    color: rgb(70, 100, 180);
+    line-height: 1.2;
+}
+
+.card-content {
+    font-size: clamp(14px, 1.5vw, 24px);
+    font-weight: 400;
+    color: rgb(94, 123, 255);
+    margin-bottom: 30px;
+    line-height: 1.6;
+    flex: 1;
+}
+
+.card-img {
+    width: 100%;
+    height: 330px;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.card-img:hover img {
+    transform: scale(1.05);
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    #main {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
     }
 
     #click-section {
-        width: 35%;
-        height: 100%;
-        padding: 20px 0;
-        position: relative;
-    }
-
-    #drawerboxes {
-        margin-left: 10%;
         width: 100%;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-    }
-
-    #drawerboxes::before {
-        content: "";
-        width: 8px;
-        height: 94%;
-        position: absolute;
-        left: -10px;
-        top: 3%;
-        z-index: 120;
-    }
-
-    .drawerbox {
-        height: calc(100% / 5.5);
-        width: 70%;
-        position: relative;
-        z-index: 100;
-        transform: translateX(-70%);
-        transition: transform .5s ease-in-out;
-    }
-
-    .drawerbox.active {
-        transform: translateX(0);
-    }
-
-    .drawer-btn {
-        width: 100%;
-        height: 100%;
-        font: 800 30px '';
-        background-color: rgb(175, 190, 255);
-        border: none;
-        transition: background-color .5s ease-in-out;
-        color: #ffffff00;
-    }
-
-    .drawer-btn.active {
-        background-image: url(../img/bg.jpg);
-        background-size: cover;
-        color: rgb(70, 100, 180);
-    }
-
-    .drawer-btn:hover {
-        cursor: pointer;
-    }
-
-    .drawer-head {
-        position: absolute;
-        color: rgb(255, 255, 255);
-        font-size: 200px;
-        font-weight: 700;
-        right: -38px;
-        top: calc(50% - 135px);
-        text-shadow: 2px -1px 8px rgba(250, 80, 193, 0.323);
+        height: 300px;
+        margin-bottom: 20px;
     }
 
     #slide-section {
-        position: relative;
-        height: 100%;
-        width: 65%;
-        display: flex;
-        justify-content: center;
-        padding: 0 40px;
-        background: linear-gradient(to right bottom,
-                rgba(255, 255, 255, .6),
-                rgba(255, 255, 255, .3),
-                rgba(255, 255, 255, .2));
-        backdrop-filter: blur(11px);
-    }
-
-    #slide-bar {
-        position: absolute;
-        top: 10%;
-        left: 40px;
-        height: 80%;
-        width: 1px;
-        background-color: rgb(223, 223, 223);
-    }
-
-    #bar {
-        position: absolute;
-        height: calc(100% / 4);
-        width: 5px;
-        top: 0;
-        left: -1.2px;
-        background-color: rgb(175, 190, 255);
-        transition: transform .5s ease-in-out;
-    }
-
-    #card-section {
-        height: 100%;
-        width: 80%;
-        overflow: hidden;
-    }
-
-    .card {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
         width: 100%;
-        padding: 10% 0;
-        color: white;
-        font-size: 30px;
-        transition: transform .5s ease-in-out;
+        height: 600px;
     }
 
-    .card-small-title {
-        font-size: 30px;
-        font-weight: 600;
-        padding-bottom: min(5%, 10px);
-        color: rgb(70, 100, 180);
+    #drawerboxes {
+        flex-direction: row;
+        height: 100%;
+        margin-left: 0;
+        justify-content: space-around;
+        align-items: center;
     }
 
-    .card-title {
-        font-size: 80px;
-        font-weight: 700;
-        padding-bottom: min(20%, 40px);
-        color: rgb(70, 100, 180);
+    .drawerbox {
+        width: calc(100% / 4.5);
+        height: 70%;
+        transform: translateY(70%);
     }
 
-    .card-content {
-        font-size: 24px;
-        font-weight: 400;
-        color: rgb(94, 123, 255);
-        margin-bottom: 60px;
+    .drawerbox.active {
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    #main {
+        padding: 10px;
+    }
+
+    #slide-section {
+        padding: 20px;
     }
 
     .card-img {
-        width: 100%;
-        height: 400px;
-        overflow: hidden;
-    }
-
-    .card-img img {
-        width: 100%;
+        height: 200px;
     }
 }

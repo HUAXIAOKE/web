@@ -1,0 +1,208 @@
+---
+import { ClientRouter } from "astro:transitions";
+
+export interface Props {
+    title: string;
+    description?: string;
+}
+
+const { title, description = "Huaxiaoke" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/src/styles/index.css" />
+        <link rel="stylesheet" href="/src/styles/gallery.css" />
+        <link rel="stylesheet" href="/src/styles/about.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        />
+        <link
+            rel="icon"
+            type="image/x-icon"
+            sizes="32x32"
+            href="/public/img/icon.ico"
+        />
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+        ></script>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+    </head>
+
+    <body>
+        <canvas transition:persist="stars-canvas"></canvas>
+
+        <div class="partOne">
+            <div class="shell">
+                <div class="box">
+                    <div class="ball"></div>
+                    <div class="shadow"></div>
+                </div>
+
+                <div class="box">
+                    <div class="ball"></div>
+                    <div class="shadow"></div>
+                </div>
+
+                <div class="box">
+                    <div class="ball"></div>
+                </div>
+            </div>
+            <ul id="nav">
+                <li class="slide1"></li>
+                <li class="slide2"></li>
+                <li><a href="#" data-page="index">主页</a></li>
+                <li><a href="#" data-page="live">直播资讯</a></li>
+                <li><a href="#" data-page="gallery">插画一览</a></li>
+                <li><a href="#" data-page="activity">当期活动</a></li>
+                <li><a href="#" data-page="about">关于我们</a></li>
+                <li>
+                    <a
+                        href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
+                        data-href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
+                        target="_blank"
+                        rel="noopener noreferrer">B站传送门</a
+                    >
+                </li>
+            </ul>
+
+            <div class="Music"></div>
+
+            <div class="box2">
+                <img src="/public/icon/pull.png" id="pull" />
+            </div>
+        </div>
+
+        <main>
+            <!-- 主页内容 -->
+            <div
+                class="partTwo page-content"
+                id="page-index"
+                style="display: block;"
+            >
+                <slot />
+            </div>
+
+            <!-- 直播资讯页面 -->
+            <div
+                class="partTwo page-content"
+                id="page-live"
+                style="display: none;"
+            >
+                <div class="live-content">
+                    <h2>直播资讯</h2>
+                    <p>这里是直播资讯内容...</p>
+                </div>
+            </div>
+
+            <!-- 插画一览页面 -->
+            <div
+                class="partTwo page-content"
+                id="page-gallery"
+                style="display: none;"
+            >
+                <div class="cards"></div>
+            </div>
+
+            <!-- 当期活动页面 -->
+            <div
+                class="partTwo page-content"
+                id="page-activity"
+                style="display: none;"
+            >
+                <div class="activity-content">
+                    <h2>当期活动</h2>
+                    <p>这里是当期活动内容...</p>
+                </div>
+            </div>
+
+            <!-- 关于我们页面 -->
+            <div
+                class="partTwo page-content"
+                id="page-about"
+                style="display: none;"
+            >
+                <div class="about" id="main">
+                    <div id="click-section">
+                        <div id="drawerboxes">
+                            <div class="drawerbox active">
+                                <button
+                                    class="drawer-btn active"
+                                    onclick="slideTo(1)">关于小科</button
+                                >
+                            </div>
+                            <div class="drawerbox">
+                                <button class="drawer-btn" onclick="slideTo(2)"
+                                    >日常生活</button
+                                >
+                            </div>
+                            <div class="drawerbox">
+                                <button class="drawer-btn" onclick="slideTo(3)"
+                                    >工作内容</button
+                                >
+                            </div>
+                            <div class="drawerbox">
+                                <button class="drawer-btn" onclick="slideTo(4)"
+                                    >加入我们</button
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div id="slide-section">
+                        <div id="slide-bar">
+                            <div id="bar"></div>
+                        </div>
+                        <div id="card-section">
+                            <div id="card1" class="card">
+                                <div class="card-small-title">HuaXiaoKe</div>
+                                <div class="card-title">XXXX</div>
+                                <div class="card-content">是名字</div>
+                                <div class="card-img">
+                                    <img src="/public/img/temp.png" alt="" />
+                                </div>
+                            </div>
+                            <div id="card2" class="card">
+                                <div class="card-small-title">Us</div>
+                                <div class="card-title">xxx</div>
+                                <div class="card-content">这里依旧是文字</div>
+                                <div class="card-img">
+                                    <img src="/public/img/temp.png" alt="" />
+                                </div>
+                            </div>
+                            <div id="card3" class="card">
+                                <div class="card-small-title">Lucky</div>
+                                <div class="card-title">Play and Sleep</div>
+                                <div class="card-content">这里是文字</div>
+                                <div class="card-img">
+                                    <img src="/public/img/temp.png" alt="" />
+                                </div>
+                            </div>
+                            <div id="card4" class="card">
+                                <div class="card-small-title">End</div>
+                                <div class="card-title">May you happy</div>
+                                <div class="card-content">这里还是文字</div>
+                                <div class="card-img">
+                                    <img src="/public/img/temp.png" alt="" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="Tip">
+            <button id="backToTopBtn">已经到底啦~</button>
+        </div>
+    </body>
+    <script src="/src/scripts/roll.js"></script>
+    <script src="/src/scripts/spa-navigation.js"></script>
+    <script src="/src/scripts/imageGallery.js"></script>
+    <script src="/src/scripts/slide.js"></script>
+    <script src="/src/scripts/stars.js"></script>
+</html>

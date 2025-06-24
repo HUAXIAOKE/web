@@ -26,12 +26,78 @@ body {
     overflow: hidden;
 }
 
-/* 卡片相关样式 */
-.partTwo {
+/* 页面内容容器基础样式 */
+.page-content {
+    transition: opacity 0.3s ease-in-out;
+    width: 100%;
+    min-height: calc(100vh - 90vh);
+    /* 减去 partOne 的高度 */
+}
+
+/* 主页特殊布局 */
+#page-index.partTwo {
     min-block-size: 100%;
     display: grid;
     place-content: center;
     padding-bottom: 30dvh;
+}
+
+/* 其他页面的通用布局 */
+#page-live,
+#page-activity {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 50vh;
+}
+
+/* 图库页面布局 */
+#page-gallery {
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 50vh;
+    padding-bottom: 4rem;
+}
+
+/* 关于页面布局 */
+#page-about {
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 4rem;
+}
+
+/* 内容区域样式 */
+.live-content,
+.activity-content {
+    max-width: 1200px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(10px);
+}
+
+.live-content h2,
+.activity-content h2 {
+    color: #4664b4;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.live-content p,
+.activity-content p {
+    color: #666;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    text-align: center;
 }
 
 .box {
@@ -72,7 +138,6 @@ body {
         opacity: 1;
     }
 }
-
 
 .ball {
     animation: float 3.5s ease-in-out infinite;
@@ -132,7 +197,6 @@ body {
     opacity: .4;
 }
 
-/* 添加漂浮动画 */
 @keyframes float {
     0% {
         transform: translatey(0px) rotate(-10deg);
@@ -169,7 +233,6 @@ body {
     box-shadow: 20px 40px 49px #00000033;
     padding: 10px;
     align-items: center;
-    /* 垂直居中 */
 }
 
 #nav li a {
@@ -229,7 +292,6 @@ body {
     color: #f5f5f5;
 }
 
-/* 添加 canvas 的样式 */
 canvas {
     position: fixed;
     top: 0;
@@ -237,7 +299,12 @@ canvas {
     width: 100%;
     height: 100%;
     z-index: -11;
-    /* 确保 canvas 在所有内容的下方 */
+}
+
+/* 导航动画 */
+#nav.animate {
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
 }
 
 @keyframes slide-fade-in {

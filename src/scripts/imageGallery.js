@@ -20,12 +20,16 @@ function setCardSize(img, card) {
     // 设置图片的对象适配
     img.style.objectFit = 'cover';
     img.style.objectPosition = 'center';
-
 }
 
 // 动态生成卡片
 async function generateImageCards() {
-    const gallery = document.querySelector('.cards');
+    const gallery = document.querySelector('#page-gallery .cards');
+
+    // 如果已经加载过图片，则不重复加载
+    if (gallery && gallery.children.length > 0) {
+        return;
+    }
 
     try {
         // 调用你创建的 API 端点
@@ -61,10 +65,10 @@ async function generateImageCards() {
     } catch (error) {
         console.error('Error loading images:', error);
         // 可以在这里添加错误提示给用户
-        const gallery = document.querySelector('.cards');
-        gallery.innerHTML = '<p style="text-align: center; color: #666;">加载图片时出错，请稍后重试</p>';
+        if (gallery) {
+            gallery.innerHTML = '<p style="text-align: center; color: #666;">加载图片时出错，请稍后重试</p>';
+        }
     }
 }
 
-// 页面加载完成后生成卡片
-document.addEventListener('DOMContentLoaded', generateImageCards);
+window.generateImageCards = generateImageCards;
