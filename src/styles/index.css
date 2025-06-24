@@ -107,85 +107,140 @@ body {
     transform: translate(-50%, -50%);
 }
 
-.Tool {
+.Music {
     position: fixed;
-    /* 固定在视口 */
-    left: 0;
-    /* 固定在页面最左侧 */
-    top: 50%;
-    /* 垂直居中 */
-    transform: translateY(-50%);
-    /* 垂直居中 */
-    width: 100px;
-    height: 500px;
+    left: 20px;
+    top: 20px;
+    width: 80px;
+    height: 80px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    /* 垂直居中 */
+    flex-direction: row;
+    justify-content: flex-start;
     align-items: center;
-    background-color: #f5f5f5;
-    border-radius: 10px;
-    transition: .3s;
+    background: linear-gradient(135deg, #cfd7fc 0%, #ccb6e2 100%);
+    border-radius: 40px;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     overflow: hidden;
     z-index: 1000;
-    /* 确保它在其他内容之上 */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+/* 专辑封面容器 */
+.album-cover-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.album-cover-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    animation: rotate 8s linear infinite;
+    transition: all 0.4s ease;
+}
+
+/* 旋转动画 */
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .tbox {
-    display: block;
-    height: 15%;
-    width: 85%;
-    margin: 9px;
-    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 80px;
+    padding: 0;
+    margin: 0;
+    border-radius: 40px;
     position: relative;
-    transition: .3s;
+    transition: all 0.3s ease;
     color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .tbox i {
-    font-size: 60px;
-    position: absolute;
-    margin: 7px 0 0 13px;
-}
-
-.tbox:nth-child(1)::before {
-    content: "";
-    display: block;
-    width: 100%;
-    height: 2px;
-    background-color: #fff;
-    position: absolute;
-    bottom: -10px;
+    font-size: 22px;
+    transition: all 0.3s ease;
+    z-index: 2;
+    margin-right: 0;
 }
 
 .tbox span {
-    text-decoration: none;
-    position: relative;
-    top: 22px;
-    left: 122px;
+    position: absolute;
+    left: 50px;
     font-weight: 500;
-    font-size: 28px;
+    font-size: 14px;
     opacity: 0;
-    transition: .1s;
-    display: inline-block;
-    /* 调整显示方式 */
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+    z-index: 2;
+    pointer-events: none;
+    transform: translateX(0);
 }
 
-.Tool:hover {
-    width: 270px;
+.Music:hover {
+    width: 420px;
+    height: 80px;
+    border-radius: 40px;
+    padding: 0 15px;
+    justify-content: space-between;
+    /* 改为均匀分布 */
 }
 
-.tbox:hover {
-    background-color: rgb(170, 190, 255);
-    border-radius: 10px;
+.Music:hover .tbox {
+    width: 75px;
+    min-width: 75px;
+    padding: 0 8px;
+    margin: 0;
+    justify-content: center;
+    /* 保持图标居中 */
 }
 
-.tbox:hover span {
+.Music:hover .tbox i {
+    margin-right: 0;
+    /* 移除右边距 */
+}
+
+.Music:hover .tbox span {
     opacity: 1;
+    position: absolute;
+    left: 50%;
+    /* 改为相对于按钮中心定位 */
+    top: -25px;
+    /* 放在按钮上方 */
+    transform: translateX(-50%);
+    /* 水平居中 */
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
 }
 
 .tbox:hover {
-    color: #fff;
+    background-color: rgba(150, 145, 145, 0.2);
+    border-radius: 25px;
+    transform: scale(1.05);
+}
+
+.tbox:hover i {
+    transform: scale(1.1);
 }
 
 .box2 {
