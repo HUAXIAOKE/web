@@ -18,7 +18,7 @@ todo：
 
 目前组件解释：
 1. public太弱智不解释了
-2. api是画廊读取public中img/illustration的借口
+2. api是画廊读取public中img/illustration的接口
 3. scripts中：
     - gallery.js 画廊相关js
     - navhover 导航栏悬停动画
