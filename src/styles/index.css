@@ -1,6 +1,6 @@
 @font-face {
     font-family: "AlimamaShuHeiTi-Bold";
-    src: url("../../public/font/AlimamaShuHeiTi-Bold.ttf");
+    src: url("/font/AlimamaShuHeiTi-Bold.ttf");
 }
 
 * {
@@ -13,7 +13,7 @@ body {
     font-family: "AlimamaShuHeiTi-Bold", sans-serif;
     background:
         linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.8)),
-        url(../../public/img/bg.png) no-repeat center center fixed;
+        url(/img/bg.png) no-repeat center center fixed;
     background-size: cover;
 }
 
@@ -70,34 +70,6 @@ body {
     justify-content: center;
     align-items: center;
     padding-bottom: 4rem;
-}
-
-/* 内容区域样式 */
-.live-content,
-.activity-content {
-    max-width: 1200px;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(10px);
-}
-
-.live-content h2,
-.activity-content h2 {
-    color: #4664b4;
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-
-.live-content p,
-.activity-content p {
-    color: #666;
-    font-size: 1.2rem;
-    line-height: 1.6;
-    text-align: center;
 }
 
 .box {

@@ -17,6 +17,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
         <link rel="stylesheet" href="/src/styles/index.css" />
         <link rel="stylesheet" href="/src/styles/gallery.css" />
         <link rel="stylesheet" href="/src/styles/about.css" />
+        <link rel="stylesheet" href="/src/styles/calender.css" />
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -25,7 +26,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
             rel="icon"
             type="image/x-icon"
             sizes="32x32"
-            href="/public/img/icon.ico"
+            href="img/icon.ico"
         />
         <script
             src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
@@ -74,7 +75,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
             <div class="Music"></div>
 
             <div class="box2">
-                <img src="/public/icon/pull.png" id="pull" />
+                <img src="icon/pull.png" id="pull" />
             </div>
         </div>
 
@@ -94,9 +95,12 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                 id="page-live"
                 style="display: none;"
             >
-                <div class="live-content">
-                    <h2>直播资讯</h2>
-                    <p>这里是直播资讯内容...</p>
+                <div class="timeline-shell" id="timeline-shell">
+                    <div class="timeline-header">
+                        <h2 class="timeline-title">直播历程</h2>
+                        <h3 class="timeline-subtitle">我们的成长足迹</h3>
+                    </div>
+                    <div class="timeline" id="timeline-container"></div>
                 </div>
             </div>
 
@@ -163,7 +167,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                                 <div class="card-title">XXXX</div>
                                 <div class="card-content">是名字</div>
                                 <div class="card-img">
-                                    <img src="/public/img/temp.png" alt="" />
+                                    <img src="img/temp.png" alt="" />
                                 </div>
                             </div>
                             <div id="card2" class="card">
@@ -171,7 +175,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                                 <div class="card-title">xxx</div>
                                 <div class="card-content">这里依旧是文字</div>
                                 <div class="card-img">
-                                    <img src="/public/img/temp.png" alt="" />
+                                    <img src="img/temp.png" alt="" />
                                 </div>
                             </div>
                             <div id="card3" class="card">
@@ -179,7 +183,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                                 <div class="card-title">Play and Sleep</div>
                                 <div class="card-content">这里是文字</div>
                                 <div class="card-img">
-                                    <img src="/public/img/temp.png" alt="" />
+                                    <img src="img/temp.png" alt="" />
                                 </div>
                             </div>
                             <div id="card4" class="card">
@@ -187,7 +191,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                                 <div class="card-title">May you happy</div>
                                 <div class="card-content">这里还是文字</div>
                                 <div class="card-img">
-                                    <img src="/public/img/temp.png" alt="" />
+                                    <img src="img/temp.png" alt="" />
                                 </div>
                             </div>
                         </div>
@@ -205,4 +209,5 @@ const { title, description = "Huaxiaoke" } = Astro.props;
     <script src="/src/scripts/imageGallery.js"></script>
     <script src="/src/scripts/slide.js"></script>
     <script src="/src/scripts/stars.js"></script>
+    <script src="/src/scripts/timeline.js"></script>
 </html>
