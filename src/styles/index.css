@@ -17,6 +17,276 @@ body {
     background-size: cover;
 }
 
+/* Music Player Styles */
+#music-player {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: auto;
+    max-width: 450px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 9999;
+    color: #333;
+    transition: max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        gap 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+        background 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+#music-player:not(.collapsed) {
+    cursor: default;
+}
+
+#music-player.collapsed {
+    max-width: 70px;
+    gap: 0;
+    cursor: pointer;
+}
+
+#music-player .info-and-progress,
+#music-player .controls,
+#music-player .volume-container {
+    display: flex;
+    align-items: center;
+    opacity: 1;
+    width: auto;
+    max-width: 300px;
+    transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
+        padding 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        margin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#music-player.collapsed .info-and-progress,
+#music-player.collapsed .controls,
+#music-player.collapsed .volume-container {
+    opacity: 0;
+    min-width: 0;
+    max-width: 0;
+    margin: 0;
+    padding: 0;
+}
+
+html.dark #music-player {
+    background: rgba(40, 40, 40, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #eee;
+}
+
+#music-player .album-art {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    /* Circular album art */
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.25);
+    position: relative;
+}
+
+#music-player .album-art img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: rotate 12s linear infinite;
+    animation-play-state: paused;
+}
+
+#music-player .album-art img.playing {
+    animation: rotate 12s linear infinite;
+}
+
+#music-player .info-and-progress {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+#music-player .track-info {
+    text-align: left;
+    margin-bottom: 8px;
+    height: 2.8em;
+}
+
+#music-player .song-title {
+    font-size: 1em;
+    font-weight: bold;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#music-player .artist-name {
+    font-size: 0.8em;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+html.dark #music-player .artist-name {
+    color: #aaa;
+}
+
+#music-player .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#music-player .progress {
+    width: 0%;
+    height: 100%;
+    background: #4664b4;
+    border-radius: 2px;
+}
+
+html.dark #music-player .progress {
+    background: #a9c1ff;
+}
+
+html.dark #music-player .progress-bar {
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#music-player .controls {
+    display: flex;
+    align-items: center;
+}
+
+#music-player .controls button {
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 1.2rem;
+    margin: 0 2px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 5px;
+}
+
+html.dark #music-player .controls button {
+    color: #eee;
+}
+
+#music-player .controls button:hover {
+    color: #4664b4;
+}
+
+html.dark #music-player .controls button:hover {
+    color: #a9c1ff;
+}
+
+#music-player .controls button#play-pause-btn {
+    font-size: 1.6rem;
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+html.dark #music-player .controls button#play-pause-btn {
+    background: transparent;
+}
+
+.volume-container {
+    display: flex;
+    align-items: center;
+    width: 120px;
+    margin-left: 5px;
+}
+
+.volume-container #volume-btn {
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 5px;
+    margin-right: 5px;
+    transition: color 0.2s ease;
+}
+
+html.dark .volume-container #volume-btn {
+    color: #eee;
+}
+
+.volume-container #volume-btn:hover {
+    color: #4664b4;
+}
+
+html.dark .volume-container #volume-btn:hover {
+    color: #a9c1ff;
+}
+
+.volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    outline: none;
+    border-radius: 2px;
+    transition: opacity .2s;
+    cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #4664b4;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: #4664b4;
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+}
+
+html.dark .volume-slider {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+html.dark .volume-slider::-webkit-slider-thumb {
+    background: #a9c1ff;
+}
+
+html.dark .volume-slider::-moz-range-thumb {
+    background: #a9c1ff;
+}
+
+/* Other Page Styles */
 #theme-toggle-container {
     position: fixed;
     top: 2rem;
@@ -65,15 +335,12 @@ html.dark .Tip button:hover {
     overflow: hidden;
 }
 
-/* 页面内容容器基础样式 */
 .page-content {
     transition: opacity 0.3s ease-in-out;
     width: 100%;
     min-height: calc(100vh - 90vh);
-    /* 减去 partOne 的高度 */
 }
 
-/* 主页特殊布局 */
 #page-index.partTwo {
     min-block-size: 100%;
     display: grid;
@@ -81,7 +348,6 @@ html.dark .Tip button:hover {
     padding-bottom: 30dvh;
 }
 
-/* 其他页面的通用布局 */
 #page-live,
 #page-activity {
     padding: 2rem;
@@ -91,7 +357,6 @@ html.dark .Tip button:hover {
     min-height: 50vh;
 }
 
-/* 图库页面布局 */
 #page-gallery {
     padding: 0;
     display: flex;
@@ -101,7 +366,6 @@ html.dark .Tip button:hover {
     padding-bottom: 4rem;
 }
 
-/* 关于页面布局 */
 #page-about {
     padding: 0;
     min-height: 100vh;
@@ -313,7 +577,6 @@ canvas {
     z-index: -11;
 }
 
-/* 导航动画 */
 #nav.animate {
     transform: scale(0.95);
     transition: transform 0.3s ease;
@@ -324,5 +587,15 @@ canvas {
         opacity: 0;
         box-shadow: none;
         transform: scale(.8) translateY(15vh);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
     }
 }
