@@ -17,12 +17,51 @@ body {
     background-size: cover;
 }
 
+#theme-toggle-container {
+    position: fixed;
+    top: 2rem;
+    left: 4rem;
+    z-index: 9999;
+}
+
+html.dark body {
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)),
+        url(/img/bg.png) no-repeat center center fixed;
+    background-size: cover;
+}
+
+html.dark #nav {
+    background: #232323;
+    box-shadow: 20px 40px 49px #00000066;
+}
+
+html.dark #nav li a {
+    color: #a9c1ff;
+}
+
+html.dark .slide1 {
+    background-color: #2a3a6b;
+}
+
+html.dark .slide2 {
+    background-color: rgba(67, 88, 148, 0.5);
+}
+
+html.dark .Tip button {
+    color: #cccccc;
+}
+
+html.dark .Tip button:hover {
+    color: #ffffff;
+}
+
 .partOne {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 90vh;
+    height: 100vh;
     overflow: hidden;
 }
 
@@ -91,7 +130,7 @@ body {
     justify-content: center;
     align-items: center;
     left: 50%;
-    top: 60%;
+    top: 65%;
     transform: translate(-50%, -50%);
 }
 
@@ -198,6 +237,7 @@ body {
 #nav {
     position: relative;
     border: none;
+    top: -7%;
     border-radius: 10em;
     display: flex;
     list-style: none;

@@ -36,6 +36,9 @@ const { title, description = "Huaxiaoke" } = Astro.props;
     </head>
 
     <body>
+        <div id="theme-toggle-container">
+            <theme-button id="theme-btn" size="1"></theme-button>
+        </div>
         <canvas transition:persist="stars-canvas"></canvas>
 
         <div class="partOne">
@@ -86,7 +89,6 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                 id="page-index"
                 style="display: block;"
             >
-                <slot />
             </div>
 
             <!-- 直播资讯页面 -->
@@ -119,10 +121,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                 id="page-activity"
                 style="display: none;"
             >
-                <div class="activity-content">
-                    <h2>当期活动</h2>
-                    <p>这里是当期活动内容...</p>
-                </div>
+                <div class="activity-content"></div>
             </div>
 
             <!-- 关于我们页面 -->
@@ -210,4 +209,6 @@ const { title, description = "Huaxiaoke" } = Astro.props;
     <script src="/src/scripts/slide.js"></script>
     <script src="/src/scripts/stars.js"></script>
     <script src="/src/scripts/timeline.js"></script>
+    <script src="/src/scripts/dayornight.js"></script>
+    <script src="/src/scripts/isinline.js"></script>
 </html>
