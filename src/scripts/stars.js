@@ -1,5 +1,3 @@
-const STAR_COLOR = "#fff";
-
 // 定义星星的大小
 const STAR_SIZE = 4;
 
@@ -195,13 +193,19 @@ function update() {
 
 // 绘制星星
 function render() {
+
+    const isDarkMode = document.documentElement.classList.contains("dark");
+    const STAR_COLOR = isDarkMode ? "#fff" : "#dedede";
+
     // 遍历所有星星
     stars.forEach((star) => {
+        const easedZ = Math.tanh(star.z * 0.7);
+
         // 设置绘制星星的样式
         context.beginPath();
         context.lineCap = "round";
         context.lineWidth = STAR_SIZE * star.z * scale;
-        context.globalAlpha = 0.5 + 0.5 * Math.random();
+        context.globalAlpha = easedZ;
         context.strokeStyle = STAR_COLOR;
 
         // 绘制星星的路径
