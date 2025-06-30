@@ -1,0 +1,160 @@
+:root {
+    --activity-poster-bg: linear-gradient(145deg, #e6e6e6, #ffffff);
+    --activity-poster-shadow: 6px 6px 12px #d9d9d9, -6px -6px 12px #ffffff;
+    --activity-poster-border: rgba(0, 0, 0, 0.1);
+    --activity-submission-bg: rgba(255, 255, 255, 0.7);
+    --activity-submission-border: rgba(0, 0, 0, 0.1);
+    --activity-submission-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --activity-text-color: #333;
+    --activity-input-bg: #fff;
+    --activity-input-border: #ccc;
+    --activity-input-color: #333;
+    --activity-btn-bg: #007bff;
+    --activity-btn-hover-bg: #0056b3;
+    --activity-btn-color: #fff;
+    --activity-file-btn-bg: #6c757d;
+    --activity-file-btn-hover-bg: #5a6268;
+}
+
+html.dark {
+    --activity-poster-bg: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+    --activity-poster-shadow: 8px 8px 16px #111, -8px -8px 16px #333;
+    --activity-poster-border: rgba(255, 255, 255, 0.1);
+    --activity-submission-bg: rgba(30, 30, 30, 0.7);
+    --activity-submission-border: rgba(255, 255, 255, 0.2);
+    --activity-submission-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --activity-text-color: #eee;
+    --activity-input-bg: #333;
+    --activity-input-border: #555;
+    --activity-input-color: #fff;
+    --activity-btn-bg: #00a1d6;
+    --activity-btn-hover-bg: #00b5e5;
+    --activity-btn-color: #fff;
+    --activity-file-btn-bg: #4a4a4a;
+    --activity-file-btn-hover-bg: #5a5a5a;
+}
+
+.activity-container {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+    align-items: stretch;
+}
+
+.activity-poster {
+    flex: 1;
+    max-width: 400px;
+    padding: 15px;
+    background: var(--activity-poster-bg);
+    border-radius: 12px;
+    box-shadow: var(--activity-poster-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-in-out;
+}
+
+.activity-poster img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: none;
+    border: 3px solid var(--activity-poster-border);
+}
+
+.activity-submission {
+    flex: 2;
+    background-color: var(--activity-submission-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--activity-submission-border);
+    backdrop-filter: blur(5px);
+    box-shadow: var(--activity-submission-shadow);
+    color: var(--activity-text-color);
+    transition: all 0.3s ease-in-out;
+}
+
+.activity-submission h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.activity-submission p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.submission-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.submission-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.submission-form input[type="text"],
+.submission-form textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 4px;
+    border: 1px solid var(--activity-input-border);
+    background-color: var(--activity-input-bg);
+    color: var(--activity-input-color);
+    box-sizing: border-box;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.submission-form input[type="text"]:focus,
+.submission-form textarea:focus {
+    outline: none;
+    border-color: var(--activity-btn-bg);
+}
+
+/* 自定义文件上传按钮 */
+.submission-form input[type="file"] {
+    display: none;
+    /* 隐藏原生input */
+}
+
+.submission-form .file-upload-label {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--activity-file-btn-bg);
+    color: var(--activity-btn-color);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.submission-form .file-upload-label:hover {
+    background-color: var(--activity-file-btn-hover-bg);
+}
+
+#file-name-display {
+    margin-left: 15px;
+    font-style: italic;
+    color: var(--activity-text-color);
+}
+
+
+.submission-form .submit-btn {
+    padding: 0.8rem 1.5rem;
+    background-color: var(--activity-btn-bg);
+    color: var(--activity-btn-color);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.submission-form .submit-btn:hover {
+    background-color: var(--activity-btn-hover-bg);
+}

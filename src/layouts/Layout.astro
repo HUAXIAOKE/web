@@ -18,6 +18,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
         <link rel="stylesheet" href="/src/styles/gallery.css" />
         <link rel="stylesheet" href="/src/styles/about.css" />
         <link rel="stylesheet" href="/src/styles/calender.css" />
+        <link rel="stylesheet" href="/src/styles/activity.css" />
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
@@ -152,7 +153,62 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                 id="page-activity"
                 style="display: none;"
             >
-                <div class="activity-content"></div>
+                <div class="activity-container">
+                    <div class="activity-poster">
+                        <img
+                            src="/img/activity/now_activity.JPG"
+                            alt="新生歌会活动海报"
+                        />
+                    </div>
+                    <div class="activity-submission">
+                        <h1>新生歌会</h1>
+                        <p>
+                            在这里展示你的才华，上传你的演唱视频，让更多人听到你的声音。
+                        </p>
+                        <form class="submission-form">
+                            <div class="form-group">
+                                <label for="video-upload">上传视频作品:</label>
+                                <!-- 隐藏的原生input -->
+                                <input
+                                    type="file"
+                                    id="video-upload"
+                                    name="video"
+                                    accept="video/*"
+                                    required
+                                />
+                                <!-- 自定义的按钮式label -->
+                                <label
+                                    for="video-upload"
+                                    class="file-upload-label">选择文件</label
+                                >
+                                <span id="file-name-display">未选择文件</span>
+                            </div>
+                            <div class="form-group">
+                                <input
+                                    type="file"
+                                    id="video-upload"
+                                    name="video"
+                                    accept="video/*"
+                                    required
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="submission-description"
+                                    >作品简介:</label
+                                >
+                                <textarea
+                                    id="submission-description"
+                                    name="description"
+                                    rows="4"
+                                    placeholder="简单介绍一下你的作品吧"
+                                ></textarea>
+                            </div>
+                            <button type="submit" class="submit-btn"
+                                >提交</button
+                            >
+                        </form>
+                    </div>
+                </div>
             </div>
 
             <!-- 关于我们页面 -->
@@ -243,4 +299,5 @@ const { title, description = "Huaxiaoke" } = Astro.props;
     <script src="/src/scripts/dayornight.js"></script>
     <script src="/src/scripts/isinline.js"></script>
     <script src="/src/scripts/music-player.js"></script>
+    <script src="/src/scripts/activity.js"></script>
 </html>
