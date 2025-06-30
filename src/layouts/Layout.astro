@@ -168,7 +168,6 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                         <form class="submission-form">
                             <div class="form-group">
                                 <label for="video-upload">上传视频作品:</label>
-                                <!-- 隐藏的原生input -->
                                 <input
                                     type="file"
                                     id="video-upload"
@@ -176,7 +175,6 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                                     accept="video/*"
                                     required
                                 />
-                                <!-- 自定义的按钮式label -->
                                 <label
                                     for="video-upload"
                                     class="file-upload-label">选择文件</label
