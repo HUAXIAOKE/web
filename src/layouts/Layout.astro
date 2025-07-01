@@ -163,11 +163,13 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                     <div class="activity-submission">
                         <h1>新生歌会</h1>
                         <p>
-                            在这里展示你的才华，上传你的演唱视频，让更多人听到你的声音。
+                            想要在新生歌会上一展歌喉吗？现在就来上传你的作品吧！<br
+                            />
+                            记得以“曲名-学院-姓名/化名”的格式命名哦！
                         </p>
                         <form class="submission-form">
                             <div class="form-group">
-                                <label for="video-upload">上传视频作品:</label>
+                                <label for="video-upload">上传作品:</label>
                                 <input
                                     type="file"
                                     id="video-upload"
@@ -182,28 +184,18 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                                 <span id="file-name-display">未选择文件</span>
                             </div>
                             <div class="form-group">
-                                <input
-                                    type="file"
-                                    id="video-upload"
-                                    name="video"
-                                    accept="video/*"
-                                    required
-                                />
+                                <button type="submit" class="submit-btn"
+                                    ><span>提交作品</span>
+                                </button>
                             </div>
-                            <div class="form-group">
-                                <label for="submission-description"
-                                    >作品简介:</label
-                                >
-                                <textarea
-                                    id="submission-description"
-                                    name="description"
-                                    rows="4"
-                                    placeholder="简单介绍一下你的作品吧"
-                                ></textarea>
-                            </div>
-                            <button type="submit" class="submit-btn"
-                                >提交</button
+                            <div
+                                id="video-preview-container"
+                                style="display: none; margin-top: 2rem;"
                             >
+                                <h3>视频预览:</h3>
+                                <video id="video-preview" width="100%" controls
+                                ></video>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -282,20 +274,22 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                     </div>
                 </div>
             </div>
-        </main>
 
-        <div class="Tip">
-            <button id="backToTopBtn">下边什么都没有了哦~</button>
-        </div>
+            <div class="Tip">
+                <button id="backToTopBtn">下边什么都没有了哦~</button>
+            </div>
+
+            <script src="/src/scripts/roll.js"></script>
+            <script src="/src/scripts/spa-navigation.js"></script>
+            <script src="/src/scripts/imageGallery.js"></script>
+            <script src="/src/scripts/slide.js"></script>
+            <script src="/src/scripts/stars.js"></script>
+            <script src="/src/scripts/timeline.js"></script>
+            <script src="/src/scripts/dayornight.js"></script>
+            <script src="/src/scripts/isinline.js"></script>
+            <script src="/src/scripts/music-player.js"></script>
+            <script src="/src/scripts/activity.js"></script>
+            <script src="/src/scripts/actRoll.js"></script>
+        </main>
     </body>
-    <script src="/src/scripts/roll.js"></script>
-    <script src="/src/scripts/spa-navigation.js"></script>
-    <script src="/src/scripts/imageGallery.js"></script>
-    <script src="/src/scripts/slide.js"></script>
-    <script src="/src/scripts/stars.js"></script>
-    <script src="/src/scripts/timeline.js"></script>
-    <script src="/src/scripts/dayornight.js"></script>
-    <script src="/src/scripts/isinline.js"></script>
-    <script src="/src/scripts/music-player.js"></script>
-    <script src="/src/scripts/activity.js"></script>
 </html>

@@ -1,37 +1,52 @@
 :root {
-    --activity-poster-bg: linear-gradient(145deg, #e6e6e6, #ffffff);
-    --activity-poster-shadow: 6px 6px 12px #d9d9d9, -6px -6px 12px #ffffff;
-    --activity-poster-border: rgba(0, 0, 0, 0.1);
-    --activity-submission-bg: rgba(255, 255, 255, 0.7);
-    --activity-submission-border: rgba(0, 0, 0, 0.1);
-    --activity-submission-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    --activity-text-color: #333;
-    --activity-input-bg: #fff;
-    --activity-input-border: #ccc;
-    --activity-input-color: #333;
-    --activity-btn-bg: #007bff;
-    --activity-btn-hover-bg: #0056b3;
-    --activity-btn-color: #fff;
-    --activity-file-btn-bg: #6c757d;
-    --activity-file-btn-hover-bg: #5a6268;
+    /* --- 浅色主题 --- */
+    --accent-color: #007bff;
+    --accent-color-hover: #0056b3;
+    --accent-text-color: #ffffff;
+    --page-bg: #f8f9fa;
+    --poster-bg: linear-gradient(145deg, #e6e6e6, #ffffff);
+    --submission-bg: rgba(255, 255, 255, 0.85);
+    --input-bg: #ffffff;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --input-text-color: #495057;
+    --border-color: #dee2e6;
+    --poster-border: rgba(0, 0, 0, 0.05);
+    --poster-shadow: 6px 6px 12px #d9d9d9, -6px -6px 12px #ffffff;
+    --submission-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    --file-btn-bg: #6c757d;
+    --file-btn-hover-bg: #5a6268;
+    --progress-wave-color: rgba(0, 0, 0, 0.1);
+    --upload-progress: 0%;
+    /* 滚动条颜色变量 */
+    --scrollbar-track-bg: rgba(0, 0, 0, 0.05);
+    --scrollbar-thumb-bg: rgba(0, 0, 0, 0.2);
+    --scrollbar-thumb-hover-bg: rgba(0, 0, 0, 0.4);
 }
 
 html.dark {
-    --activity-poster-bg: linear-gradient(145deg, #2c2c2c, #1a1a1a);
-    --activity-poster-shadow: 8px 8px 16px #111, -8px -8px 16px #333;
-    --activity-poster-border: rgba(255, 255, 255, 0.1);
-    --activity-submission-bg: rgba(30, 30, 30, 0.7);
-    --activity-submission-border: rgba(255, 255, 255, 0.2);
-    --activity-submission-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    --activity-text-color: #eee;
-    --activity-input-bg: #333;
-    --activity-input-border: #555;
-    --activity-input-color: #fff;
-    --activity-btn-bg: #00a1d6;
-    --activity-btn-hover-bg: #00b5e5;
-    --activity-btn-color: #fff;
-    --activity-file-btn-bg: #4a4a4a;
-    --activity-file-btn-hover-bg: #5a5a5a;
+    /* --- 深色主题 --- */
+    --accent-color: #00a1d6;
+    --accent-color-hover: #00b5e5;
+    --accent-text-color: #ffffff;
+    --page-bg: #121212;
+    --poster-bg: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+    --submission-bg: rgba(30, 30, 30, 0.85);
+    --input-bg: #2a2a2e;
+    --text-primary: #e9ecef;
+    --text-secondary: #adb5bd;
+    --input-text-color: #e9ecef;
+    --border-color: #495057;
+    --poster-border: rgba(255, 255, 255, 0.1);
+    --poster-shadow: 8px 8px 16px #111, -8px -8px 16px #333;
+    --submission-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+    --file-btn-bg: #4a4a4a;
+    --file-btn-hover-bg: #5a5a5a;
+    --progress-wave-color: rgba(255, 255, 255, 0.1);
+    /* 滚动条颜色变量 */
+    --scrollbar-track-bg: rgba(255, 255, 255, 0.1);
+    --scrollbar-thumb-bg: rgba(255, 255, 255, 0.3);
+    --scrollbar-thumb-hover-bg: rgba(255, 255, 255, 0.5);
 }
 
 .activity-container {
@@ -40,16 +55,31 @@ html.dark {
     padding: 2rem;
     max-width: 1200px;
     margin: auto;
-    align-items: stretch;
+    align-items: flex-start;
+    animation: slide-fade-in-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    position: relative;
+    /* 为自定义滚动条定位提供父级 */
+}
+
+@keyframes slide-fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .activity-poster {
     flex: 1;
     max-width: 400px;
     padding: 15px;
-    background: var(--activity-poster-bg);
+    background: var(--poster-bg);
     border-radius: 12px;
-    box-shadow: var(--activity-poster-shadow);
+    box-shadow: var(--poster-shadow);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,31 +88,83 @@ html.dark {
 
 .activity-poster img {
     width: 100%;
+    height: auto;
+    object-fit: contain;
     border-radius: 8px;
     box-shadow: none;
-    border: 3px solid var(--activity-poster-border);
+    border: 3px solid var(--poster-border);
 }
 
 .activity-submission {
     flex: 2;
-    background-color: var(--activity-submission-bg);
+    background-color: var(--submission-bg);
     padding: 2rem;
     border-radius: 12px;
-    border: 1px solid var(--activity-submission-border);
-    backdrop-filter: blur(5px);
-    box-shadow: var(--activity-submission-shadow);
-    color: var(--activity-text-color);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--submission-shadow);
+    color: var(--text-primary);
     transition: all 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-width: 90vh;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    position: relative;
+}
+
+/* 隐藏原生滚动条 (Chrome, Safari, Opera) */
+.activity-submission::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- 自定义滚动条样式 --- */
+.custom-scrollbar-track {
+    position: absolute;
+    top: 0;
+    right: 2px;
+    /* 调整与右侧的距离 */
+    width: 10px;
+    height: 100%;
+    background-color: var(--scrollbar-track-bg);
+    border-radius: 5px;
+    display: none;
+    /* 默认隐藏，由JS控制显示 */
+}
+
+.custom-scrollbar-thumb {
+    position: absolute;
+    left: 1px;
+    width: 8px;
+    background-color: var(--scrollbar-thumb-bg);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.custom-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover-bg);
 }
 
 .activity-submission h1 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
+    font-weight: 500;
+    flex-shrink: 0;
 }
 
 .activity-submission p {
     font-size: 1.1rem;
     margin-bottom: 2rem;
+    color: var(--text-secondary);
+}
+
+.submission-form {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
 }
 
 .submission-form .form-group {
@@ -92,38 +174,37 @@ html.dark {
 .submission-form label {
     display: block;
     margin-bottom: 0.5rem;
-    font-weight: bold;
+    color: var(--text-primary);
 }
 
 .submission-form input[type="text"],
 .submission-form textarea {
     width: 100%;
     padding: 0.8rem;
-    border-radius: 4px;
-    border: 1px solid var(--activity-input-border);
-    background-color: var(--activity-input-bg);
-    color: var(--activity-input-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
+    color: var(--input-text-color);
     box-sizing: border-box;
     transition: border-color 0.3s, background-color 0.3s;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .submission-form input[type="text"]:focus,
 .submission-form textarea:focus {
     outline: none;
-    border-color: var(--activity-btn-bg);
+    border-color: var(--accent-color);
 }
 
-/* 自定义文件上传按钮 */
 .submission-form input[type="file"] {
     display: none;
-    /* 隐藏原生input */
 }
 
 .submission-form .file-upload-label {
     display: inline-block;
     padding: 0.8rem 1.5rem;
-    background-color: var(--activity-file-btn-bg);
-    color: var(--activity-btn-color);
+    background-color: var(--file-btn-bg);
+    color: var(--accent-text-color);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -132,29 +213,158 @@ html.dark {
 }
 
 .submission-form .file-upload-label:hover {
-    background-color: var(--activity-file-btn-hover-bg);
+    background-color: var(--file-btn-hover-bg);
 }
 
 #file-name-display {
     margin-left: 15px;
     font-style: italic;
-    color: var(--activity-text-color);
+    color: var(--text-secondary);
 }
 
+#video-preview-container {
+    margin-top: 1.5rem;
+    flex-shrink: 0;
+}
 
+#video-preview-container h3 {
+    margin-bottom: 0.5rem;
+    font-weight: normal;
+    color: var(--text-primary);
+}
+
+#video-preview {
+    max-width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+}
+
+/* --- 提交按钮动画 --- */
 .submission-form .submit-btn {
+    position: relative;
+    overflow: hidden;
     padding: 0.8rem 1.5rem;
-    background-color: var(--activity-btn-bg);
-    color: var(--activity-btn-color);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    border: 2px solid var(--accent-color);
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--accent-color);
     font-size: 1rem;
-    transition: background-color 0.3s;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
     width: 100%;
+    font-family: inherit;
     margin-top: 1rem;
 }
 
-.submission-form .submit-btn:hover {
-    background-color: var(--activity-btn-hover-bg);
+.submission-form .submit-btn span {
+    position: relative;
+    z-index: 1;
+    transition: color 0.4s;
+}
+
+.submission-form .submit-btn::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--accent-color);
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.7, 0, 0.2, 1);
+    z-index: 0;
+}
+
+.submission-form .submit-btn.uploading::before {
+    transform: translateX(calc(-100% + var(--upload-progress)));
+    transition: transform 0.1s linear;
+}
+
+.submission-form .submit-btn.uploading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: 40px 40px;
+    background-image: linear-gradient(45deg, var(--progress-wave-color) 25%, transparent 25%, transparent 50%, var(--progress-wave-color) 50%, var(--progress-wave-color) 75%, transparent 75%, transparent);
+    animation: wave-move-rtl 1s linear infinite;
+    opacity: 0.5;
+}
+
+.submission-form .submit-btn.uploading span {
+    color: var(--accent-text-color);
+}
+
+.submission-form .submit-btn:hover:not(.uploading):not(.completed) span {
+    color: var(--accent-text-color);
+}
+
+.submission-form .submit-btn:hover:not(.uploading):not(.completed)::before {
+    transform: translateX(0);
+}
+
+.submission-form .submit-btn.completed {
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+.submission-form .submit-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+@keyframes wave-move-rtl {
+    from {
+        background-position: 0 0;
+    }
+
+    to {
+        background-position: 40px 0;
+    }
+}
+
+/* --- 响应式设计 --- */
+@media (max-width: 992px) {
+    .activity-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .activity-poster {
+        max-width: 100%;
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+
+    .activity-submission {
+        width: 100%;
+        max-height: none;
+        /* 在移动端移除最大高度限制 */
+        overflow-y: visible;
+        /* 在移动端移除内部滚动 */
+    }
+
+    /* 在移动端隐藏自定义滚动条 */
+    .custom-scrollbar-track {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .activity-container {
+        padding: 1rem;
+    }
+
+    .activity-submission {
+        padding: 1.5rem;
+    }
+
+    .activity-submission h1 {
+        font-size: 2rem;
+    }
 }
