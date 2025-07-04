@@ -59,6 +59,14 @@ html.dark {
     animation: slide-fade-in-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     position: relative;
     /* 为自定义滚动条定位提供父级 */
+    user-select: none;
+    /* 禁止选择导航栏文本 */
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE/Edge */
 }
 
 @keyframes slide-fade-in-up {

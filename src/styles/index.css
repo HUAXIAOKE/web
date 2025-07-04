@@ -499,6 +499,13 @@ html.dark .Tip button:hover {
 }
 
 #nav {
+    user-select: none;
+    -webkit-user-select: none;
+    /* Safari */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE/Edge */
     position: relative;
     border: none;
     top: -7%;
@@ -521,6 +528,10 @@ html.dark .Tip button:hover {
     display: inline-block;
     text-decoration: none;
     z-index: 3;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .slide1,
