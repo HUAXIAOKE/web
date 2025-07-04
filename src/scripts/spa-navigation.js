@@ -47,17 +47,30 @@ class SPANavigation {
         // 外部链接处理
         const externalLinks = document.querySelectorAll("#nav a[target='_blank']");
         externalLinks.forEach(link => {
+            // 为外部链接添加悬浮效果
+            link.addEventListener("mouseover", () => {
+                const parent = link.parentElement;
+                const position = parent.offsetLeft;
+                const width = parent.offsetWidth;
+
+                slide2.style.opacity = "1";
+                slide2.style.left = position + "px";
+                slide2.style.width = width + "px";
+                slide2.classList.add("squeeze");
+            });
+
+            link.addEventListener("mouseout", () => {
+                slide2.style.opacity = "0";
+                slide2.classList.remove("squeeze");
+            });
+
+            // 点击事件处理
             link.addEventListener("click", (e) => {
                 e.preventDefault();
                 const targetUrl = link.getAttribute('href');
-                const nav = document.getElementById("nav");
 
-                nav.classList.add("animate");
-
-                setTimeout(() => {
-                    window.open(targetUrl, "_blank", "noopener,noreferrer");
-                    nav.classList.remove("animate");
-                }, 700);
+                // 直接打开外部链接，不添加动画效果
+                window.open(targetUrl, "_blank", "noopener,noreferrer");
             });
         });
     }
