@@ -15,10 +15,12 @@ body {
         linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.8)),
         url(/img/bg.png) no-repeat center center fixed;
     background-size: cover;
+    overflow-x: hidden;
 }
 
 /* Music Player Styles */
 #music-player {
+    box-sizing: content-box;
     position: fixed;
     top: 1rem;
     right: 1rem;

@@ -1,378 +1,391 @@
-:root {
-    /* --- 浅色主题 --- */
-    --accent-color: #007bff;
-    --accent-color-hover: #0056b3;
-    --accent-text-color: #ffffff;
-    --page-bg: #f8f9fa;
-    --poster-bg: linear-gradient(145deg, #e6e6e6, #ffffff);
-    --submission-bg: rgba(255, 255, 255, 0.85);
-    --input-bg: #ffffff;
-    --text-primary: #212529;
-    --text-secondary: #6c757d;
-    --input-text-color: #495057;
-    --border-color: #dee2e6;
-    --poster-border: rgba(0, 0, 0, 0.05);
-    --poster-shadow: 6px 6px 12px #d9d9d9, -6px -6px 12px #ffffff;
-    --submission-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-    --file-btn-bg: #6c757d;
-    --file-btn-hover-bg: #5a6268;
-    --progress-wave-color: rgba(0, 0, 0, 0.1);
-    --upload-progress: 0%;
-    /* 滚动条颜色变量 */
-    --scrollbar-track-bg: rgba(0, 0, 0, 0.05);
-    --scrollbar-thumb-bg: rgba(0, 0, 0, 0.2);
-    --scrollbar-thumb-hover-bg: rgba(0, 0, 0, 0.4);
+.activity-container {
+    /* 使用CSS变量控制尺寸 */
+    width: var(--book-width, 540px);
+    height: var(--book-height, 840px);
+    transform-style: preserve-3d;
+    perspective: 1200px;
+    transition: 1.2s ease-in-out;
+    /* 增加动画时间 */
+    margin: 0 auto;
+    position: relative;
 }
 
-html.dark {
-    /* --- 深色主题 --- */
-    --accent-color: #00a1d6;
-    --accent-color-hover: #00b5e5;
-    --accent-text-color: #ffffff;
-    --page-bg: #121212;
-    --poster-bg: linear-gradient(145deg, #2c2c2c, #1a1a1a);
-    --submission-bg: rgba(30, 30, 30, 0.85);
-    --input-bg: #2a2a2e;
-    --text-primary: #e9ecef;
-    --text-secondary: #adb5bd;
-    --input-text-color: #e9ecef;
-    --border-color: #495057;
-    --poster-border: rgba(255, 255, 255, 0.1);
-    --poster-shadow: 8px 8px 16px #111, -8px -8px 16px #333;
-    --submission-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-    --file-btn-bg: #4a4a4a;
-    --file-btn-hover-bg: #5a5a5a;
-    --progress-wave-color: rgba(255, 255, 255, 0.1);
-    /* 滚动条颜色变量 */
-    --scrollbar-track-bg: rgba(255, 255, 255, 0.1);
-    --scrollbar-thumb-bg: rgba(255, 255, 255, 0.3);
-    --scrollbar-thumb-hover-bg: rgba(255, 255, 255, 0.5);
+.book-1,
+.book-2 {
+    width: var(--book-width, 540px);
+    height: var(--book-height, 840px);
+    position: absolute;
+    transform-origin: left;
+    background-size: cover;
+    background-position: center;
+    top: -20px;
+    background-clip: padding-box;
+    border: solid 20px #576574;
+    border-left: none;
+    border-radius: 0 20px 20px 0;
+    overflow: hidden;
+    box-shadow:
+        inset 0 0 50px rgba(0, 0, 0, 0.1),
+        0 5px 15px rgba(0, 0, 0, 0.2),
+        0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: border-color 0.3s ease;
+}
+
+/* 封面 */
+.book-1 {
+    z-index: 2;
+    transition: 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 内页 */
+.book-2 {
+    z-index: 1;
+    background: #f8f9fa;
+    display: flex;
+    align-items: flex-start;
+    padding: 40px 30px;
+    box-sizing: border-box;
+    background-image:
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.6) 0%, transparent 50%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.02) 0%, transparent 10%, transparent 90%, rgba(0, 0, 0, 0.02) 100%);
+}
+
+.activity-container:hover .book-1 {
+    border-left: #576574 20px solid;
+    transform: rotateY(-180deg);
+    box-shadow:
+        -5px 0 15px rgba(0, 0, 0, 0.3),
+        -10px 0 30px rgba(0, 0, 0, 0.2),
+        0 5px 25px rgba(0, 0, 0, 0.15);
+}
+
+.activity-container:hover {
+    transform: translateX(calc(var(--book-width, 540px) * 0.5)) rotateY(-5deg) scale(1.02);
+    transition: 1.2s ease-in-out;
 }
 
 .activity-container {
-    display: flex;
-    gap: 2rem;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: auto;
-    align-items: flex-start;
-    animation: slide-fade-in-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-    position: relative;
-    /* 为自定义滚动条定位提供父级 */
-    user-select: none;
-    /* 禁止选择导航栏文本 */
-    -webkit-user-select: none;
-    /* Safari */
-    -moz-user-select: none;
-    /* Firefox */
-    -ms-user-select: none;
-    /* IE/Edge */
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4)) drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
 }
 
-@keyframes slide-fade-in-up {
-    from {
-        opacity: 0;
-        transform: translateY(50px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* 内页内容样式 */
+.book-content {
+    width: 100%;
+    height: 100%;
+    color: #333;
+    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
+    overflow-y: auto;
 }
 
-.activity-poster {
-    flex: 1;
-    max-width: 400px;
-    padding: 15px;
-    background: var(--poster-bg);
-    border-radius: 12px;
-    box-shadow: var(--poster-shadow);
+.activity-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
+}
+
+.activity-description {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    text-align: justify;
+    color: #555;
+    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
+}
+
+.submission-section {
+    background: #ecf0f1;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 15px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease-in-out;
+    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
 }
 
-.activity-poster img {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    border-radius: 8px;
-    box-shadow: none;
-    border: 3px solid var(--poster-border);
+.section-title::before {
+    content: "🎥";
+    margin-right: 8px;
 }
 
-.activity-submission {
-    flex: 2;
-    background-color: var(--submission-bg);
-    padding: 2rem;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    backdrop-filter: blur(10px);
-    box-shadow: var(--submission-shadow);
-    color: var(--text-primary);
-    transition: all 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    max-width: 90vh;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    position: relative;
+.form-group {
+    margin-bottom: 15px;
 }
 
-/* 隐藏原生滚动条 (Chrome, Safari, Opera) */
-.activity-submission::-webkit-scrollbar {
-    display: none;
-}
-
-/* --- 自定义滚动条样式 --- */
-.custom-scrollbar-track {
-    position: absolute;
-    top: 0;
-    right: 2px;
-    /* 调整与右侧的距离 */
-    width: 10px;
-    height: 100%;
-    background-color: var(--scrollbar-track-bg);
-    border-radius: 5px;
-    display: none;
-    /* 默认隐藏，由JS控制显示 */
-}
-
-.custom-scrollbar-thumb {
-    position: absolute;
-    left: 1px;
-    width: 8px;
-    background-color: var(--scrollbar-thumb-bg);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.custom-scrollbar-thumb:hover {
-    background-color: var(--scrollbar-thumb-hover-bg);
-}
-
-.activity-submission h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    font-weight: 500;
-    flex-shrink: 0;
-}
-
-.activity-submission p {
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-    color: var(--text-secondary);
-}
-
-.submission-form {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    min-height: 0;
-}
-
-.submission-form .form-group {
-    margin-bottom: 1.5rem;
-}
-
-.submission-form label {
+.form-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #34495e;
+    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
 }
 
-.submission-form input[type="text"],
-.submission-form textarea {
+.form-group input,
+.form-group textarea,
+.form-group select {
     width: 100%;
-    padding: 0.8rem;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    background-color: var(--input-bg);
-    color: var(--input-text-color);
-    box-sizing: border-box;
-    transition: border-color 0.3s, background-color 0.3s;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 8px 12px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
 }
 
-.submission-form input[type="text"]:focus,
-.submission-form textarea:focus {
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
     outline: none;
-    border-color: var(--accent-color);
+    border-color: #3498db;
 }
 
-.submission-form input[type="file"] {
-    display: none;
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
 }
 
-.submission-form .file-upload-label {
-    display: inline-block;
-    padding: 0.8rem 1.5rem;
-    background-color: var(--file-btn-bg);
-    color: var(--accent-text-color);
+/* 自定义文件上传按钮 */
+.file-upload-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.custom-file-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(145deg, #4664b4, #3a5299);
+    color: white;
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-}
-
-.submission-form .file-upload-label:hover {
-    background-color: var(--file-btn-hover-bg);
-}
-
-#file-name-display {
-    margin-left: 15px;
-    font-style: italic;
-    color: var(--text-secondary);
-}
-
-#video-preview-container {
-    margin-top: 1.5rem;
-    flex-shrink: 0;
-}
-
-#video-preview-container h3 {
-    margin-bottom: 0.5rem;
-    font-weight: normal;
-    color: var(--text-primary);
-}
-
-#video-preview {
-    max-width: 100%;
     border-radius: 8px;
-    border: 1px solid var(--border-color);
-    margin-bottom: 1rem;
-}
-
-/* --- 提交按钮动画 --- */
-.submission-form .submit-btn {
-    position: relative;
-    overflow: hidden;
-    padding: 0.8rem 1.5rem;
-    border: 2px solid var(--accent-color);
-    border-radius: 8px;
-    background-color: transparent;
-    color: var(--accent-color);
-    font-size: 1rem;
-    font-weight: bold;
     cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
     transition: all 0.3s ease;
+    box-shadow:
+        0 4px 8px rgba(70, 100, 180, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.custom-file-btn:hover {
+    background: linear-gradient(145deg, #3a5299, #2d4280);
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 12px rgba(70, 100, 180, 0.4),
+        0 4px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.custom-file-btn:active {
+    transform: translateY(0);
+    box-shadow:
+        0 2px 4px rgba(70, 100, 180, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* 暗色主题下的按钮样式 */
+html.dark .custom-file-btn {
+    background: linear-gradient(145deg, #a9c1ff, #8aa5e8);
+    color: #1a1a1a;
+    box-shadow:
+        0 4px 8px rgba(169, 193, 255, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+html.dark .custom-file-btn:hover {
+    background: linear-gradient(145deg, #8aa5e8, #6b88d6);
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 12px rgba(169, 193, 255, 0.4),
+        0 4px 8px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+html.dark .custom-file-btn:active {
+    transform: translateY(0);
+    box-shadow:
+        0 2px 4px rgba(169, 193, 255, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.custom-file-btn i {
+    font-size: 16px;
+}
+
+.file-name {
+    font-size: 14px;
+    color: #666;
+    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-name.selected {
+    color: #27ae60;
+    font-weight: 500;
+}
+
+/* 暗色主题下的文件名样式 */
+html.dark .file-name {
+    color: #aaa;
+}
+
+html.dark .file-name.selected {
+    color: #a9c1ff;
+}
+
+.submit-btn {
+    background: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
     width: 100%;
-    font-family: inherit;
-    margin-top: 1rem;
+    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
 }
 
-.submission-form .submit-btn span {
-    position: relative;
-    z-index: 1;
-    transition: color 0.4s;
+.submit-btn:hover {
+    background: #2980b9;
 }
 
-.submission-form .submit-btn::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--accent-color);
-    transform: translateX(-100%);
-    transition: transform 0.4s cubic-bezier(0.7, 0, 0.2, 1);
-    z-index: 0;
-}
-
-.submission-form .submit-btn.uploading::before {
-    transform: translateX(calc(-100% + var(--upload-progress)));
-    transition: transform 0.1s linear;
-}
-
-.submission-form .submit-btn.uploading::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: 40px 40px;
-    background-image: linear-gradient(45deg, var(--progress-wave-color) 25%, transparent 25%, transparent 50%, var(--progress-wave-color) 50%, var(--progress-wave-color) 75%, transparent 75%, transparent);
-    animation: wave-move-rtl 1s linear infinite;
-    opacity: 0.5;
-}
-
-.submission-form .submit-btn.uploading span {
-    color: var(--accent-text-color);
-}
-
-.submission-form .submit-btn:hover:not(.uploading):not(.completed) span {
-    color: var(--accent-text-color);
-}
-
-.submission-form .submit-btn:hover:not(.uploading):not(.completed)::before {
-    transform: translateX(0);
-}
-
-.submission-form .submit-btn.completed {
-    background-color: #28a745;
-    border-color: #28a745;
+/* 暗色主题下的提交按钮样式 */
+html.dark .submit-btn {
+    background: #4664b4;
     color: white;
 }
 
-.submission-form .submit-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.7;
+html.dark .submit-btn:hover {
+    background: #3a5299;
 }
 
-@keyframes wave-move-rtl {
-    from {
-        background-position: 0 0;
-    }
-
-    to {
-        background-position: 40px 0;
-    }
+.file-hint {
+    color: #7f8c8d;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
 }
 
-/* --- 响应式设计 --- */
-@media (max-width: 992px) {
-    .activity-container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .activity-poster {
-        max-width: 100%;
-        width: 100%;
-        margin-bottom: 2rem;
-    }
-
-    .activity-submission {
-        width: 100%;
-        max-height: none;
-        /* 在移动端移除最大高度限制 */
-        overflow-y: visible;
-        /* 在移动端移除内部滚动 */
-    }
-
-    /* 在移动端隐藏自定义滚动条 */
-    .custom-scrollbar-track {
-        display: none !important;
-    }
+/* 暗色主题下的提示文字样式 */
+html.dark .file-hint {
+    color: #bbb;
 }
 
-@media (max-width: 768px) {
-    .activity-container {
-        padding: 1rem;
-    }
+.info-section {
+    background: #e8f5e8;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
 
-    .activity-submission {
-        padding: 1.5rem;
-    }
+.info-item {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
 
-    .activity-submission h1 {
-        font-size: 2rem;
-    }
+.info-item strong {
+    color: #27ae60;
+}
+
+/* 防止横向滚动条 */
+body {
+    overflow-x: hidden;
+}
+
+/* 暗色主题下的整体样式调整 */
+html.dark .book-2 {
+    background: #2a2a2a;
+    background-image:
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0%, transparent 10%, transparent 90%, rgba(255, 255, 255, 0.02) 100%);
+}
+
+html.dark .book-content {
+    color: #e0e0e0;
+}
+
+html.dark .activity-title {
+    color: #a9c1ff;
+    border-bottom-color: #4664b4;
+}
+
+html.dark .activity-description {
+    color: #ccc;
+}
+
+html.dark .submission-section {
+    background: #333;
+}
+
+html.dark .section-title {
+    color: #a9c1ff;
+}
+
+html.dark .form-group label {
+    color: #ccc;
+}
+
+html.dark .form-group input,
+html.dark .form-group textarea,
+html.dark .form-group select {
+    background: #444;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+html.dark .form-group input:focus,
+html.dark .form-group textarea:focus,
+html.dark .form-group select:focus {
+    border-color: #4664b4;
+}
+
+/* 暗色主题下的书本边框样式 */
+html.dark .book-1,
+html.dark .book-2 {
+    border-color: #4a4a4a;
+    box-shadow:
+        inset 0 0 50px rgba(255, 255, 255, 0.03),
+        0 5px 15px rgba(0, 0, 0, 0.6),
+        0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+html.dark .activity-container:hover .book-1 {
+    border-left: #4a4a4a 20px solid;
+    box-shadow:
+        -5px 0 15px rgba(0, 0, 0, 0.6),
+        -10px 0 30px rgba(0, 0, 0, 0.4),
+        0 5px 25px rgba(0, 0, 0, 0.5);
+}
+
+html.dark .activity-container {
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.7)) drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
 }

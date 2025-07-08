@@ -153,143 +153,177 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                 id="page-activity"
                 style="display: none;"
             >
-                <div class="activity-container">
-                    <div class="activity-poster">
-                        <img
-                            src="/img/activity/now_activity.JPG"
-                            alt="新生歌会活动海报"
-                        />
+                <div class="activity-container" , id="main">
+                    <div
+                        class="book-1"
+                        style="--i:2;background-image: url(/img/activity/now_activity.JPG);"
+                    >
                     </div>
-                    <div class="activity-submission">
-                        <h1>新生歌会</h1>
-                        <p>
-                            想要在新生歌会上一展歌喉吗？现在就来上传你的作品吧！<br
-                            />
-                            记得以“曲名-学院-姓名/化名”的格式命名哦！
-                        </p>
-                        <form class="submission-form">
-                            <div class="form-group">
-                                <label for="video-upload">上传作品:</label>
-                                <input
-                                    type="file"
-                                    id="video-upload"
-                                    name="video"
-                                    accept="video/*"
-                                    required
-                                />
-                                <label
-                                    for="video-upload"
-                                    class="file-upload-label">选择文件</label
-                                >
-                                <span id="file-name-display">未选择文件</span>
+                    <div class="book-2">
+                        <div class="book-content">
+                            <h1 class="activity-title">新生歌会</h1>
+
+                            <div class="activity-description">
+                                欢迎参加我们的新生歌会！这是一个展示你才华的绝佳机会，无论你是唱歌新手还是经验丰富的歌手，都欢迎来参加。让我们一起用歌声点亮青春，用音乐连接彼此！
                             </div>
-                            <div class="form-group">
+
+                            <div class="submission-section">
+                                <h2 class="section-title">视频提交</h2>
+                                <form id="submission-form">
+                                    <div class="form-group">
+                                        <label for="participant-grade"
+                                            >年级&专业</label
+                                        >
+                                        <input
+                                            type="text"
+                                            id="participant-grade"
+                                            name="grade"
+                                            placeholder="eg：25级计科"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="song-title">歌曲名称</label>
+                                        <input
+                                            type="text"
+                                            id="song-title"
+                                            name="songTitle"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="participant-nickname"
+                                            >昵称</label
+                                        >
+                                        <input
+                                            type="text"
+                                            id="participant-nickname"
+                                            name="nickname"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="video-file"
+                                            >上传视频文件</label
+                                        >
+                                        <button
+                                            type="button"
+                                            class="custom-file-btn"
+                                            id="file-upload-btn"
+                                        >
+                                            <i class="fas fa-video"></i>
+                                            <span>选择视频文件</span>
+                                        </button>
+                                        <span class="file-name" id="file-name"
+                                            >未选择文件</span
+                                        >
+                                    </div>
+                                    <small class="file-hint"
+                                        >支持 MP4、AVI、MOV
+                                        等视频格式，文件大小不超过 100MB</small
+                                    >
+                                </form>
+
                                 <button type="submit" class="submit-btn"
-                                    ><span>提交作品</span>
-                                </button>
-                            </div>
-                            <div
-                                id="video-preview-container"
-                                style="display: none; margin-top: 2rem;"
-                            >
-                                <h3>视频预览:</h3>
-                                <video id="video-preview" width="100%" controls
-                                ></video>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 关于我们页面 -->
-            <div
-                class="partTwo page-content"
-                id="page-about"
-                style="display: none;"
-            >
-                <div class="about" id="main">
-                    <div id="click-section">
-                        <div id="drawerboxes">
-                            <div class="drawerbox active">
-                                <button
-                                    class="drawer-btn active"
-                                    onclick="slideTo(1)">关于小科</button
+                                    >提交视频</button
                                 >
-                            </div>
-                            <div class="drawerbox">
-                                <button class="drawer-btn" onclick="slideTo(2)"
-                                    >日常生活</button
-                                >
-                            </div>
-                            <div class="drawerbox">
-                                <button class="drawer-btn" onclick="slideTo(3)"
-                                    >工作内容</button
-                                >
-                            </div>
-                            <div class="drawerbox">
-                                <button class="drawer-btn" onclick="slideTo(4)"
-                                    >加入我们</button
-                                >
-                            </div>
-                        </div>
-                    </div>
-                    <div id="slide-section">
-                        <div id="slide-bar">
-                            <div id="bar"></div>
-                        </div>
-                        <div id="card-section">
-                            <div id="card1" class="card">
-                                <div class="card-small-title">HuaXiaoKe</div>
-                                <div class="card-title">XXXX</div>
-                                <div class="card-content">是名字</div>
-                                <div class="card-img">
-                                    <img src="img/temp.png" alt="" />
-                                </div>
-                            </div>
-                            <div id="card2" class="card">
-                                <div class="card-small-title">Us</div>
-                                <div class="card-title">xxx</div>
-                                <div class="card-content">这里依旧是文字</div>
-                                <div class="card-img">
-                                    <img src="img/temp.png" alt="" />
-                                </div>
-                            </div>
-                            <div id="card3" class="card">
-                                <div class="card-small-title">Lucky</div>
-                                <div class="card-title">Play and Sleep</div>
-                                <div class="card-content">这里是文字</div>
-                                <div class="card-img">
-                                    <img src="img/temp.png" alt="" />
-                                </div>
-                            </div>
-                            <div id="card4" class="card">
-                                <div class="card-small-title">End</div>
-                                <div class="card-title">May you happy</div>
-                                <div class="card-content">这里还是文字</div>
-                                <div class="card-img">
-                                    <img src="img/temp.png" alt="" />
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="Tip">
-                <button id="backToTopBtn">下边什么都没有了哦~</button>
-            </div>
-
-            <script src="/src/scripts/roll.js"></script>
-            <script src="/src/scripts/spa-navigation.js"></script>
-            <script src="/src/scripts/imageGallery.js"></script>
-            <script src="/src/scripts/slide.js"></script>
-            <script src="/src/scripts/stars.js"></script>
-            <script src="/src/scripts/timeline.js"></script>
-            <script src="/src/scripts/dayornight.js"></script>
-            <script src="/src/scripts/isinline.js"></script>
-            <script src="/src/scripts/music-player.js"></script>
-            <script src="/src/scripts/activity.js"></script>
-            <script src="/src/scripts/actRoll.js"></script>
         </main>
+
+        <!-- 关于我们页面 -->
+        <div
+            class="partTwo page-content"
+            id="page-about"
+            style="display: none;"
+        >
+            <div class="about" id="main">
+                <div id="click-section">
+                    <div id="drawerboxes">
+                        <div class="drawerbox active">
+                            <button
+                                class="drawer-btn active"
+                                onclick="slideTo(1)">关于小科</button
+                            >
+                        </div>
+                        <div class="drawerbox">
+                            <button class="drawer-btn" onclick="slideTo(2)"
+                                >日常生活</button
+                            >
+                        </div>
+                        <div class="drawerbox">
+                            <button class="drawer-btn" onclick="slideTo(3)"
+                                >工作内容</button
+                            >
+                        </div>
+                        <div class="drawerbox">
+                            <button class="drawer-btn" onclick="slideTo(4)"
+                                >加入我们</button
+                            >
+                        </div>
+                    </div>
+                </div>
+                <div id="slide-section">
+                    <div id="slide-bar">
+                        <div id="bar"></div>
+                    </div>
+                    <div id="card-section">
+                        <div id="card1" class="card">
+                            <div class="card-small-title">HuaXiaoKe</div>
+                            <div class="card-title">XXXX</div>
+                            <div class="card-content">是名字</div>
+                            <div class="card-img">
+                                <img src="img/temp.png" alt="" />
+                            </div>
+                        </div>
+                        <div id="card2" class="card">
+                            <div class="card-small-title">Us</div>
+                            <div class="card-title">xxx</div>
+                            <div class="card-content">这里依旧是文字</div>
+                            <div class="card-img">
+                                <img src="img/temp.png" alt="" />
+                            </div>
+                        </div>
+                        <div id="card3" class="card">
+                            <div class="card-small-title">Lucky</div>
+                            <div class="card-title">Play and Sleep</div>
+                            <div class="card-content">这里是文字</div>
+                            <div class="card-img">
+                                <img src="img/temp.png" alt="" />
+                            </div>
+                        </div>
+                        <div id="card4" class="card">
+                            <div class="card-small-title">End</div>
+                            <div class="card-title">May you happy</div>
+                            <div class="card-content">这里还是文字</div>
+                            <div class="card-img">
+                                <img src="img/temp.png" alt="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="Tip">
+            <button id="backToTopBtn">下边什么都没有了哦~</button>
+        </div>
+
+        <script src="/src/scripts/roll.js"></script>
+        <script src="/src/scripts/spa-navigation.js"></script>
+        <script src="/src/scripts/imageGallery.js"></script>
+        <script src="/src/scripts/slide.js"></script>
+        <script src="/src/scripts/stars.js"></script>
+        <script src="/src/scripts/timeline.js"></script>
+        <script src="/src/scripts/dayornight.js"></script>
+        <script src="/src/scripts/isinline.js"></script>
+        <script src="/src/scripts/music-player.js"></script>
+        <script src="/src/scripts/activity.js"></script>
     </body>
 </html>
