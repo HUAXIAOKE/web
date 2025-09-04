@@ -19,6 +19,41 @@ body {
     transition: background 0.3s ease;
 }
 
+#page-index {
+    position: relative;
+}
+
+/* Live2D 容器（只占主页内部右下角） */
+#live2d-container {
+    position: absolute;
+    right: 5px;
+    /* 可微调，正值向右溢出一点 */
+    bottom: 0;
+    width: 510px;
+    height: 900px;
+    pointer-events: none;
+    /* 不阻塞主页内容点击 */
+    z-index: 12;
+}
+
+#live2d-container canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+}
+
+/* 小屏可缩小或隐藏 */
+@media (max-width: 800px) {
+    #live2d-container {
+        width: 390px;
+        height: 690px;
+        right: -4px;
+        opacity: 0.95;
+    }
+}
+
 /* Music Player Styles */
 #music-player {
     box-sizing: content-box;
