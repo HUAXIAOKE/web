@@ -32,6 +32,20 @@ const { title, description = "Huaxiaoke" } = Astro.props;
         <script
             src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
         ></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.2/dist/browser/pixi.min.js"
+            defer></script>
+        <script defer>
+            // @ts-ignore
+            window.PIXI = window.PIXI || globalThis.PIXI;
+        </script>
+        <script
+            src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"
+            defer></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js"
+            defer></script>
+        <script src="/src/scripts/live2d.js" defer></script>
         <title>{title}</title>
         <meta name="description" content={description} />
     </head>
@@ -121,6 +135,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                 id="page-index"
                 style="display: block;"
             >
+                <div id="live2d-container" aria-hidden="true"></div>
             </div>
 
             <!-- 直播资讯页面 -->
@@ -339,5 +354,6 @@ const { title, description = "Huaxiaoke" } = Astro.props;
         <script src="/src/scripts/isinline.js"></script>
         <script src="/src/scripts/music-player.js"></script>
         <script src="/src/scripts/activity.js"></script>
+        <script src="/src/scripts/live2d.js"></script>
     </body>
 </html>
