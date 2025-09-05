@@ -146,8 +146,8 @@ const { title, description = "Huaxiaoke" } = Astro.props;
             >
                 <div class="timeline-shell" id="timeline-shell">
                     <div class="timeline-header">
-                        <h2 class="timeline-title">直播历程</h2>
-                        <h3 class="timeline-subtitle">我们的成长足迹</h3>
+                        <h2 class="timeline-title"></h2>
+                        <h3 class="timeline-subtitle"></h3>
                     </div>
                     <div class="timeline" id="timeline-container"></div>
                 </div>
@@ -175,78 +175,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                     >
                     </div>
                     <div class="book-2">
-                        <div class="book-content">
-                            <h1 class="activity-title">新生歌会</h1>
-
-                            <div class="activity-description">
-                                欢迎参加我们的新生歌会！这是一个展示你才华的绝佳机会，无论你是唱歌新手还是经验丰富的歌手，都欢迎来参加。让我们一起用歌声点亮青春，用音乐连接彼此！
-                            </div>
-
-                            <div class="submission-section">
-                                <h2 class="section-title">视频提交</h2>
-                                <form id="submission-form">
-                                    <div class="form-group">
-                                        <label for="participant-grade"
-                                            >年级&专业</label
-                                        >
-                                        <input
-                                            type="text"
-                                            id="participant-grade"
-                                            name="grade"
-                                            placeholder="eg：25级计科"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="song-title">歌曲名称</label>
-                                        <input
-                                            type="text"
-                                            id="song-title"
-                                            name="songTitle"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="participant-nickname"
-                                            >昵称</label
-                                        >
-                                        <input
-                                            type="text"
-                                            id="participant-nickname"
-                                            name="nickname"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="video-file"
-                                            >上传视频文件</label
-                                        >
-                                        <button
-                                            type="button"
-                                            class="custom-file-btn"
-                                            id="file-upload-btn"
-                                        >
-                                            <i class="fas fa-video"></i>
-                                            <span>选择视频文件</span>
-                                        </button>
-                                        <span class="file-name" id="file-name"
-                                            >未选择文件</span
-                                        >
-                                    </div>
-                                    <small class="file-hint"
-                                        >支持 MP4、AVI、MOV
-                                        等视频格式，文件大小不超过 100MB</small
-                                    >
-                                </form>
-
-                                <button type="submit" class="submit-btn"
-                                    >提交视频</button
-                                >
-                            </div>
-                        </div>
+                        <div class="book-content"><!-- 动态活动内容 --></div>
                     </div>
                 </div>
             </div>
@@ -289,52 +218,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
                         <div id="bar"></div>
                     </div>
                     <div id="card-section">
-                        <div id="card1" class="card">
-                            <div class="card-small-title">HuaXiaoKe</div>
-                            <div class="card-title">智慧虚拟女大一枚</div>
-                            <div class="card-content">TODO</div>
-                            <div class="card-img">
-                                <img src="img/temp.png" alt="" />
-                            </div>
-                        </div>
-                        <div id="card2" class="card">
-                            <div class="card-small-title">Daily</div>
-                            <div class="card-title">神人的日常生活</div>
-                            <div class="card-content">TODO</div>
-                            <div class="card-img">
-                                <img src="img/temp.png" alt="" />
-                            </div>
-                        </div>
-                        <div id="card3" class="card">
-                            <div class="card-small-title">Work!</div>
-                            <div class="card-title">成分极其复杂</div>
-                            <div class="card-content">
-                                首先，组内全员颠佬（划掉）~<br />
-                                在这里你可以学习视频制作、如何直播、各种妙妙技术，只要你感兴趣的事情都可以在这里找到前辈……<br
-                                />
-                                我们会使用到OBS、AE、PR等软件，当然也会有一些其他的工具，包括但不限于视频、游戏、音频制作等~<br
-                                />
-                                当然我们是为爱发电，热爱是我们的核心动力！
-                            </div>
-                            <div class="card-img">
-                                <img src="img/temp.png" alt="" />
-                            </div>
-                        </div>
-                        <div id="card4" class="card">
-                            <div class="card-small-title">Join Us!</div>
-                            <div class="card-title">加入这里只需热爱</div>
-                            <div class="card-content">
-                                无论是否来自华中科技大学， 无论年级高低，<br />
-                                只要你喜欢华小科这个形象，你就一定可以在这里找到你想做的事情！<br
-                                />
-                                如果你对我们感兴趣，可以关注每年的秋招与春招~<br
-                                />
-                                当然也可以加入粉丝群(451141031)哦！
-                            </div>
-                            <div class="card-img">
-                                <img src="img/temp.png" alt="" />
-                            </div>
-                        </div>
+                        <!-- about 卡片由 JSON 动态注入 -->
                     </div>
                 </div>
             </div>
@@ -355,5 +239,6 @@ const { title, description = "Huaxiaoke" } = Astro.props;
         <script src="/src/scripts/music-player.js"></script>
         <script src="/src/scripts/activity.js"></script>
         <script src="/src/scripts/live2d.js"></script>
+        <script src="/src/scripts/content-loader.js"></script>
     </body>
 </html>

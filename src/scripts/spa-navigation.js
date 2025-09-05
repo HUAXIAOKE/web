@@ -112,7 +112,9 @@ class SPANavigation {
             case 'index':
                 // 切换到主页时重新加载 Live2D 模型
                 if (typeof window.reloadLive2DModel === 'function') {
-                    window.reloadLive2DModel();
+                    setTimeout(() => {
+                        window.reloadLive2DModel();
+                    }, 100);
                 }
                 break;
             case 'gallery':
