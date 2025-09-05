@@ -109,6 +109,12 @@ class SPANavigation {
 
     initializePage(pageName) {
         switch (pageName) {
+            case 'index':
+                // 切换到主页时重新加载 Live2D 模型
+                if (typeof window.reloadLive2DModel === 'function') {
+                    window.reloadLive2DModel();
+                }
+                break;
             case 'gallery':
                 // 如果图库还没有加载图片，则加载图片
                 setTimeout(() => {
