@@ -96,6 +96,7 @@ public
 # 临时文件夹
 tmp/
 temp/
+temp.txt
 
 # Vercel
 .vercel
