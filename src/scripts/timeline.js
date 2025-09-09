@@ -55,8 +55,97 @@ function initTimelineAnimation() {
 
     if (!selectors.shell || selectors.items.length === 0) return;
 
-    const timelineHeight = selectors.timeline.scrollHeight;
-    selectors.timeline.style.setProperty('--timeline-line-height', `${timelineHeight}px`);
+    // 计算并设置正确的时间轴线高度
+    function updateTimelineHeight() {
+        const timelineElement = selectors.timeline;
+        const items = selectors.items;
+
+        if (items.length > 0) {
+            // 等待DOM完全渲染后计算
+            setTimeout(() => {
+                const firstItem = items[0];
+                const lastItem = items[items.length - 1];
+
+                const firstItemTop = firstItem.offsetTop;
+                const lastItemBottom = lastItem.offsetTop + lastItem.offsetHeight;
+                const totalContentHeight = lastItemBottom - firstItemTop + (selectors.items.length * 10); // 根据卡片数量动态计算额外空间
+
+                // 动态创建CSS规则
+                const styleId = 'timeline-height-style';
+                let existingStyle = document.getElementById(styleId);
+                if (existingStyle) {
+                    existingStyle.remove();
+                }
+
+                const style = document.createElement('style');
+                style.id = styleId;
+                style.textContent = `
+                    #timeline-container::before {
+                        height: ${totalContentHeight}px !important;
+                    }
+                `;
+                document.head.appendChild(style);
+
+                // 更新指针位置（在高度计算完成后）
+                setTimeout(() => {
+                    if (currentIndex >= 0 && selectors.items[currentIndex]) {
+                        updatePointerPosition(currentIndex);
+                    }
+                }, 50);
+            }, 200);
+        }
+    }
+
+    // 调用高度更新
+    updateTimelineHeight();
+
+    // 创建时间轴指针
+    function createTimelinePointer() {
+        // 检查是否已存在指针
+        const existingPointer = selectors.timeline.querySelector('.timeline-pointer');
+        if (existingPointer) {
+            existingPointer.remove();
+        }
+
+        const pointer = document.createElement('div');
+        pointer.className = 'timeline-pointer';
+        selectors.timeline.appendChild(pointer);
+
+        return pointer;
+    }
+
+    // 更新指针位置
+    function updatePointerPosition(index) {
+        const pointer = selectors.timeline.querySelector('.timeline-pointer');
+        if (!pointer || !selectors.items[index]) return;
+
+        const item = selectors.items[index];
+        const itemTop = item.offsetTop;
+        const itemHeight = item.offsetHeight;
+
+        const zoomLevel = window.devicePixelRatio || 1;
+        const baseOffset = Math.max(1, 2 / zoomLevel);
+
+        const computedStyle = window.getComputedStyle(document.documentElement);
+        const fontSize = parseFloat(computedStyle.fontSize);
+        const scaleFactor = fontSize / 18;
+
+        const dynamicOffset = baseOffset * scaleFactor;
+        const pointerTop = itemTop + itemHeight * 0.5 - dynamicOffset + 2;
+
+        pointer.style.top = `${pointerTop}px`;
+
+        pointer.classList.add('active');
+
+        clearTimeout(pointer.animationTimeout);
+        pointer.animationTimeout = setTimeout(() => {
+            pointer.classList.remove('active');
+            setTimeout(() => pointer.classList.add('active'), 50);
+        }, 100);
+    }
+
+    // 创建时间轴指针
+    const timelinePointer = createTimelinePointer();
 
     let currentIndex = 0;
 
@@ -105,6 +194,9 @@ function initTimelineAnimation() {
             if (currentImg) {
                 selectors.shell.style.backgroundImage = `url(${currentImg.getAttribute("src")})`;
             }
+
+            // 更新指针位置
+            updatePointerPosition(index);
         }
     }
 
