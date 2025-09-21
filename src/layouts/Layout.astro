@@ -2,8 +2,8 @@
 import { ClientRouter } from "astro:transitions";
 
 export interface Props {
-    title: string;
-    description?: string;
+  title: string;
+  description?: string;
 }
 
 import "../styles/index.css";
@@ -17,234 +17,243 @@ const { title, description = "Huaxiaoke" } = Astro.props;
 
 <!doctype html>
 <html lang="en" class="dark">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="/src/styles/index.css" />
-        <link rel="stylesheet" href="/src/styles/gallery.css" />
-        <link rel="stylesheet" href="/src/styles/about.css" />
-        <link rel="stylesheet" href="/src/styles/calender.css" />
-        <link rel="stylesheet" href="/src/styles/activity.css" />
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/styles/index.css" />
+    <link rel="stylesheet" href="/src/styles/gallery.css" />
+    <link rel="stylesheet" href="/src/styles/about.css" />
+    <link rel="stylesheet" href="/src/styles/calender.css" />
+    <link rel="stylesheet" href="/src/styles/activity.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="icon" type="image/x-icon" sizes="32x32" href="img/icon.ico" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.2/dist/browser/pixi.min.js"
+      defer></script>
+    <script defer>
+      // @ts-ignore
+      window.PIXI = window.PIXI || globalThis.PIXI;
+    </script>
+    <script
+      src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"
+      defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js"
+      defer></script>
+    <script src="/src/scripts/live2d.js" defer></script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <div id="theme-toggle-container">
+      <theme-button id="theme-btn" size="1"></theme-button>
+    </div>
+    <div id="music-player">
+      <div class="album-art">
+        <img src="" alt="Album Art" id="album-cover" />
+      </div>
+      <div class="info-and-progress">
+        <div class="track-info">
+          <div class="song-title" id="song-title"></div>
+          <div class="artist-name" id="artist-name"></div>
+        </div>
+        <div class="progress-bar" id="progress-bar">
+          <div class="progress" id="progress"></div>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="prev-btn"><i class="fas fa-backward"></i></button>
+        <button id="play-pause-btn"><i class="fas fa-play"></i></button>
+        <button id="next-btn"><i class="fas fa-forward"></i></button>
+      </div>
+      <div class="volume-container">
+        <button id="volume-btn"><i class="fas fa-volume-up"></i></button>
+        <input
+          type="range"
+          id="volume-slider"
+          class="volume-slider"
+          min="0"
+          max="1"
+          step="0.01"
+          value="1"
         />
-        <link
-            rel="icon"
-            type="image/x-icon"
-            sizes="32x32"
-            href="img/icon.ico"
-        />
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
-        ></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.2/dist/browser/pixi.min.js"
-            defer></script>
-        <script defer>
-            // @ts-ignore
-            window.PIXI = window.PIXI || globalThis.PIXI;
-        </script>
-        <script
-            src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"
-            defer></script>
-        <script
-            src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js"
-            defer></script>
-        <script src="/src/scripts/live2d.js" defer></script>
-        <title>{title}</title>
-        <meta name="description" content={description} />
-    </head>
+      </div>
+      <audio id="audio-source" src=""></audio>
+    </div>
+    <canvas transition:persist="stars-canvas"></canvas>
 
-    <body>
-        <div id="theme-toggle-container">
-            <theme-button id="theme-btn" size="1"></theme-button>
-        </div>
-        <div id="music-player">
-            <div class="album-art">
-                <img src="" alt="Album Art" id="album-cover" />
-            </div>
-            <div class="info-and-progress">
-                <div class="track-info">
-                    <div class="song-title" id="song-title"></div>
-                    <div class="artist-name" id="artist-name"></div>
-                </div>
-                <div class="progress-bar" id="progress-bar">
-                    <div class="progress" id="progress"></div>
-                </div>
-            </div>
-            <div class="controls">
-                <button id="prev-btn"><i class="fas fa-backward"></i></button>
-                <button id="play-pause-btn"><i class="fas fa-play"></i></button>
-                <button id="next-btn"><i class="fas fa-forward"></i></button>
-            </div>
-            <div class="volume-container">
-                <button id="volume-btn"><i class="fas fa-volume-up"></i></button
-                >
-                <input
-                    type="range"
-                    id="volume-slider"
-                    class="volume-slider"
-                    min="0"
-                    max="1"
-                    step="0.01"
-                    value="1"
-                />
-            </div>
-            <audio id="audio-source" src=""></audio>
-        </div>
-        <canvas transition:persist="stars-canvas"></canvas>
-
-        <div class="partOne">
-            <div class="shell">
-                <div class="box">
-                    <div class="ball"></div>
-                    <div class="shadow"></div>
-                </div>
-
-                <div class="box">
-                    <div class="ball"></div>
-                    <div class="shadow"></div>
-                </div>
-
-                <div class="box">
-                    <div class="ball"></div>
-                </div>
-            </div>
-            <ul id="nav">
-                <li class="slide1"></li>
-                <li class="slide2"></li>
-                <li><a href="#" data-page="index">主页</a></li>
-                <li><a href="#" data-page="live">足迹</a></li>
-                <li><a href="#" data-page="gallery">插画一览</a></li>
-                <li><a href="#" data-page="activity">当期活动</a></li>
-                <li><a href="#" data-page="about">关于我们</a></li>
-                <li>
-                    <a
-                        href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
-                        data-href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
-                        target="_blank"
-                        rel="noopener noreferrer">B站传送门</a
-                    >
-                </li>
-            </ul>
-
-            <div class="box2">
-                <img src="icon/pull.png" id="pull" />
-            </div>
+    <div class="partOne">
+      <div class="shell">
+        <div class="box">
+          <div class="ball"></div>
+          <div class="shadow"></div>
         </div>
 
-        <main>
-            <!-- 主页内容 -->
-            <div
-                class="partTwo page-content"
-                id="page-index"
-                style="display: block;"
-            >
-                <div id="live2d-container" aria-hidden="true"></div>
-            </div>
+        <div class="box">
+          <div class="ball"></div>
+          <div class="shadow"></div>
+        </div>
 
-            <!-- 直播资讯页面 -->
-            <div
-                class="partTwo page-content"
-                id="page-live"
-                style="display: none;"
-            >
-                <div class="timeline-shell" id="timeline-shell">
-                    <div class="timeline-header">
-                        <h2 class="timeline-title"></h2>
-                        <h3 class="timeline-subtitle"></h3>
-                    </div>
-                    <div class="timeline" id="timeline-container"></div>
-                </div>
-            </div>
+        <div class="box">
+          <div class="ball"></div>
+        </div>
+      </div>
+      <ul id="nav">
+        <li class="slide1"></li>
+        <li class="slide2"></li>
+        <li><a href="#" data-page="index">主页</a></li>
+        <li><a href="#" data-page="live">足迹</a></li>
+        <li><a href="#" data-page="gallery">插画一览</a></li>
+        <li><a href="#" data-page="activity">当期活动</a></li>
+        <li><a href="#" data-page="about">关于我们</a></li>
+        <li>
+          <a
+            href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
+            data-href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
+            target="_blank"
+            rel="noopener noreferrer">B站传送门</a
+          >
+        </li>
+      </ul>
 
-            <!-- 插画一览页面 -->
-            <div
-                class="partTwo page-content"
-                id="page-gallery"
-                style="display: none;"
-            >
-                <div class="cards"></div>
-            </div>
+      <div class="box2">
+        <img src="icon/pull.png" id="pull" />
+      </div>
+    </div>
 
-            <!-- 当期活动页面 -->
-            <div
-                class="partTwo page-content"
-                id="page-activity"
-                style="display: none;"
-            >
-                <div class="activity-container" , id="main">
-                    <div
-                        class="book-1"
-                        style="--i:2;background-image: url(/img/activity/now_activity.png);"
-                    >
-                    </div>
-                    <div class="book-2">
-                        <div class="book-content"><!-- 动态活动内容 --></div>
-                    </div>
-                </div>
-            </div>
-        </main>
+    <main>
+      <!-- 主页内容 -->
+      <div class="partTwo page-content" id="page-index" style="display: block;">
+        <!-- <div id="live2d-container" aria-hidden="true"></div> -->
+        <div id="blackboard">
+          <div class="box">
+            <h2 class="title">欢迎来到华小科！</h2>
+            <img src="/img/temp.png" alt="" />
+            <p class="text">华小科是一个由热爱科技与艺术的年轻人组成的团队。</p>
+          </div>
+          <div class="box">
+            <h2 class="title">欢迎来到华小科！</h2>
+            <img src="/img/temp.png" alt="" />
+            <p class="text">华小科是一个由热爱科技与艺术的年轻人组成的团队。</p>
+          </div>
+          <div class="box">
+            <h2 class="title">欢迎来到华小科！</h2>
+            <img src="/img/temp.png" alt="" />
+            <p class="text">华小科是一个由热爱科技与艺术的年轻人组成的团队。</p>
+          </div>
+          <div class="box">
+            <h2 class="title">欢迎来到华小科！</h2>
+            <img src="/img/temp.png" alt="" />
+            <p class="text">华小科是一个由热爱科技与艺术的年轻人组成的团队。</p>
+          </div>
+          <div class="box">
+            <h2 class="title">欢迎来到华小科！</h2>
+            <img src="/img/temp.png" alt="" />
+            <p class="text">华小科是一个由热爱科技与艺术的年轻人组成的团队。</p>
+          </div>
+          <div class="box">
+            <h2 class="title">欢迎来到华小科！</h2>
+            <img src="/img/temp.png" alt="" />
+            <p class="text">华小科是一个由热爱科技与艺术的年轻人组成的团队。</p>
+          </div>
+          <div class="box">
+            <h2 class="title">欢迎来到华小科！</h2>
+            <img src="/img/temp.png" alt="" />
+            <p class="text">华小科是一个由热爱科技与艺术的年轻人组成的团队。</p>
+          </div>
+          <div class="box">
+            <h2 class="title">欢迎来到华小科！</h2>
+            <img src="/img/temp.png" alt="" />
+            <p class="text">华小科是一个由热爱科技与艺术的年轻人组成的团队。</p>
+          </div>
+        </div>
+      </div>
+    </main>
 
-        <!-- 关于我们页面 -->
+    <!-- 直播资讯页面 -->
+    <div class="partTwo page-content" id="page-live" style="display: none;">
+      <div class="timeline-shell" id="timeline-shell">
+        <div class="timeline-header">
+          <h2 class="timeline-title"></h2>
+          <h3 class="timeline-subtitle"></h3>
+        </div>
+        <div class="timeline" id="timeline-container"></div>
+      </div>
+    </div>
+
+    <!-- 插画一览页面 -->
+    <div class="partTwo page-content" id="page-gallery" style="display: none;">
+      <div class="cards"></div>
+    </div>
+
+    <!-- 当期活动页面 -->
+    <div class="partTwo page-content" id="page-activity" style="display: none;">
+      <div class="activity-container" , id="main">
         <div
-            class="partTwo page-content"
-            id="page-about"
-            style="display: none;"
+          class="book-1"
+          style="--i:2;background-image: url(/img/activity/now_activity.png);"
         >
-            <div class="about" id="main">
-                <div id="click-section">
-                    <div id="drawerboxes">
-                        <div class="drawerbox active">
-                            <button
-                                class="drawer-btn active"
-                                onclick="slideTo(1)">关于小科</button
-                            >
-                        </div>
-                        <div class="drawerbox">
-                            <button class="drawer-btn" onclick="slideTo(2)"
-                                >日常生活</button
-                            >
-                        </div>
-                        <div class="drawerbox">
-                            <button class="drawer-btn" onclick="slideTo(3)"
-                                >工作内容</button
-                            >
-                        </div>
-                        <div class="drawerbox">
-                            <button class="drawer-btn" onclick="slideTo(4)"
-                                >加入我们</button
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div id="slide-section">
-                    <div id="slide-bar">
-                        <div id="bar"></div>
-                    </div>
-                    <div id="card-section">
-                        <!-- about 卡片由 JSON 动态注入 -->
-                    </div>
-                </div>
-            </div>
         </div>
-
-        <div class="Tip">
-            <button id="backToTopBtn">下边什么都没有了哦~</button>
+        <div class="book-2">
+          <div class="book-content"><!-- 动态活动内容 --></div>
         </div>
+      </div>
+    </div>
+  </body>
 
-        <script src="/src/scripts/roll.js"></script>
-        <script src="/src/scripts/spa-navigation.js"></script>
-        <script src="/src/scripts/imageGallery.js"></script>
-        <script src="/src/scripts/slide.js"></script>
-        <script src="/src/scripts/stars.js"></script>
-        <script src="/src/scripts/timeline.js"></script>
-        <script src="/src/scripts/dayornight.js"></script>
-        <script src="/src/scripts/isinline.js"></script>
-        <script src="/src/scripts/music-player.js"></script>
-        <script src="/src/scripts/activity.js"></script>
-        <script src="/src/scripts/live2d.js"></script>
-        <script src="/src/scripts/content-loader.js"></script>
-    </body>
+  <!-- 关于我们页面 -->
+  <div class="partTwo page-content" id="page-about" style="display: none;">
+    <div class="about" id="main">
+      <div id="click-section">
+        <div id="drawerboxes">
+          <div class="drawerbox active">
+            <button class="drawer-btn active" onclick="slideTo(1)"
+              >关于小科</button
+            >
+          </div>
+          <div class="drawerbox">
+            <button class="drawer-btn" onclick="slideTo(2)">日常生活</button>
+          </div>
+          <div class="drawerbox">
+            <button class="drawer-btn" onclick="slideTo(3)">工作内容</button>
+          </div>
+          <div class="drawerbox">
+            <button class="drawer-btn" onclick="slideTo(4)">加入我们</button>
+          </div>
+        </div>
+      </div>
+      <div id="slide-section">
+        <div id="slide-bar">
+          <div id="bar"></div>
+        </div>
+        <div id="card-section">
+          <!-- about 卡片由 JSON 动态注入 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="Tip">
+    <button id="backToTopBtn">下边什么都没有了哦~</button>
+  </div>
+
+  <script src="/src/scripts/roll.js"></script>
+  <script src="/src/scripts/spa-navigation.js"></script>
+  <script src="/src/scripts/imageGallery.js"></script>
+  <script src="/src/scripts/slide.js"></script>
+  <script src="/src/scripts/stars.js"></script>
+  <script src="/src/scripts/timeline.js"></script>
+  <script src="/src/scripts/dayornight.js"></script>
+  <script src="/src/scripts/isinline.js"></script>
+  <script src="/src/scripts/music-player.js"></script>
+  <script src="/src/scripts/activity.js"></script>
+  <script src="/src/scripts/live2d.js"></script>
+  <script src="/src/scripts/content-loader.js"></script>
 </html>
