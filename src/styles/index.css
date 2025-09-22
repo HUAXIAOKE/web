@@ -23,15 +23,7 @@ body {
     position: relative;
 }
 
-#blackboard {
-    width: 1320px;
-    height: 700px;
-    display: flex;
-    border-radius: 10px;
-    overflow: hidden;
-    flex-direction: row;
-
-    .box {
+.box-main {
         position: relative;
         width: 20%;
         height: 100%;
@@ -40,23 +32,23 @@ body {
         color: #fff;
     }
 
-    .box:hover {
+.box-main:hover {
         width: 80%;
     }
 
-    .box:hover .text {
+.box-main:hover .box-maintext {
         opacity: 1;
         transform: translateY(0);
         transition-delay: 200ms;
     }
 
-    .box img {
+    .box-main img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
     
-    .title {
+    .box-maintitle {
         position: absolute;
         top: 1rem;
         font-size: 1.5rem;
@@ -65,7 +57,7 @@ body {
         width: 100%;
     }
 
-    .text {
+.box-maintext {
         position: absolute;
         bottom: 0;
         left: 0;
@@ -81,13 +73,22 @@ body {
         background: linear-gradient(to top, rgba(137, 152, 236, 0.8), transparent);
     }
 
-    .box::before {
+.box-main::before {
         content: '';
         position: absolute;
         background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), transparent 25%, transparent 50%, rgba(0, 0, 0, 0.25));
         inset: 0;
         z-index: 1;
     }
+
+#blackboard {
+    margin: 0 auto;
+    width: 1320px;
+    height: 700px;
+    display: flex;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-direction: row;
 }
 
 /* Live2D 容器（只占主页内部右下角） */
