@@ -1,391 +1,344 @@
-.activity-container {
-    /* 使用CSS变量控制尺寸 */
-    width: var(--book-width, 540px);
-    height: var(--book-height, 840px);
-    transform-style: preserve-3d;
-    perspective: 1200px;
-    transition: 1.2s ease-in-out;
-    /* 增加动画时间 */
-    margin: 0 auto;
-    position: relative;
+:root {
+    --news-accent: #4664b4;          
+    --news-accent-weak: rgba(70, 100, 180, .15);
+    --news-surface: rgba(255, 255, 255, .45);
+    --news-border: rgba(70, 100, 180, .28);
+    --news-text: #1b1f29;
+    --news-muted: #5d6b88;
+    --news-shadow-1: 0 18px 40px rgba(0, 0, 0, .18);
+    --news-shadow-2: 0 6px 18px rgba(0, 0, 0, .12);
 }
 
-.book-1,
-.book-2 {
-    width: var(--book-width, 540px);
-    height: var(--book-height, 840px);
-    position: absolute;
-    transform-origin: left;
+html.dark {
+    --news-accent: #a9c1ff;
+    --news-accent-weak: rgba(169, 193, 255, .12);
+    --news-surface: rgba(25, 25, 25, .45);
+    --news-border: rgba(169, 193, 255, .22);
+    --news-text: #eaeefb;
+    --news-muted: #a9b4d6;
+    --news-shadow-1: 0 22px 54px rgba(0, 0, 0, .55);
+    --news-shadow-2: 0 8px 22px rgba(0, 0, 0, .45);
+}
+
+/* 容器 */
+.activity {
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+}
+
+.news-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.news-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+    color: var(--news-text);
+    text-shadow: 0 1px 0 rgba(255,255,255,.3);
+}
+
+html.dark .news-title {
+    text-shadow: 0 1px 0 rgba(0,0,0,.3);
+}
+
+.news-tabs {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    position: relative;
+    padding: .25rem;
+    background: var(--news-accent-weak);
+    border-radius: 999px;
+    border: 1px solid var(--news-border);
+}
+
+.news-filter { display: none; }
+
+.news-tabs .tab {
+    position: relative;
+    padding: .5rem 1rem;
+    font-size: .95rem;
+    color: var(--news-muted);
+    background: transparent;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    user-select: none;
+    transition: color .25s ease, background-color .25s ease, box-shadow .25s ease;
+}
+
+#filter-all:checked ~ .tab[for="filter-all"],
+#filter-event:checked ~ .tab[for="filter-event"],
+#filter-update:checked ~ .tab[for="filter-update"],
+#filter-notice:checked ~ .tab[for="filter-notice"] {
+    color: var(--news-accent);
+    background: rgba(255,255,255,.5);
+    box-shadow: inset 0 0 0 1px var(--news-border), 0 3px 8px rgba(0,0,0,.08);
+}
+
+html.dark #filter-all:checked ~ .tab[for="filter-all"],
+html.dark #filter-event:checked ~ .tab[for="filter-event"],
+html.dark #filter-update:checked ~ .tab[for="filter-update"],
+html.dark #filter-notice:checked ~ .tab[for="filter-notice"] {
+    background: rgba(0,0,0,.2);
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+}
+
+/* 3列卡片：在 1320px 下每列 4 栅格 */
+.news-card {
+    grid-column: span 4;
+    position: relative;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+
+    background: var(--news-surface);
+    border: 1px solid var(--news-border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--news-shadow-1), var(--news-shadow-2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease,
+        background .25s ease;
+}
+
+.news-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 24px 60px rgba(0,0,0,.22),
+        0 10px 28px rgba(0,0,0,.18);
+}
+
+/* 缩略图（顶图） */
+.news-card .thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
     background-size: cover;
     background-position: center;
-    top: -20px;
-    background-clip: padding-box;
-    border: solid 20px #576574;
-    border-left: none;
-    border-radius: 0 20px 20px 0;
-    overflow: hidden;
-    box-shadow:
-        inset 0 0 50px rgba(0, 0, 0, 0.1),
-        0 5px 15px rgba(0, 0, 0, 0.2),
-        0 10px 30px rgba(0, 0, 0, 0.15);
-    transition: border-color 0.3s ease;
 }
 
-/* 封面 */
-.book-1 {
-    z-index: 2;
-    transition: 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 内页 */
-.book-2 {
-    z-index: 1;
-    background: #f8f9fa;
+/* 元信息条（标签 + 日期） */
+.news-card .meta {
     display: flex;
-    align-items: flex-start;
-    padding: 40px 30px;
-    box-sizing: border-box;
-    background-image:
-        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
-        radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.6) 0%, transparent 50%),
-        linear-gradient(90deg, rgba(0, 0, 0, 0.02) 0%, transparent 10%, transparent 90%, rgba(0, 0, 0, 0.02) 100%);
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .75rem 1rem 0;
+    font-size: .88rem;
 }
 
-.activity-container:hover .book-1 {
-    border-left: #576574 20px solid;
-    transform: rotateY(-180deg);
-    box-shadow:
-        -5px 0 15px rgba(0, 0, 0, 0.3),
-        -10px 0 30px rgba(0, 0, 0, 0.2),
-        0 5px 25px rgba(0, 0, 0, 0.15);
+.news-card .tag {
+    padding: .2rem .6rem;
+    border-radius: 999px;
+    color: var(--news-accent);
+    background: var(--news-accent-weak);
+    border: 1px solid var(--news-border);
 }
 
-.activity-container:hover {
-    transform: translateX(calc(var(--book-width, 540px) * 0.5)) rotateY(-5deg) scale(1.02);
-    transition: 1.2s ease-in-out;
+.news-card .date {
+    color: var(--news-muted);
 }
 
-.activity-container {
-    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.4)) drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+.news-card .headline {
+    font-size: 1.1rem;
+    font-weight: 800;
+    line-height: 1.35;
+    padding: .5rem 1rem 0;
+    color: var(--news-text);
 }
 
-/* 内页内容样式 */
-.book-content {
-    width: 100%;
-    height: 100%;
-    color: #333;
-    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
-    overflow-y: auto;
-}
-
-.activity-title {
-    font-size: 28px;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 20px;
-    text-align: center;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 10px;
-    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
-}
-
-.activity-description {
-    font-size: 16px;
+.news-card .excerpt {
+    font-size: .95rem;
     line-height: 1.6;
-    margin-bottom: 30px;
-    text-align: justify;
-    color: #555;
-    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
+    color: var(--news-muted);
+    padding: .25rem 1rem 1rem;
 }
 
-.submission-section {
-    background: #ecf0f1;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
+@media (max-width: 1100px) {
+    .news-card { grid-column: span 6; }
+}
+@media (max-width: 640px) {
+    .news-card { grid-column: span 12; }
 }
 
-.section-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
+#filter-event:checked ~ .news-grid .news-card:not([data-type="event"]) { display: none; }
+#filter-update:checked ~ .news-grid .news-card:not([data-type="update"]) { display: none; }
+#filter-notice:checked ~ .news-grid .news-card:not([data-type="notice"]) { display: none; }
+
+html.theme-animating .news-card,
+html.theme-animating .news-tabs .tab,
+html.theme-animating .news-title {
+    transition:
+        background .45s ease,
+        border-color .45s ease,
+        color .45s ease,
+        box-shadow .45s ease;
 }
 
-.section-title::before {
-    content: "🎥";
-    margin-right: 8px;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: #34495e;
-    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #bdc3c7;
-    border-radius: 5px;
-    font-size: 14px;
-    transition: border-color 0.3s;
-    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: #3498db;
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-/* 自定义文件上传按钮 */
-.file-upload-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 5px;
-}
-
-.custom-file-btn {
+.news-tabs {
     position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: linear-gradient(145deg, #4664b4, #3a5299);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
-    transition: all 0.3s ease;
-    box-shadow:
-        0 4px 8px rgba(70, 100, 180, 0.3),
-        0 2px 4px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    overflow: visible;
 }
 
-.custom-file-btn:hover {
-    background: linear-gradient(145deg, #3a5299, #2d4280);
-    transform: translateY(-2px);
-    box-shadow:
-        0 6px 12px rgba(70, 100, 180, 0.4),
-        0 4px 8px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+.news-tabs .tab {
+    position: relative;
+}
+.news-tabs .tab::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 6px;
+    height: 2px;
+    border-radius: 2px;
+    background: transparent;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform .22s ease, background-color .22s ease;
+}
+.news-tabs .tab:hover::after {
+    background: var(--news-accent);
+    transform: scaleX(1);
 }
 
-.custom-file-btn:active {
-    transform: translateY(0);
-    box-shadow:
-        0 2px 4px rgba(70, 100, 180, 0.3),
-        0 1px 2px rgba(0, 0, 0, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+.news-tabs .tab-indicator {
+    position: absolute;
+    bottom: 4px;
+    height: 3px;
+    width: 32px; 
+    border-radius: 3px;
+    background: var(--news-accent);
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+    transform: translateX(0);
+    transition: transform .28s cubic-bezier(.2,.8,.2,1), width .28s cubic-bezier(.2,.8,.2,1), background-color .28s;
+    pointer-events: none;
 }
 
-/* 暗色主题下的按钮样式 */
-html.dark .custom-file-btn {
-    background: linear-gradient(145deg, #a9c1ff, #8aa5e8);
-    color: #1a1a1a;
-    box-shadow:
-        0 4px 8px rgba(169, 193, 255, 0.3),
-        0 2px 4px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+#filter-all:checked ~ .tab[for="filter-all"],
+#filter-event:checked ~ .tab[for="filter-event"],
+#filter-update:checked ~ .tab[for="filter-update"],
+#filter-notice:checked ~ .tab[for="filter-notice"] {
+    color: var(--news-accent);
 }
 
-html.dark .custom-file-btn:hover {
-    background: linear-gradient(145deg, #8aa5e8, #6b88d6);
-    transform: translateY(-2px);
-    box-shadow:
-        0 6px 12px rgba(169, 193, 255, 0.4),
-        0 4px 8px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+html.theme-animating .news-tabs .tab-indicator {
+    transition-duration: .45s;
 }
 
-html.dark .custom-file-btn:active {
-    transform: translateY(0);
-    box-shadow:
-        0 2px 4px rgba(169, 193, 255, 0.3),
-        0 1px 2px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+.news-tabs .tab-indicator { display: none !important; }
+
+
+.activity {
+    min-height: 100vh;     /* 你可改为 85vh/90vh 视实际需要 */
+    padding-bottom: 6rem;  /* 拉开底部空间，避免拥挤 */
 }
 
-.custom-file-btn i {
-    font-size: 16px;
-}
-
-.file-name {
-    font-size: 14px;
-    color: #666;
-    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
-    max-width: 200px;
+/* NEWS 引导文案（玻璃拟态 + 崩三排版） */
+.news-intro {
+    position: relative;
+    margin: 1rem 0 1.5rem;
+    padding: 1rem 1.25rem 1.25rem 1.25rem;
+    background: var(--news-surface);
+    border: 1px solid var(--news-border);
+    border-radius: 12px;
+    box-shadow: var(--news-shadow-1), var(--news-shadow-2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    transition: background .35s ease, border-color .35s ease, box-shadow .35s ease;
 }
 
-.file-name.selected {
-    color: #27ae60;
-    font-weight: 500;
+.news-intro::after {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: var(--news-accent-weak);
+    filter: blur(10px);
+    pointer-events: none;
 }
 
-/* 暗色主题下的文件名样式 */
-html.dark .file-name {
-    color: #aaa;
+.intro-head {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .5rem;
 }
 
-html.dark .file-name.selected {
-    color: #a9c1ff;
+.intro-accent {
+    display: inline-block;
+    width: 6px;
+    height: 18px;
+    border-radius: 3px;
+    background: var(--news-accent);
+    box-shadow: 0 0 0 2px rgba(0,0,0,.06) inset;
 }
 
-.submit-btn {
-    background: #3498db;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s;
-    width: 100%;
-    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
+.intro-kicker {
+    font-size: .78rem;
+    letter-spacing: .12em;
+    color: var(--news-muted);
+    text-transform: uppercase;
 }
 
-.submit-btn:hover {
-    background: #2980b9;
+.intro-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+    color: var(--news-text);
+    margin: 0;
 }
 
-/* 暗色主题下的提交按钮样式 */
-html.dark .submit-btn {
-    background: #4664b4;
-    color: white;
+.intro-sub {
+    margin-top: .25rem;
+    color: var(--news-muted);
+    line-height: 1.7;
+    font-size: .96rem;
 }
 
-html.dark .submit-btn:hover {
-    background: #3a5299;
+.pill {
+    font-size: .8rem;
+    padding: .25rem .6rem;
+    border-radius: 999px;
+    color: var(--news-accent);
+    background: var(--news-accent-weak);
+    border: 1px solid var(--news-border);
+    transition: background-color .2s ease, color .2s ease, border-color .2s ease;
 }
 
-.file-hint {
-    color: #7f8c8d;
-    font-size: 12px;
-    margin-top: 5px;
-    display: block;
-    font-family: "AlimamaShuHeiTi-Bold", sans-serif;
+.news-intro:hover .pill {
+    background: rgba(255,255,255,.55);
 }
 
-/* 暗色主题下的提示文字样式 */
-html.dark .file-hint {
-    color: #bbb;
+html.dark .news-intro:hover .pill {
+    background: rgba(0,0,0,.22);
 }
 
-.info-section {
-    background: #e8f5e8;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-}
-
-.info-item {
-    margin-bottom: 8px;
-    font-size: 14px;
-}
-
-.info-item strong {
-    color: #27ae60;
-}
-
-/* 防止横向滚动条 */
-body {
-    overflow-x: hidden;
-}
-
-/* 暗色主题下的整体样式调整 */
-html.dark .book-2 {
-    background: #2a2a2a;
-    background-image:
-        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0%, transparent 10%, transparent 90%, rgba(255, 255, 255, 0.02) 100%);
-}
-
-html.dark .book-content {
-    color: #e0e0e0;
-}
-
-html.dark .activity-title {
-    color: #a9c1ff;
-    border-bottom-color: #4664b4;
-}
-
-html.dark .activity-description {
-    color: #ccc;
-}
-
-html.dark .submission-section {
-    background: #333;
-}
-
-html.dark .section-title {
-    color: #a9c1ff;
-}
-
-html.dark .form-group label {
-    color: #ccc;
-}
-
-html.dark .form-group input,
-html.dark .form-group textarea,
-html.dark .form-group select {
-    background: #444;
-    border-color: #555;
-    color: #e0e0e0;
-}
-
-html.dark .form-group input:focus,
-html.dark .form-group textarea:focus,
-html.dark .form-group select:focus {
-    border-color: #4664b4;
-}
-
-/* 暗色主题下的书本边框样式 */
-html.dark .book-1,
-html.dark .book-2 {
-    border-color: #4a4a4a;
-    box-shadow:
-        inset 0 0 50px rgba(255, 255, 255, 0.03),
-        0 5px 15px rgba(0, 0, 0, 0.6),
-        0 10px 30px rgba(0, 0, 0, 0.4);
-}
-
-html.dark .activity-container:hover .book-1 {
-    border-left: #4a4a4a 20px solid;
-    box-shadow:
-        -5px 0 15px rgba(0, 0, 0, 0.6),
-        -10px 0 30px rgba(0, 0, 0, 0.4),
-        0 5px 25px rgba(0, 0, 0, 0.5);
-}
-
-html.dark .activity-container {
-    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.7)) drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
+/* 主题切换时更柔和 */
+html.theme-animating .news-intro,
+html.theme-animating .intro-title,
+html.theme-animating .intro-sub,
+html.theme-animating .pill {
+    transition-duration: .45s;
 }

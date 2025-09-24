@@ -186,65 +186,169 @@ const { title, description = "Huaxiaoke" } = Astro.props;
 
     <!-- 当期活动页面 -->
     <div class="partTwo page-content" id="page-activity" style="display: none;">
-      <div class="activity-container" , id="main">
-        <div
-          class="book-1"
-          style="--i:2;background-image: url(/img/activity/now_activity.png);"
-        >
-        </div>
-        <div class="book-2">
-          <div class="book-content"><!-- 动态活动内容 --></div>
-        </div>
-      </div>
-    </div>
-  </body>
+      <section class="activity">
+        <header class="news-header">
+          <h2 class="news-title">当期活动 / NEWS</h2>
 
-  <!-- 关于我们页面 -->
-  <div class="partTwo page-content" id="page-about" style="display: none;">
-    <div class="about" id="main">
-      <div id="click-section">
-        <div id="drawerboxes">
-          <div class="drawerbox active">
-            <button class="drawer-btn active" onclick="slideTo(1)"
-              >关于小科</button
+          <div class="news-tabs" role="tablist" aria-label="News filters">
+            <input
+              type="radio"
+              name="news-filter"
+              id="filter-all"
+              class="news-filter"
+              checked
+            />
+            <label class="tab" for="filter-all" role="tab">全部</label>
+
+            <input
+              type="radio"
+              name="news-filter"
+              id="filter-event"
+              class="news-filter"
+            />
+            <label class="tab" for="filter-event" role="tab">线上</label>
+
+            <input
+              type="radio"
+              name="news-filter"
+              id="filter-update"
+              class="news-filter"
+            />
+            <label class="tab" for="filter-update" role="tab">线下</label>
+
+            <input
+              type="radio"
+              name="news-filter"
+              id="filter-notice"
+              class="news-filter"
+            />
+            <label class="tab" for="filter-notice" role="tab">联动</label>
+          </div>
+        </header>
+
+        <div class="news-grid">
+          <a
+            class="news-card"
+            data-type="event"
+            href="#"
+            target="_blank"
+            rel="noopener"
+          >
+            <div
+              class="thumb"
+              style="background-image:url(/img/activity/now_activity.png)"
             >
+            </div>
+            <div class="meta">
+              <span class="tag">线上</span>
+              <span class="date">2025-09-15</span>
+            </div>
+            <h3 class="headline">「2025新声歌会」线上直播</h3>
+            <p class="excerpt">喻见·声生不息，在这里展现你的风采！</p>
+          </a>
+
+          <a
+            class="news-card"
+            data-type="update"
+            href="#"
+            target="_blank"
+            rel="noopener"
+          >
+            <div
+              class="thumb"
+              style="background-image:url(/img/activity/Bingke.png)"
+            >
+            </div>
+            <div class="meta">
+              <span class="tag">联动</span>
+              <span class="date">2025-10-15</span>
+            </div>
+            <h3 class="headline">华小科 x 冰岩作坊</h3>
+            <p class="excerpt">线下ARG，等你来解密~</p>
+          </a>
+
+          <a
+            class="news-card"
+            data-type="notice"
+            href="#"
+            target="_blank"
+            rel="noopener"
+          >
+            <div
+              class="thumb"
+              style="background-image:url(/img/activity/Luyan.PNG)"
+            >
+            </div>
+            <div class="meta">
+              <span class="tag">线下</span>
+              <span class="date">2025-09-27</span>
+            </div>
+            <h3 class="headline">我们来路演啦！</h3>
+            <p class="excerpt">紫菘、韵苑路口，我们不见不散！</p>
+          </a>
+        </div>
+        <div class="news-intro">
+          <div class="intro-head">
+            <span class="intro-accent"></span>
+            <span class="intro-kicker">LATEST</span>
+            <h3 class="intro-title">公告 · NEWS CENTER</h3>
           </div>
-          <div class="drawerbox">
-            <button class="drawer-btn" onclick="slideTo(2)">日常生活</button>
-          </div>
-          <div class="drawerbox">
-            <button class="drawer-btn" onclick="slideTo(3)">工作内容</button>
-          </div>
-          <div class="drawerbox">
-            <button class="drawer-btn" onclick="slideTo(4)">加入我们</button>
+          <p class="intro-sub">
+            占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br
+            />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br
+            />占位<br />占位<br />占位<br />占位
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <!-- 关于我们页面 -->
+    <div class="partTwo page-content" id="page-about" style="display: none;">
+      <div class="about" id="main">
+        <div id="click-section">
+          <div id="drawerboxes">
+            <div class="drawerbox active">
+              <button class="drawer-btn active" onclick="slideTo(1)"
+                >关于小科</button
+              >
+            </div>
+            <div class="drawerbox">
+              <button class="drawer-btn" onclick="slideTo(2)">日常生活</button>
+            </div>
+            <div class="drawerbox">
+              <button class="drawer-btn" onclick="slideTo(3)">工作内容</button>
+            </div>
+            <div class="drawerbox">
+              <button class="drawer-btn" onclick="slideTo(4)">加入我们</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div id="slide-section">
-        <div id="slide-bar">
-          <div id="bar"></div>
-        </div>
-        <div id="card-section">
-          <!-- about 卡片由 JSON 动态注入 -->
+        <div id="slide-section">
+          <div id="slide-bar">
+            <div id="bar"></div>
+          </div>
+          <div id="card-section">
+            <!-- about 卡片由 JSON 动态注入 -->
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="Tip">
-    <button id="backToTopBtn">下边什么都没有了哦~</button>
-  </div>
+    <div class="Tip">
+      <button id="backToTopBtn">下边什么都没有了哦~</button>
+    </div>
 
-  <script src="/src/scripts/roll.js"></script>
-  <script src="/src/scripts/spa-navigation.js"></script>
-  <script src="/src/scripts/imageGallery.js"></script>
-  <script src="/src/scripts/slide.js"></script>
-  <script src="/src/scripts/stars.js"></script>
-  <script src="/src/scripts/timeline.js"></script>
-  <script src="/src/scripts/dayornight.js"></script>
-  <script src="/src/scripts/isinline.js"></script>
-  <script src="/src/scripts/music-player.js"></script>
-  <script src="/src/scripts/activity.js"></script>
-  <script src="/src/scripts/live2d.js"></script>
-  <script src="/src/scripts/content-loader.js"></script>
+    <script src="/src/scripts/roll.js"></script>
+    <script src="/src/scripts/spa-navigation.js"></script>
+    <script src="/src/scripts/imageGallery.js"></script>
+    <script src="/src/scripts/slide.js"></script>
+    <script src="/src/scripts/stars.js"></script>
+    <script src="/src/scripts/timeline.js"></script>
+    <script src="/src/scripts/dayornight.js"></script>
+    <script src="/src/scripts/isinline.js"></script>
+    <script src="/src/scripts/music-player.js"></script>
+    <script src="/src/scripts/activity.js"></script>
+    <script src="/src/scripts/live2d.js"></script>
+    <script src="/src/scripts/content-loader.js"></script>
+  </body>
 </html>

@@ -1,65 +1,67 @@
-// 动态调整书本尺寸
-function adjustBookSize() {
-    const cover = document.getElementById('activity-cover');
-    const container = document.querySelector('.activity-container');
+document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelector('.news-tabs');
+    if (!tabs) return;
 
-    if (cover && container) {
-        const img = new Image();
-        img.onload = function () {
-            const aspectRatio = this.width / this.height;
-            let bookWidth, bookHeight;
-
-            // 根据屏幕大小调整书本尺寸
-            const maxWidth = Math.min(window.innerWidth * 0.4, 600);
-            const maxHeight = Math.min(window.innerHeight * 0.8, 800);
-
-            if (aspectRatio > 1) {
-                // 横向图片
-                bookWidth = Math.min(maxWidth, this.width);
-                bookHeight = bookWidth / aspectRatio;
-            } else {
-                // 纵向图片
-                bookHeight = Math.min(maxHeight, this.height);
-                bookWidth = bookHeight * aspectRatio;
-            }
-
-            // 设置CSS变量
-            container.style.setProperty('--book-width', bookWidth + 'px');
-            container.style.setProperty('--book-height', bookHeight + 'px');
-        };
-
-        // 从背景图片获取尺寸
-        const bgImage = getComputedStyle(cover).backgroundImage;
-        const url = bgImage.slice(5, -2); // 移除 'url("' 和 '")'
-        img.src = url;
+    let ink = tabs.querySelector('.tab-indicator');
+    if (!ink) {
+        ink = document.createElement('span');
+        ink.className = 'tab-indicator';
+        tabs.appendChild(ink);
     }
-}
 
-// 表单提交处理
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('submission-form');
+    const inputs = Array.from(tabs.querySelectorAll('input.news-filter'));
+    const labels = Array.from(tabs.querySelectorAll('.tab'));
 
-    if (form) {
-        form.addEventListener('submit', function (e) {
+    const getInputByLabel = (label) => {
+        const id = label.getAttribute('for');
+        return tabs.querySelector(`#${id}`);
+    };
+
+    const moveInkTo = (label) => {
+        const rect = label.getBoundingClientRect();
+        const host = tabs.getBoundingClientRect();
+        const pad = 12;
+        const width = Math.max(32, rect.width - pad * 2);
+        const x = rect.left - host.left + pad;
+
+        ink.style.width = `${width}px`;
+        ink.style.transform = `translateX(${x}px)`;
+    };
+
+    const setChecked = (input) => {
+        inputs.forEach(i => i.checked = false);
+        input.checked = true;
+        const label = labels.find(l => l.getAttribute('for') === input.id);
+        if (label) moveInkTo(label);
+    };
+
+    const initInput = inputs.find(i => i.checked) || inputs[0];
+    if (initInput) setChecked(initInput);
+
+    labels.forEach(label => {
+        label.addEventListener('click', (e) => {
             e.preventDefault();
-
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData);
-
-            // 这里可以添加实际的提交逻辑
-            console.log('提交的数据:', data);
-
-            // 显示提交成功消息
-            alert('报名提交成功！我们会尽快与您联系。');
-
-            // 重置表单
-            form.reset();
+            const input = getInputByLabel(label);
+            if (!input) return;
+            setChecked(input);
         });
-    }
+    });
 
-    // 调整书本尺寸
-    adjustBookSize();
+    tabs.addEventListener('keydown', (e) => {
+        const current = inputs.findIndex(i => i.checked);
+        if (current < 0) return;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const delta = e.key === 'ArrowRight' ? 1 : -1;
+            const next = (current + delta + inputs.length) % inputs.length;
+            setChecked(inputs[next]);
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        const current = inputs.find(i => i.checked);
+        if (!current) return;
+        const label = labels.find(l => l.getAttribute('for') === current.id);
+        if (label) moveInkTo(label);
+    });
 });
-
-// 窗口大小改变时重新调整
-window.addEventListener('resize', adjustBookSize);
