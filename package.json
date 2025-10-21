@@ -14,12 +14,12 @@
   "type": "commonjs",
   "dependencies": {
     "@astrojs/db": "^0.18.0",
-    "@astrojs/vercel": "^8.2.8",
+    "@astrojs/vercel": "^8.2.10",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.1.2",
     "aplayer": "^1.10.1",
-    "astro": "^5.14.1",
+    "astro": "^5.14.7",
     "pixi-live2d-display": "^0.3.1"
   },
   "devDependencies": {
