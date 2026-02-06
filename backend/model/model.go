@@ -13,8 +13,7 @@ type HomepageCard struct {
 // Activity 当期活动
 type Activity struct {
 	ID       int    `json:"id"`
-	Type     string `json:"type"`
-	Tag      string `json:"tag"`
+	Tags     string `json:"tags"`
 	Date     string `json:"date"`
 	Image    string `json:"image"`
 	Headline string `json:"headline"`

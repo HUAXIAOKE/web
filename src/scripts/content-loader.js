@@ -52,10 +52,10 @@ async function initActivity() {
 			grid.innerHTML = activities
 				.map(
 					(a) =>
-						`<a class="news-card" data-type="${a.type}" href="${a.href}" target="_blank" rel="noopener">
+						`<a class="news-card" data-tags="${a.tags}" href="${a.href}" target="_blank" rel="noopener">
   <div class="thumb" style="background-image:url(${a.image})"></div>
   <div class="meta">
-    <span class="tag">${a.tag}</span>
+    ${a.tags.split(',').map(t => `<span class="tag">${t}</span>`).join('')}
     <span class="date">${a.date}</span>
   </div>
   <h3 class="headline">${a.headline}</h3>

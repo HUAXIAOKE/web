@@ -42,8 +42,7 @@ func migrate() {
 	statements := []string{
 		`CREATE TABLE IF NOT EXISTS activity (
 			id        INTEGER PRIMARY KEY AUTOINCREMENT,
-			type      TEXT    NOT NULL,
-			tag       TEXT    NOT NULL,
+			tags      TEXT    NOT NULL DEFAULT '',
 			date      TEXT    NOT NULL,
 			image     TEXT    NOT NULL DEFAULT '',
 			headline  TEXT    NOT NULL,

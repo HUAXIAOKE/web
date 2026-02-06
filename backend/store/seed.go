@@ -13,15 +13,15 @@ func Seed() {
 
 func seedActivities() {
 	data := []struct {
-		Type, Tag, Date, Image, Headline, Excerpt, Href string
+		Tags, Date, Image, Headline, Excerpt, Href string
 	}{
-		{"event", "线上", "2025-09-15", "/img/activity/now_activity.png", "「2025新声歌会」线上直播", "喻见·声生不息，在这里展现你的风采！", "#"},
-		{"notice", "联动", "2025-10-15", "/img/activity/Bingke.png", "华小科 x 冰岩作坊", "线下ARG，等你来解密~", "#"},
-		{"update", "线下", "2025-09-27", "/img/activity/Luyan.PNG", "我们来路演啦！", "紫菘、韵苑路口，我们不见不散！", "#"},
+		{"线上", "2025-09-15", "/img/activity/now_activity.png", "「2025新声歌会」线上直播", "喻见·声生不息，在这里展现你的风采！", "#"},
+		{"线下,联动", "2025-10-15", "/img/activity/Bingke.png", "华小科 x 冰岩作坊", "线下ARG，等你来解密~", "#"},
+		{"线下", "2025-09-27", "/img/activity/Luyan.PNG", "我们来路演啦！", "紫菘、韵苑路口，我们不见不散！", "#"},
 	}
 	for _, a := range data {
-		DB.Exec(`INSERT INTO activity (type,tag,date,image,headline,excerpt,href) VALUES (?,?,?,?,?,?,?)`,
-			a.Type, a.Tag, a.Date, a.Image, a.Headline, a.Excerpt, a.Href)
+		DB.Exec(`INSERT INTO activity (tags,date,image,headline,excerpt,href) VALUES (?,?,?,?,?,?)`,
+			a.Tags, a.Date, a.Image, a.Headline, a.Excerpt, a.Href)
 	}
 }
 

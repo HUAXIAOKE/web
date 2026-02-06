@@ -9,18 +9,19 @@ document.addEventListener('DOMContentLoaded', () => {
 	let currentFilter = 'all';
 	let fadeTimer = null;
 
-	const getFilterType = (input) => input.id.replace('filter-', '');
+	const filterMap = { all: 'all', online: '线上', offline: '线下', collab: '联动' };
+	const getFilterTag = (input) => filterMap[input.id.replace('filter-', '')] || 'all';
 
 	const getInputByLabel = (label) => {
 		const id = label.getAttribute('for');
 		return section.querySelector(`#${id}`);
 	};
 
-	const applyFilter = (type) => {
+	const applyFilter = (tag) => {
 		const cards = Array.from(grid.querySelectorAll('.news-card'));
 		cards.forEach((card) => {
-			const cardType = card.getAttribute('data-type');
-			if (type === 'all' || cardType === type) {
+			const cardTags = card.getAttribute('data-tags') || '';
+			if (tag === 'all' || cardTags.split(',').includes(tag)) {
 				card.classList.remove('card-hidden');
 			} else {
 				card.classList.add('card-hidden');
@@ -28,15 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	};
 
-	const filterCards = (type) => {
-		if (type === currentFilter) return;
+	const filterCards = (tag) => {
+		if (tag === currentFilter) return;
 		if (fadeTimer) clearTimeout(fadeTimer);
 
 		grid.classList.add('grid-fading');
 
 		fadeTimer = setTimeout(() => {
-			applyFilter(type);
-			currentFilter = type;
+			applyFilter(tag);
+			currentFilter = tag;
 			grid.classList.remove('grid-fading');
 			fadeTimer = null;
 		}, 180);
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const activeLabel = labels.find((l) => l.getAttribute('for') === input.id);
 		if (activeLabel) activeLabel.classList.add('active');
 
-		filterCards(getFilterType(input));
+		filterCards(getFilterTag(input));
 	};
 
 	const initInput = inputs.find((i) => i.checked) || inputs[0];
@@ -60,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		labels.forEach((l) => l.classList.remove('active'));
 		const initLabel = labels.find((l) => l.getAttribute('for') === initInput.id);
 		if (initLabel) initLabel.classList.add('active');
-		currentFilter = getFilterType(initInput);
+		currentFilter = getFilterTag(initInput);
 		applyFilter(currentFilter);
 	}
 
