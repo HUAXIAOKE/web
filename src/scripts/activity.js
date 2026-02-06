@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const inputs = Array.from(section.querySelectorAll('input.news-filter'));
 	const labels = Array.from(tabs.querySelectorAll('.tab'));
 	let currentFilter = 'all';
-	let animating = false;
+	let fadeTimer = null;
 
 	const getFilterType = (input) => input.id.replace('filter-', '');
 
@@ -29,21 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
 	};
 
 	const filterCards = (type) => {
-		if (type === currentFilter || animating) return;
-		animating = true;
+		if (type === currentFilter) return;
+		if (fadeTimer) clearTimeout(fadeTimer);
 
 		grid.classList.add('grid-fading');
 
-		grid.addEventListener(
-			'transitionend',
-			() => {
-				applyFilter(type);
-				currentFilter = type;
-				grid.classList.remove('grid-fading');
-				grid.addEventListener('transitionend', () => { animating = false; }, { once: true });
-			},
-			{ once: true }
-		);
+		fadeTimer = setTimeout(() => {
+			applyFilter(type);
+			currentFilter = type;
+			grid.classList.remove('grid-fading');
+			fadeTimer = null;
+		}, 180);
 	};
 
 	const setChecked = (input) => {

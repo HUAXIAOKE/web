@@ -123,15 +123,7 @@ function initTimelineAnimation() {
 		const itemTop = item.offsetTop;
 		const itemHeight = item.offsetHeight;
 
-		const zoomLevel = window.devicePixelRatio || 1;
-		const baseOffset = Math.max(1, 2 / zoomLevel);
-
-		const computedStyle = window.getComputedStyle(document.documentElement);
-		const fontSize = parseFloat(computedStyle.fontSize);
-		const scaleFactor = fontSize / 18;
-
-		const dynamicOffset = baseOffset * scaleFactor;
-		const pointerTop = itemTop + itemHeight * 0.5 - dynamicOffset + 2;
+		const pointerTop = itemTop + itemHeight * 0.5 - 3;
 
 		pointer.style.top = `${pointerTop}px`;
 
