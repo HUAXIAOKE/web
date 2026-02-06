@@ -1,0 +1,31 @@
+<!-- 关于我们页面 -->
+<div class="partTwo page-content" id="page-about" style="display: none;">
+  <div class="about" id="main">
+    <div id="click-section">
+      <div id="drawerboxes">
+        <div class="drawerbox active">
+          <button class="drawer-btn active" onclick="slideTo(1)"
+            >关于小科</button
+          >
+        </div>
+        <div class="drawerbox">
+          <button class="drawer-btn" onclick="slideTo(2)">日常生活</button>
+        </div>
+        <div class="drawerbox">
+          <button class="drawer-btn" onclick="slideTo(3)">工作内容</button>
+        </div>
+        <div class="drawerbox">
+          <button class="drawer-btn" onclick="slideTo(4)">加入我们</button>
+        </div>
+      </div>
+    </div>
+    <div id="slide-section">
+      <div id="slide-bar">
+        <div id="bar"></div>
+      </div>
+      <div id="card-section">
+        <!-- about 卡片由 JSON 动态注入 -->
+      </div>
+    </div>
+  </div>
+</div>

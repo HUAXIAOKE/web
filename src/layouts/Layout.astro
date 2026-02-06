@@ -12,6 +12,14 @@ import "../styles/about.css";
 import "../styles/calender.css";
 import "../styles/activity.css";
 
+import MusicPlayer from "../components/MusicPlayer.astro";
+import Navigation from "../components/Navigation.astro";
+import HomePage from "../components/HomePage.astro";
+import LivePage from "../components/LivePage.astro";
+import GalleryPage from "../components/GalleryPage.astro";
+import ActivityPage from "../components/ActivityPage.astro";
+import AboutPage from "../components/AboutPage.astro";
+
 const { title, description = "Huaxiaoke" } = Astro.props;
 ---
 
@@ -55,287 +63,22 @@ const { title, description = "Huaxiaoke" } = Astro.props;
     <div id="theme-toggle-container">
       <theme-button id="theme-btn" size="1"></theme-button>
     </div>
-    <div id="music-player">
-      <div class="album-art">
-        <img src="" alt="Album Art" id="album-cover" />
-      </div>
-      <div class="info-and-progress">
-        <div class="track-info">
-          <div class="song-title" id="song-title"></div>
-          <div class="artist-name" id="artist-name"></div>
-        </div>
-        <div class="progress-bar" id="progress-bar">
-          <div class="progress" id="progress"></div>
-        </div>
-      </div>
-      <div class="controls">
-        <button id="prev-btn"><i class="fas fa-backward"></i></button>
-        <button id="play-pause-btn"><i class="fas fa-play"></i></button>
-        <button id="next-btn"><i class="fas fa-forward"></i></button>
-      </div>
-      <div class="volume-container">
-        <button id="volume-btn"><i class="fas fa-volume-up"></i></button>
-        <input
-          type="range"
-          id="volume-slider"
-          class="volume-slider"
-          min="0"
-          max="1"
-          step="0.01"
-          value="1"
-        />
-      </div>
-      <audio id="audio-source" src=""></audio>
-    </div>
+
+    <MusicPlayer />
     <canvas transition:persist="stars-canvas"></canvas>
-
-    <div class="partOne">
-      <div class="shell">
-        <div class="box">
-          <div class="ball"></div>
-          <div class="shadow"></div>
-        </div>
-
-        <div class="box">
-          <div class="ball"></div>
-          <div class="shadow"></div>
-        </div>
-
-        <div class="box">
-          <div class="ball"></div>
-        </div>
-      </div>
-      <ul id="nav">
-        <li class="slide1"></li>
-        <li class="slide2"></li>
-        <li><a href="#" data-page="index">主页</a></li>
-        <li><a href="#" data-page="live">足迹</a></li>
-        <li><a href="#" data-page="gallery">插画一览</a></li>
-        <li><a href="#" data-page="activity">当期活动</a></li>
-        <li><a href="#" data-page="about">关于我们</a></li>
-        <li>
-          <a
-            href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
-            data-href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
-            target="_blank"
-            rel="noopener noreferrer">B站传送门</a
-          >
-        </li>
-      </ul>
-
-      <div class="box2">
-        <img src="icon/pull.png" id="pull" />
-      </div>
-    </div>
+    <Navigation />
 
     <main>
-      <!-- 主页内容 -->
-      <div class="partTwo page-content" id="page-index" style="display: block;">
-        <!-- <div id="live2d-container" aria-hidden="true"></div> -->
-        <div id="blackboard">
-          <div class="box-main">
-            <h2 class="box-maintitle"># 最新视频</h2>
-            <img src="/img/temp.png" alt="" />
-            <p class="box-maintext">
-              此事在Bilibili的华小科Official中亦有记载~
-            </p>
-          </div>
-          <div class="box-main">
-            <h2 class="box-maintitle"># 近期活动</h2>
-            <img src="/img/temp.png" alt="" />
-            <p class="box-maintext">
-              你听我说啊，最近我们在开展谁才是野猪活动哦！
-            </p>
-          </div>
-          <div class="box-main">
-            <h2 class="box-maintitle"># 好物上架</h2>
-            <img src="/img/temp.png" alt="" />
-            <p class="box-maintext">崭新周边，新鲜出炉，成本价只赚一点点QwQ</p>
-          </div>
-          <div class="box-main">
-            <h2 class="box-maintitle"># 华科趣闻</h2>
-            <img src="/img/temp.png" alt="" />
-            <p class="box-maintext">
-              悄悄跟你说嗷，其实华科的野猪是我们的Staff……
-            </p>
-          </div>
-          <div class="box-main">
-            <h2 class="box-maintitle"># 联动咨询</h2>
-            <img src="/img/temp.png" alt="" />
-            <p class="box-maintext">你知道吗，我从17年就想和XXX联动了TwT</p>
-          </div>
-        </div>
-      </div>
+      <HomePage />
     </main>
 
-    <!-- 直播资讯页面 -->
-    <div class="partTwo page-content" id="page-live" style="display: none;">
-      <div class="timeline-shell" id="timeline-shell">
-        <div class="timeline-header">
-          <h2 class="timeline-title"></h2>
-          <h3 class="timeline-subtitle"></h3>
-        </div>
-        <div class="timeline" id="timeline-container"></div>
-      </div>
-    </div>
-
-    <!-- 插画一览页面 -->
-    <div class="partTwo page-content" id="page-gallery" style="display: none;">
-      <div class="cards"></div>
-    </div>
-
-    <!-- 当期活动页面 -->
-    <div class="partTwo page-content" id="page-activity" style="display: none;">
-      <section class="activity">
-        <header class="news-header">
-          <h2 class="news-title">当期活动 / NEWS</h2>
-
-          <div class="news-tabs" role="tablist" aria-label="News filters">
-            <input
-              type="radio"
-              name="news-filter"
-              id="filter-all"
-              class="news-filter"
-              checked
-            />
-            <label class="tab" for="filter-all" role="tab">全部</label>
-
-            <input
-              type="radio"
-              name="news-filter"
-              id="filter-event"
-              class="news-filter"
-            />
-            <label class="tab" for="filter-event" role="tab">线上</label>
-
-            <input
-              type="radio"
-              name="news-filter"
-              id="filter-update"
-              class="news-filter"
-            />
-            <label class="tab" for="filter-update" role="tab">线下</label>
-
-            <input
-              type="radio"
-              name="news-filter"
-              id="filter-notice"
-              class="news-filter"
-            />
-            <label class="tab" for="filter-notice" role="tab">联动</label>
-          </div>
-        </header>
-
-        <div class="news-grid">
-          <a
-            class="news-card"
-            data-type="event"
-            href="#"
-            target="_blank"
-            rel="noopener"
-          >
-            <div
-              class="thumb"
-              style="background-image:url(/img/activity/now_activity.png)"
-            >
-            </div>
-            <div class="meta">
-              <span class="tag">线上</span>
-              <span class="date">2025-09-15</span>
-            </div>
-            <h3 class="headline">「2025新声歌会」线上直播</h3>
-            <p class="excerpt">喻见·声生不息，在这里展现你的风采！</p>
-          </a>
-
-          <a
-            class="news-card"
-            data-type="update"
-            href="#"
-            target="_blank"
-            rel="noopener"
-          >
-            <div
-              class="thumb"
-              style="background-image:url(/img/activity/Bingke.png)"
-            >
-            </div>
-            <div class="meta">
-              <span class="tag">联动</span>
-              <span class="date">2025-10-15</span>
-            </div>
-            <h3 class="headline">华小科 x 冰岩作坊</h3>
-            <p class="excerpt">线下ARG，等你来解密~</p>
-          </a>
-
-          <a
-            class="news-card"
-            data-type="notice"
-            href="#"
-            target="_blank"
-            rel="noopener"
-          >
-            <div
-              class="thumb"
-              style="background-image:url(/img/activity/Luyan.PNG)"
-            >
-            </div>
-            <div class="meta">
-              <span class="tag">线下</span>
-              <span class="date">2025-09-27</span>
-            </div>
-            <h3 class="headline">我们来路演啦！</h3>
-            <p class="excerpt">紫菘、韵苑路口，我们不见不散！</p>
-          </a>
-        </div>
-        <div class="news-intro">
-          <div class="intro-head">
-            <span class="intro-accent"></span>
-            <span class="intro-kicker">LATEST</span>
-            <h3 class="intro-title">公告 · NEWS CENTER</h3>
-          </div>
-          <p class="intro-sub">
-            占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br
-            />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br
-            />占位<br />占位<br />占位<br />占位
-          </p>
-        </div>
-      </section>
-    </div>
-
-    <!-- 关于我们页面 -->
-    <div class="partTwo page-content" id="page-about" style="display: none;">
-      <div class="about" id="main">
-        <div id="click-section">
-          <div id="drawerboxes">
-            <div class="drawerbox active">
-              <button class="drawer-btn active" onclick="slideTo(1)"
-                >关于小科</button
-              >
-            </div>
-            <div class="drawerbox">
-              <button class="drawer-btn" onclick="slideTo(2)">日常生活</button>
-            </div>
-            <div class="drawerbox">
-              <button class="drawer-btn" onclick="slideTo(3)">工作内容</button>
-            </div>
-            <div class="drawerbox">
-              <button class="drawer-btn" onclick="slideTo(4)">加入我们</button>
-            </div>
-          </div>
-        </div>
-        <div id="slide-section">
-          <div id="slide-bar">
-            <div id="bar"></div>
-          </div>
-          <div id="card-section">
-            <!-- about 卡片由 JSON 动态注入 -->
-          </div>
-        </div>
-      </div>
-    </div>
+    <LivePage />
+    <GalleryPage />
+    <ActivityPage />
+    <AboutPage />
 
     <div class="Tip">
-      <button id="backToTopBtn">下边什么都没有了哦~</button>
+      <button id="backToTopBtn">到底啦！</button>
     </div>
 
     <script src="/src/scripts/roll.js"></script>
