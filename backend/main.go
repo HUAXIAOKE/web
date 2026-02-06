@@ -71,7 +71,7 @@ func main() {
 
 	h := middleware.CORS(mux)
 
-	fmt.Printf("华小科后端启动 -> http://localhost%s\n", config.Port)
+	fmt.Printf("后端启动 -> http://localhost%s\n", config.Port)
 	fmt.Printf("管理后台 -> http://localhost%s/admin/\n", config.Port)
 
 	if err := http.ListenAndServe(config.Port, h); err != nil {
