@@ -1,7 +1,8 @@
-// 动态加载 PartTwo 文本内容脚本
-async function loadJSON(path) {
-	const res = await fetch(path);
-	if (!res.ok) throw new Error('加载失败 ' + path);
+const API = () => window.API_BASE || '';
+
+async function loadAPI(endpoint) {
+	const res = await fetch(API() + endpoint);
+	if (!res.ok) throw new Error('API 请求失败 ' + endpoint);
 	return res.json();
 }
 
@@ -9,7 +10,7 @@ async function initTimeline() {
 	const shell = document.querySelector('#page-live .timeline-header');
 	if (!shell) return;
 	try {
-		const data = await loadJSON('/json/timeline.json');
+		const data = await loadAPI('/api/timeline');
 		const titleEl = shell.querySelector('.timeline-title');
 		const subEl = shell.querySelector('.timeline-subtitle');
 		if (titleEl) titleEl.textContent = data.header.title;
@@ -23,7 +24,7 @@ async function initAbout() {
 	const container = document.querySelector('#page-about #card-section');
 	if (!container) return;
 	try {
-		const data = await loadJSON('/json/about.json');
+		const data = await loadAPI('/api/about');
 		const cards = data.cards || [];
 		container.innerHTML = cards
 			.map(
@@ -43,10 +44,9 @@ async function initAbout() {
 
 async function initActivity() {
 	try {
-		const activities = await loadJSON('/json/activity.json');
+		const activities = await loadAPI('/api/activities');
 		if (!activities || activities.length === 0) return;
 
-		// ── 渲染活动页卡片 ──
 		const grid = document.getElementById('activity-grid');
 		if (grid) {
 			grid.innerHTML = activities
@@ -65,7 +65,6 @@ async function initActivity() {
 				.join('\n');
 		}
 
-		// ── 首页「近期活动」取日期最近的一条 ──
 		const latest = activities.reduce((a, b) => (a.date > b.date ? a : b));
 		const homeBlock = document.getElementById('home-latest-activity');
 		if (homeBlock && latest) {

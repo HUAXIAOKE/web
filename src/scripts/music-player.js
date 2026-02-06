@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	// --- init ---
 	async function init() {
 		try {
-			const response = await fetch('/json/music.json');
+			const response = await fetch((window.API_BASE || '') + '/api/music');
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}

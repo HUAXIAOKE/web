@@ -100,3 +100,7 @@ temp.txt
 
 # Vercel
 .vercel
+
+# Go 后端
+backend/data.db
+backend/huaxiaoke-server

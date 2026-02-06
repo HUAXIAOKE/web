@@ -1,10 +1,10 @@
 let timelineData = [];
 
-// 从JSON文件加载时间轴数据
 async function loadTimelineData() {
 	try {
-		const response = await fetch('/json/timelineData.json');
-		timelineData = await response.json();
+		const data = await fetch((window.API_BASE || '') + '/api/timeline');
+		const result = await data.json();
+		timelineData = result.events || [];
 		return timelineData;
 	} catch (error) {
 		console.error('加载时间轴数据失败:', error);

@@ -32,8 +32,7 @@ async function generateImageCards() {
 	}
 
 	try {
-		// 并行获取 API 的图片列表和 JSON 的元数据
-		const [apiResponse, jsonResponse] = await Promise.all([fetch('/api/Gallery'), fetch('/json/gallery.json')]);
+		const [apiResponse, jsonResponse] = await Promise.all([fetch('/api/Gallery'), fetch((window.API_BASE || '') + '/api/gallery')]);
 
 		if (!apiResponse.ok) {
 			throw new Error(`API error! status: ${apiResponse.status}`);

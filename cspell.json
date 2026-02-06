@@ -1,5 +1,6 @@
 {
     "ignorePaths": [
-        "src/*"
+        "src/*",
+        "backend/*"
     ]
 }
