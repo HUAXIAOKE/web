@@ -22,37 +22,42 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// GET
+	// 登录
+	mux.HandleFunc("POST /api/login", handler.Login)
+
+	// GET (公开)
 	mux.HandleFunc("GET /api/activities", handler.GetActivities)
 	mux.HandleFunc("GET /api/timeline", handler.GetTimeline)
 	mux.HandleFunc("GET /api/gallery", handler.GetGallery)
 	mux.HandleFunc("GET /api/about", handler.GetAbout)
 	mux.HandleFunc("GET /api/music", handler.GetMusic)
 
-	// POST
-	mux.HandleFunc("POST /api/activities", handler.CreateActivity)
-	mux.HandleFunc("POST /api/timeline/events", handler.CreateTimelineEvent)
-	mux.HandleFunc("POST /api/gallery", handler.CreateGallery)
-	mux.HandleFunc("POST /api/about", handler.CreateAbout)
-	mux.HandleFunc("POST /api/music", handler.CreateMusic)
-	mux.HandleFunc("POST /api/upload", handler.UploadFile)
+	// 写入操作 (需要登录)
+	writeMux := http.NewServeMux()
+	writeMux.HandleFunc("POST /api/activities", handler.CreateActivity)
+	writeMux.HandleFunc("POST /api/timeline/events", handler.CreateTimelineEvent)
+	writeMux.HandleFunc("POST /api/gallery", handler.CreateGallery)
+	writeMux.HandleFunc("POST /api/about", handler.CreateAbout)
+	writeMux.HandleFunc("POST /api/music", handler.CreateMusic)
+	writeMux.HandleFunc("POST /api/upload", handler.UploadFile)
+	writeMux.HandleFunc("PUT /api/activities/{id}", handler.UpdateActivity)
+	writeMux.HandleFunc("PUT /api/timeline/header", handler.UpdateTimelineHeader)
+	writeMux.HandleFunc("PUT /api/timeline/events/{id}", handler.UpdateTimelineEvent)
+	writeMux.HandleFunc("PUT /api/gallery/{id}", handler.UpdateGallery)
+	writeMux.HandleFunc("PUT /api/about/{id}", handler.UpdateAbout)
+	writeMux.HandleFunc("PUT /api/music/{id}", handler.UpdateMusic)
+	writeMux.HandleFunc("DELETE /api/activities/{id}", handler.DeleteActivity)
+	writeMux.HandleFunc("DELETE /api/timeline/events/{id}", handler.DeleteTimelineEvent)
+	writeMux.HandleFunc("DELETE /api/gallery/{id}", handler.DeleteGallery)
+	writeMux.HandleFunc("DELETE /api/about/{id}", handler.DeleteAbout)
+	writeMux.HandleFunc("DELETE /api/music/{id}", handler.DeleteMusic)
 
-	// PUT
-	mux.HandleFunc("PUT /api/activities/{id}", handler.UpdateActivity)
-	mux.HandleFunc("PUT /api/timeline/header", handler.UpdateTimelineHeader)
-	mux.HandleFunc("PUT /api/timeline/events/{id}", handler.UpdateTimelineEvent)
-	mux.HandleFunc("PUT /api/gallery/{id}", handler.UpdateGallery)
-	mux.HandleFunc("PUT /api/about/{id}", handler.UpdateAbout)
-	mux.HandleFunc("PUT /api/music/{id}", handler.UpdateMusic)
+	protected := handler.RequireAuth(writeMux)
+	mux.Handle("POST /api/", protected)
+	mux.Handle("PUT /api/", protected)
+	mux.Handle("DELETE /api/", protected)
 
-	// DELETE
-	mux.HandleFunc("DELETE /api/activities/{id}", handler.DeleteActivity)
-	mux.HandleFunc("DELETE /api/timeline/events/{id}", handler.DeleteTimelineEvent)
-	mux.HandleFunc("DELETE /api/gallery/{id}", handler.DeleteGallery)
-	mux.HandleFunc("DELETE /api/about/{id}", handler.DeleteAbout)
-	mux.HandleFunc("DELETE /api/music/{id}", handler.DeleteMusic)
-
-	// 静态资源 (图片、音频等)
+	// 静态资源
 	staticDir := handler.StaticDir
 	mux.Handle("/img/", http.FileServer(http.Dir(staticDir)))
 	mux.Handle("/audio/", http.FileServer(http.Dir(staticDir)))

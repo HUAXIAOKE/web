@@ -13,7 +13,7 @@ import (
 var StaticDir = "../public"
 
 func UploadFile(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(0)
+	r.ParseMultipartForm(128 << 20)
 
 	file, header, err := r.FormFile("file")
 	if err != nil {
