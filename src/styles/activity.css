@@ -127,6 +127,18 @@ html.dark #filter-notice:checked ~ .tab[for='filter-notice'] {
 		background 0.25s ease;
 }
 
+.news-card.card-hidden {
+	display: none;
+}
+
+.news-grid {
+	transition: opacity 0.18s ease;
+}
+
+.news-grid.grid-fading {
+	opacity: 0;
+}
+
 .news-card:hover {
 	transform: translateY(-4px);
 	box-shadow:
@@ -190,15 +202,7 @@ html.dark #filter-notice:checked ~ .tab[for='filter-notice'] {
 	}
 }
 
-#filter-event:checked ~ .news-grid .news-card:not([data-type='event']) {
-	display: none;
-}
-#filter-update:checked ~ .news-grid .news-card:not([data-type='update']) {
-	display: none;
-}
-#filter-notice:checked ~ .news-grid .news-card:not([data-type='notice']) {
-	display: none;
-}
+/* 筛选动画由 JS 控制（fade-out → fade-hide / 移除） */
 
 html.theme-animating .news-card,
 html.theme-animating .news-tabs .tab,
@@ -370,4 +374,17 @@ html.theme-animating .intro-title,
 html.theme-animating .intro-sub,
 html.theme-animating .pill {
 	transition-duration: 0.45s;
+}
+
+/* ── Tab 选中态（JS 驱动 .active） ── */
+.news-tabs .tab.active {
+	color: var(--news-accent);
+	background: rgba(255, 255, 255, 0.5);
+	box-shadow:
+		inset 0 0 0 1px var(--news-border),
+		0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+html.dark .news-tabs .tab.active {
+	background: rgba(0, 0, 0, 0.2);
 }

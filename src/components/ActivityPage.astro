@@ -1,117 +1,32 @@
 <!-- 当期活动页面 -->
 <div class="partTwo page-content" id="page-activity" style="display: none;">
-  <section class="activity">
-    <header class="news-header">
-      <h2 class="news-title">当期活动 / NEWS</h2>
+	<section class="activity">
+		<input type="radio" name="news-filter" id="filter-all" class="news-filter" checked />
+		<input type="radio" name="news-filter" id="filter-event" class="news-filter" />
+		<input type="radio" name="news-filter" id="filter-update" class="news-filter" />
+		<input type="radio" name="news-filter" id="filter-notice" class="news-filter" />
 
-      <div class="news-tabs" role="tablist" aria-label="News filters">
-        <input
-          type="radio"
-          name="news-filter"
-          id="filter-all"
-          class="news-filter"
-          checked
-        />
-        <label class="tab" for="filter-all" role="tab">全部</label>
+		<div class="news-header">
+			<h2 class="news-title">当期活动 / NEWS</h2>
+			<div class="news-tabs" role="tablist" aria-label="活动筛选">
+				<label class="tab active" for="filter-all" role="tab">全部</label>
+				<label class="tab" for="filter-event" role="tab">线上</label>
+				<label class="tab" for="filter-update" role="tab">线下</label>
+				<label class="tab" for="filter-notice" role="tab">联动</label>
+			</div>
+		</div>
 
-        <input
-          type="radio"
-          name="news-filter"
-          id="filter-event"
-          class="news-filter"
-        />
-        <label class="tab" for="filter-event" role="tab">线上</label>
+		<div class="news-grid" id="activity-grid"></div>
 
-        <input
-          type="radio"
-          name="news-filter"
-          id="filter-update"
-          class="news-filter"
-        />
-        <label class="tab" for="filter-update" role="tab">线下</label>
-
-        <input
-          type="radio"
-          name="news-filter"
-          id="filter-notice"
-          class="news-filter"
-        />
-        <label class="tab" for="filter-notice" role="tab">联动</label>
-      </div>
-    </header>
-
-    <div class="news-grid">
-      <a
-        class="news-card"
-        data-type="event"
-        href="#"
-        target="_blank"
-        rel="noopener"
-      >
-        <div
-          class="thumb"
-          style="background-image:url(/img/activity/now_activity.png)"
-        >
-        </div>
-        <div class="meta">
-          <span class="tag">线上</span>
-          <span class="date">2025-09-15</span>
-        </div>
-        <h3 class="headline">「2025新声歌会」线上直播</h3>
-        <p class="excerpt">喻见·声生不息，在这里展现你的风采！</p>
-      </a>
-
-      <a
-        class="news-card"
-        data-type="update"
-        href="#"
-        target="_blank"
-        rel="noopener"
-      >
-        <div
-          class="thumb"
-          style="background-image:url(/img/activity/Bingke.png)"
-        >
-        </div>
-        <div class="meta">
-          <span class="tag">联动</span>
-          <span class="date">2025-10-15</span>
-        </div>
-        <h3 class="headline">华小科 x 冰岩作坊</h3>
-        <p class="excerpt">线下ARG，等你来解密~</p>
-      </a>
-
-      <a
-        class="news-card"
-        data-type="notice"
-        href="#"
-        target="_blank"
-        rel="noopener"
-      >
-        <div
-          class="thumb"
-          style="background-image:url(/img/activity/Luyan.PNG)"
-        >
-        </div>
-        <div class="meta">
-          <span class="tag">线下</span>
-          <span class="date">2025-09-27</span>
-        </div>
-        <h3 class="headline">我们来路演啦！</h3>
-        <p class="excerpt">紫菘、韵苑路口，我们不见不散！</p>
-      </a>
-    </div>
-    <div class="news-intro">
-      <div class="intro-head">
-        <span class="intro-accent"></span>
-        <span class="intro-kicker">LATEST</span>
-        <h3 class="intro-title">公告 · NEWS CENTER</h3>
-      </div>
-      <p class="intro-sub">
-        占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br
-        />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br
-        />占位<br />占位<br />占位<br />占位
-      </p>
-    </div>
-  </section>
+		<div class="news-intro">
+			<div class="intro-head">
+				<span class="intro-accent"></span>
+				<span class="intro-kicker">LATEST</span>
+				<h3 class="intro-title">公告</h3>
+			</div>
+			<p class="intro-sub">
+				占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位<br />占位
+			</p>
+		</div>
+	</section>
 </div>
