@@ -20,7 +20,8 @@
     "@mui/material": "^7.1.2",
     "aplayer": "^1.10.1",
     "astro": "^5.17.1",
-    "pixi-live2d-display": "^0.3.1"
+    "pixi-live2d-display": "^0.3.1",
+    "prettier": "^3.8.1"
   },
   "devDependencies": {
     "@types/prop-types": "^15.7.15",

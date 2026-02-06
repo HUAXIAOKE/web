@@ -1,544 +1,532 @@
 /* 时间轴样式 */
 .timeline-shell {
-    width: 80%;
-    max-width: 2100px;
-    position: relative;
-    padding: 80px 0;
-    transition: 0.3s ease 0s;
-    background-attachment: fixed;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    border-radius: 24px;
-    box-shadow:
+	width: 80%;
+	max-width: 2100px;
+	position: relative;
+	padding: 80px 0;
+	transition: 0.3s ease 0s;
+	background-attachment: fixed;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	border-radius: 24px;
+	box-shadow:
         /* 外部深阴影 - 增强立体感 */
-        0 25px 50px rgba(0, 0, 0, 0.4),
-        0 15px 25px rgba(0, 0, 0, 0.25),
-        0 5px 15px rgba(0, 0, 0, 0.15),
-        /* 内部高光 - 更明显 */
-        inset 0 4px 8px rgba(255, 255, 255, 0.15),
-        inset 0 -4px 8px rgba(0, 0, 0, 0.12),
-        /* 边框高光 - 多层次 */
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        0 0 0 3px rgba(255, 255, 255, 0.05),
-        0 0 0 5px rgba(255, 255, 255, 0.02);
-    /* 居中显示 */
-    margin: 20px auto;
-    overflow: hidden;
-    border: 3px solid transparent;
-    background-clip: padding-box;
-    /* 添加渐变边框 */
-    background:
-        linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)) padding-box,
-        linear-gradient(135deg,
-            rgba(255, 255, 255, 0.3),
-            rgba(255, 255, 255, 0.1),
-            rgba(255, 255, 255, 0.2)) border-box;
+		0 25px 50px rgba(0, 0, 0, 0.4),
+		0 15px 25px rgba(0, 0, 0, 0.25),
+		0 5px 15px rgba(0, 0, 0, 0.15),
+		/* 内部高光 - 更明显 */ inset 0 4px 8px rgba(255, 255, 255, 0.15),
+		inset 0 -4px 8px rgba(0, 0, 0, 0.12),
+		/* 边框高光 - 多层次 */ 0 0 0 1px rgba(255, 255, 255, 0.1),
+		0 0 0 3px rgba(255, 255, 255, 0.05),
+		0 0 0 5px rgba(255, 255, 255, 0.02);
+	/* 居中显示 */
+	margin: 20px auto;
+	overflow: hidden;
+	border: 3px solid transparent;
+	background-clip: padding-box;
+	/* 添加渐变边框 */
+	background:
+		linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0)) padding-box,
+		linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2)) border-box;
 
-    background-attachment: fixed;
-    background-size: 86% 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    pointer-events: none;
+	background-attachment: fixed;
+	background-size: 86% 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	pointer-events: none;
 }
 
 .timeline-shell::before {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(99, 99, 99, .7);
-    content: "";
-    z-index: 1;
-    /* 确保遮罩层也有圆角 */
-    border-radius: 22px;
-    /* 添加虚化效果 */
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(99, 99, 99, 0.7);
+	content: '';
+	z-index: 1;
+	/* 确保遮罩层也有圆角 */
+	border-radius: 22px;
+	/* 添加虚化效果 */
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
 }
 
 /* 增强外边框立体效果 */
 .timeline-shell::after {
-    content: "";
-    position: absolute;
-    top: -8px;
-    left: -8px;
-    right: -8px;
-    bottom: -8px;
-    background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.15),
-            rgba(255, 255, 255, 0.02),
-            rgba(255, 255, 255, 0.08),
-            rgba(255, 255, 255, 0.01));
-    border-radius: 33px;
-    z-index: -1;
-    filter: blur(2px);
-    box-shadow:
-        0 0 20px rgba(255, 255, 255, 0.1),
-        inset 0 2px 4px rgba(255, 255, 255, 0.05);
+	content: '';
+	position: absolute;
+	top: -8px;
+	left: -8px;
+	right: -8px;
+	bottom: -8px;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01));
+	border-radius: 33px;
+	z-index: -1;
+	filter: blur(2px);
+	box-shadow:
+		0 0 20px rgba(255, 255, 255, 0.1),
+		inset 0 2px 4px rgba(255, 255, 255, 0.05);
 }
 
 .timeline-header {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 40px;
-    position: relative;
-    z-index: 2;
+	width: 100%;
+	text-align: center;
+	margin-bottom: 40px;
+	position: relative;
+	z-index: 2;
 }
 
 .timeline-title {
-    color: #fff;
-    font-size: clamp(28px, 3.5vw, 40px);
-    font-weight: normal;
-    margin: 0;
-    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+	color: #fff;
+	font-size: clamp(28px, 3.5vw, 40px);
+	font-weight: normal;
+	margin: 0;
+	text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
 }
 
 .timeline-subtitle {
-    color: rgba(255, 255, 255, .6);
-    font-size: clamp(12px, 1vw, 14px);
-    letter-spacing: 2px;
-    margin: 8px 0 0 0;
-    font-weight: normal;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	color: rgba(255, 255, 255, 0.6);
+	font-size: clamp(12px, 1vw, 14px);
+	letter-spacing: 2px;
+	margin: 8px 0 0 0;
+	font-weight: normal;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .timeline {
-    display: flex;
-    margin: 0 auto;
-    flex-direction: column;
-    max-width: 1100px;
-    position: relative;
-    z-index: 2;
-    /* 添加内部滚动 */
-    height: 600px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 0 40px 120px 40px;
-    /* 增加底部padding */
-    /* 允许滚动但禁用选择 */
-    pointer-events: auto;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+	display: flex;
+	margin: 0 auto;
+	flex-direction: column;
+	max-width: 1100px;
+	position: relative;
+	z-index: 2;
+	/* 添加内部滚动 */
+	height: 600px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 0 40px 120px 40px;
+	/* 增加底部padding */
+	/* 允许滚动但禁用选择 */
+	pointer-events: auto;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 }
 
 .timeline::-webkit-scrollbar {
-    display: none;
+	display: none;
 }
 
 .timeline::-webkit-scrollbar {
-    width: 6px;
+	width: 6px;
 }
 
 .timeline::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 3px;
 }
 
 .timeline::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 3px;
 }
 
 .timeline::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
+	background: rgba(255, 255, 255, 0.5);
 }
 
 .timeline::before {
-    position: absolute;
-    left: 50%;
-    width: 3px;
-    height: calc(100% + 80px);
-    /* 增加高度 */
-    margin-left: -1.5px;
-    content: "";
-    background: linear-gradient(to bottom,
-            rgba(255, 255, 255, 0.1));
-    box-shadow:
-        inset 0 0 3px rgba(255, 255, 255, 0.15);
-    border-radius: 2px;
-    top: 0;
-    z-index: 1;
+	position: absolute;
+	left: 50%;
+	width: 3px;
+	height: calc(100% + 80px);
+	/* 增加高度 */
+	margin-left: -1.5px;
+	content: '';
+	background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1));
+	box-shadow: inset 0 0 3px rgba(255, 255, 255, 0.15);
+	border-radius: 2px;
+	top: 0;
+	z-index: 1;
 }
 
 /* 中轴线指针圆点 */
 .timeline-pointer {
-    position: absolute;
-    left: 50%;
-    width: 6px;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    transform: translateX(-50%);
-    z-index: 3;
-    box-shadow:
-        0 0 0 2px rgba(255, 255, 255, 0.2),
-        0 0 0 4px rgba(255, 255, 255, 0.1),
-        0 2px 6px rgba(0, 0, 0, 0.3);
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    opacity: 0;
+	position: absolute;
+	left: 50%;
+	width: 6px;
+	height: 6px;
+	background: rgba(255, 255, 255, 0.9);
+	border-radius: 50%;
+	transform: translateX(-50%);
+	z-index: 3;
+	box-shadow:
+		0 0 0 2px rgba(255, 255, 255, 0.2),
+		0 0 0 4px rgba(255, 255, 255, 0.1),
+		0 2px 6px rgba(0, 0, 0, 0.3);
+	transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	opacity: 0;
 }
 
 .timeline-pointer.active {
-    opacity: 1;
-    animation: pointerPulse 2s infinite;
+	opacity: 1;
+	animation: pointerPulse 2s infinite;
 }
 
 .timeline-pointer::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 2px;
-    height: 2px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(200, 200, 255, 0.9));
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 2px;
+	height: 2px;
+	background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(200, 200, 255, 0.9));
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes pointerPulse {
+	0%,
+	100% {
+		box-shadow:
+			0 0 0 2px rgba(255, 255, 255, 0.2),
+			0 0 0 4px rgba(255, 255, 255, 0.1),
+			0 2px 6px rgba(0, 0, 0, 0.3);
+		transform: translateX(-50%) scale(1);
+	}
 
-    0%,
-    100% {
-        box-shadow:
-            0 0 0 2px rgba(255, 255, 255, 0.2),
-            0 0 0 4px rgba(255, 255, 255, 0.1),
-            0 2px 6px rgba(0, 0, 0, 0.3);
-        transform: translateX(-50%) scale(1);
-    }
-
-    50% {
-        box-shadow:
-            0 0 0 3px rgba(255, 255, 255, 0.3),
-            0 0 0 6px rgba(255, 255, 255, 0.15),
-            0 3px 8px rgba(0, 0, 0, 0.4);
-        transform: translateX(-50%) scale(1.05);
-    }
+	50% {
+		box-shadow:
+			0 0 0 3px rgba(255, 255, 255, 0.3),
+			0 0 0 6px rgba(255, 255, 255, 0.15),
+			0 3px 8px rgba(0, 0, 0, 0.4);
+		transform: translateX(-50%) scale(1.05);
+	}
 }
 
 .timeline-item {
-    padding: 30px 0;
-    /* 增加垂直padding */
-    opacity: 0.4;
-    filter: blur(1px);
-    transition: all 0.6s ease;
-    box-sizing: border-box;
-    width: calc(50% - 30px);
-    display: flex;
-    position: relative;
-    transform: translateY(-30px);
+	padding: 30px 0;
+	/* 增加垂直padding */
+	opacity: 0.4;
+	filter: blur(1px);
+	transition: all 0.6s ease;
+	box-sizing: border-box;
+	width: calc(50% - 30px);
+	display: flex;
+	position: relative;
+	transform: translateY(-30px);
 
-    /* 禁用选择 */
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+	/* 禁用选择 */
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 }
 
 .timeline-item:nth-child(odd) {
-    align-self: flex-start;
+	align-self: flex-start;
 }
 
 .timeline-item:nth-child(even) {
-    align-self: flex-end;
+	align-self: flex-end;
 }
 
 .timeline-item::before {
-    content: attr(data-text);
-    letter-spacing: 2px;
-    width: 98%;
-    position: absolute;
-    color: rgba(255, 255, 255, .6);
-    font-size: clamp(10px, 0.8vw, 12px);
-    top: 60%;
-    margin-top: -5px;
-    padding-left: 10px;
-    opacity: 0;
-    right: calc(-100% - 30px);
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    transition: all 0.4s ease;
+	content: attr(data-text);
+	letter-spacing: 2px;
+	width: 98%;
+	position: absolute;
+	color: rgba(255, 255, 255, 0.6);
+	font-size: clamp(10px, 0.8vw, 12px);
+	top: 60%;
+	margin-top: -5px;
+	padding-left: 10px;
+	opacity: 0;
+	right: calc(-100% - 30px);
+	font-weight: 700;
+	letter-spacing: 2px;
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+	transition: all 0.4s ease;
 }
 
 .timeline-item:nth-child(even)::before {
-    right: auto;
-    text-align: right;
-    left: calc(-100% - 31px);
-    padding-left: 0;
-    border-left: none;
-    padding-right: 10px;
+	right: auto;
+	text-align: right;
+	left: calc(-100% - 31px);
+	padding-left: 0;
+	border-left: none;
+	padding-right: 10px;
 }
 
 .timeline-item--active {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0px);
+	opacity: 1;
+	transform: translateY(0);
+	filter: blur(0px);
 }
 
 .timeline-item--active::before {
-    top: 50%;
-    transition: all 0.4s ease 0.2s;
-    opacity: 1;
+	top: 50%;
+	transition: all 0.4s ease 0.2s;
+	opacity: 1;
 }
 
 .timeline-content {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 15px;
-    padding: 20px;
-    backdrop-filter: blur(15px);
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.2),
-        inset 0 1px 3px rgba(255, 255, 255, 0.1),
-        0 0 0 1px rgba(255, 255, 255, 0.08);
-    transition: all 0.4s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+	width: 100%;
+	background: rgba(255, 255, 255, 0.08);
+	border-radius: 15px;
+	padding: 20px;
+	backdrop-filter: blur(15px);
+	box-shadow:
+		0 10px 30px rgba(0, 0, 0, 0.2),
+		inset 0 1px 3px rgba(255, 255, 255, 0.1),
+		0 0 0 1px rgba(255, 255, 255, 0.08);
+	transition: all 0.4s ease;
+	border: 1px solid rgba(255, 255, 255, 0.1);
 
-    /* 禁用选择 */
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+	/* 禁用选择 */
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 }
 
 .timeline-item--active .timeline-content {
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow:
-        0 15px 35px rgba(0, 0, 0, 0.25),
-        inset 0 2px 5px rgba(255, 255, 255, 0.15),
-        0 0 0 2px rgba(255, 255, 255, 0.12);
-    transform: scale(1.02);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+	background: rgba(255, 255, 255, 0.12);
+	box-shadow:
+		0 15px 35px rgba(0, 0, 0, 0.25),
+		inset 0 2px 5px rgba(255, 255, 255, 0.15),
+		0 0 0 2px rgba(255, 255, 255, 0.12);
+	transform: scale(1.02);
+	border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .timeline-content-title {
-    font-weight: normal;
-    font-size: clamp(24px, 3vw, 36px);
-    margin: 0 0 10px 0;
-    transition: 0.4s;
-    padding: 0 5px;
-    box-sizing: border-box;
-    color: #fff;
-    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+	font-weight: normal;
+	font-size: clamp(24px, 3vw, 36px);
+	margin: 0 0 10px 0;
+	transition: 0.4s;
+	padding: 0 5px;
+	box-sizing: border-box;
+	color: #fff;
+	text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
 
-    /* 禁用选择 */
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+	/* 禁用选择 */
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 }
 
 .timeline-content h3 {
-    font-size: clamp(16px, 2vw, 20px) !important;
-    margin: 8px 0 !important;
-    padding: 0 5px !important;
+	font-size: clamp(16px, 2vw, 20px) !important;
+	margin: 8px 0 !important;
+	padding: 0 5px !important;
 
-    /* 禁用选择 */
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
+	/* 禁用选择 */
+	user-select: none !important;
+	-webkit-user-select: none !important;
+	-moz-user-select: none !important;
+	-ms-user-select: none !important;
 }
 
 .timeline-content-desc {
-    margin: 8px 0 0 0;
-    font-size: clamp(12px, 1vw, 14px);
-    box-sizing: border-box;
-    color: rgba(255, 255, 255, .8);
-    line-height: 1.5;
-    padding: 0 5px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+	margin: 8px 0 0 0;
+	font-size: clamp(12px, 1vw, 14px);
+	box-sizing: border-box;
+	color: rgba(255, 255, 255, 0.8);
+	line-height: 1.5;
+	padding: 0 5px;
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 
-    /* 禁用选择 */
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+	/* 禁用选择 */
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 }
 
 .timeline-img {
-    max-width: 100%;
-    height: auto;
-    max-height: 150px;
-    object-fit: cover;
-    box-shadow:
-        0 8px 20px rgba(0, 0, 0, .4),
-        0 3px 8px rgba(0, 0, 0, .2);
-    border-radius: 10px;
-    transition: all 0.4s ease;
-    margin-bottom: 12px;
+	max-width: 100%;
+	height: auto;
+	max-height: 150px;
+	object-fit: cover;
+	box-shadow:
+		0 8px 20px rgba(0, 0, 0, 0.4),
+		0 3px 8px rgba(0, 0, 0, 0.2);
+	border-radius: 10px;
+	transition: all 0.4s ease;
+	margin-bottom: 12px;
 
-    /* 禁用选择和拖拽 */
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -webkit-user-drag: none;
-    -khtml-user-drag: none;
-    -moz-user-drag: none;
-    -o-user-drag: none;
-    -webkit-user-drag: none;
+	/* 禁用选择和拖拽 */
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-user-drag: none;
+	-khtml-user-drag: none;
+	-moz-user-drag: none;
+	-o-user-drag: none;
+	-webkit-user-drag: none;
 }
 
 .timeline-item--active .timeline-img {
-    box-shadow:
-        0 12px 25px rgba(0, 0, 0, .5),
-        0 5px 12px rgba(0, 0, 0, .3),
-        0 0 0 2px rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
+	box-shadow:
+		0 12px 25px rgba(0, 0, 0, 0.5),
+		0 5px 12px rgba(0, 0, 0, 0.3),
+		0 0 0 2px rgba(255, 255, 255, 0.1);
+	transform: translateY(-2px);
 }
 
 /* 滚动指示器样式 */
 .timeline-scroll-indicator {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
+	position: absolute;
+	right: 15px;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 10;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
 }
 
 .scroll-indicator-track {
-    width: 3px;
-    height: 120px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 2px;
-    position: relative;
-    overflow: hidden;
+	width: 3px;
+	height: 120px;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 2px;
+	position: relative;
+	overflow: hidden;
 }
 
 .scroll-indicator-thumb {
-    width: 100%;
-    height: 15px;
-    background: rgba(255, 255, 255, 0.6);
-    border-radius: 2px;
-    transition: transform 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	width: 100%;
+	height: 15px;
+	background: rgba(255, 255, 255, 0.6);
+	border-radius: 2px;
+	transition: transform 0.3s ease;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .scroll-indicator-text {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 10px;
-    font-weight: 600;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    white-space: nowrap;
+	color: rgba(255, 255, 255, 0.8);
+	font-size: 10px;
+	font-weight: 600;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+	white-space: nowrap;
 }
 
 /* 响应式设计 */
 @media only screen and (max-width: 1024px) {
-    .timeline-shell {
-        width: 85%;
-        margin: 15px auto;
-        min-height: 70vh;
-        padding: 40px 0;
-    }
+	.timeline-shell {
+		width: 85%;
+		margin: 15px auto;
+		min-height: 70vh;
+		padding: 40px 0;
+	}
 
-    .timeline {
-        max-width: 600px;
-        padding: 0 20px 80px 20px;
-        /* 增加底部padding */
-        height: 350px;
-    }
+	.timeline {
+		max-width: 600px;
+		padding: 0 20px 80px 20px;
+		/* 增加底部padding */
+		height: 350px;
+	}
 
-    .timeline-pointer {
-        width: 8px;
-        height: 8px;
-    }
+	.timeline-pointer {
+		width: 8px;
+		height: 8px;
+	}
 
-    .timeline-pointer::before {
-        width: 3px;
-        height: 3px;
-    }
+	.timeline-pointer::before {
+		width: 3px;
+		height: 3px;
+	}
 }
 
 @media only screen and (max-width: 767px) {
-    .timeline-shell {
-        width: 95%;
-        margin: 10px auto;
-        border-radius: 20px;
-        min-height: 60vh;
-        padding: 30px 0;
-    }
+	.timeline-shell {
+		width: 95%;
+		margin: 10px auto;
+		border-radius: 20px;
+		min-height: 60vh;
+		padding: 30px 0;
+	}
 
-    .timeline-shell::before {
-        border-radius: 17px;
-    }
+	.timeline-shell::before {
+		border-radius: 17px;
+	}
 
-    .timeline-shell::after {
-        top: -5px;
-        left: -5px;
-        right: -5px;
-        bottom: -5px;
-        border-radius: 25px;
-    }
+	.timeline-shell::after {
+		top: -5px;
+		left: -5px;
+		right: -5px;
+		bottom: -5px;
+		border-radius: 25px;
+	}
 
-    .timeline {
-        padding: 10px 10px 60px 10px;
-        /* 增加底部padding */
-        height: 300px;
-        max-width: 100%;
-    }
+	.timeline {
+		padding: 10px 10px 60px 10px;
+		/* 增加底部padding */
+		height: 300px;
+		max-width: 100%;
+	}
 
-    .timeline-item {
-        align-self: baseline !important;
-        width: 100%;
-        padding: 15px 0 15px 50px;
-    }
+	.timeline-item {
+		align-self: baseline !important;
+		width: 100%;
+		padding: 15px 0 15px 50px;
+	}
 
-    .timeline-item::before {
-        left: -45px !important;
-        padding: 0 !important;
-        top: 30px;
-        text-align: center !important;
-        width: 40px;
-        border: none !important;
-        font-size: 8px;
-        right: auto !important;
-        padding-right: 0 !important;
-    }
+	.timeline-item::before {
+		left: -45px !important;
+		padding: 0 !important;
+		top: 30px;
+		text-align: center !important;
+		width: 40px;
+		border: none !important;
+		font-size: 8px;
+		right: auto !important;
+		padding-right: 0 !important;
+	}
 
-    .timeline::before {
-        left: 20px;
-        width: 2px;
-    }
+	.timeline::before {
+		left: 20px;
+		width: 2px;
+	}
 
-    .timeline-content {
-        padding: 15px;
-    }
+	.timeline-content {
+		padding: 15px;
+	}
 
-    .timeline-img {
-        max-height: 120px;
-    }
+	.timeline-img {
+		max-height: 120px;
+	}
 
-    .timeline-scroll-indicator {
-        right: 8px;
-    }
+	.timeline-scroll-indicator {
+		right: 8px;
+	}
 
-    .scroll-indicator-track {
-        height: 90px;
-    }
+	.scroll-indicator-track {
+		height: 90px;
+	}
 
-    .timeline-pointer {
-        left: 20px;
-        width: 6px;
-        height: 6px;
-        transform: translateX(-50%);
-    }
+	.timeline-pointer {
+		left: 20px;
+		width: 6px;
+		height: 6px;
+		transform: translateX(-50%);
+	}
 
-    .timeline-pointer::before {
-        width: 2px;
-        height: 2px;
-    }
+	.timeline-pointer::before {
+		width: 2px;
+		height: 2px;
+	}
 }
