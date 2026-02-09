@@ -19,5 +19,5 @@ function scrollToTop(duration) {
 }
 
 document.getElementById('backToTopBtn').addEventListener('click', function () {
-	scrollToTop(3000); // 1000毫秒（1秒）的滚动时间
+	scrollToTop(600);
 });
