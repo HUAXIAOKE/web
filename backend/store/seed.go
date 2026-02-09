@@ -72,9 +72,9 @@ func seedAbout() {
 		SmallTitle, Title, Content, Image string
 	}{
 		{"HuaXiaoKe", "智慧虚拟女大一枚", "TODO", "/img/temp.png"},
-		{"Daily", "神人的日常生活", "TODO", "/img/temp.png"},
+		{"Daily", "神人的日常生活", "TODO", "/img/about/daily.jpg"},
 		{"Work!", "成分极其复杂", "首先，组内全员颠佬（划掉）~<br />在这里你可以学习视频制作、如何直播、各种妙妙技术，只要你感兴趣的事情都可以在这里找到前辈……<br />我们会使用到OBS、AE、PR等软件，当然也会有一些其他的工具，包括但不限于视频、游戏、音频制作等~<br />当然我们是为爱发电，热爱是我们的核心动力！", "/img/about/work.jpeg"},
-		{"Join Us!", "加入这里只需热爱", "无论是否来自华中科技大学， 无论年级高低，<br />只要你喜欢华小科这个形象，你就一定可以在这里找到你想做的事情！<br />如果你对我们感兴趣，可以关注每年的秋招与春招~<br />当然也可以加入粉丝群(451141031)哦！", "/img/temp.png"},
+		{"Join Us!", "加入这里只需热爱", "无论是否来自华中科技大学， 无论年级高低，<br />只要你喜欢华小科这个形象，你就一定可以在这里找到你想做的事情！<br />如果你对我们感兴趣，可以关注每年的秋招与春招~<br />当然也可以加入粉丝群(451141031)哦！", "/img/about/join.png"},
 	}
 	for _, c := range cards {
 		DB.Exec(`INSERT INTO about_card (small_title,title,content,image) VALUES (?,?,?,?)`,

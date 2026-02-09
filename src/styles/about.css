@@ -189,7 +189,7 @@ html.dark #bar {
 }
 
 .card-title {
-	font-size: clamp(32px, 6vw, 80px);
+	font-size: clamp(24px, 4.5vw, 56px);
 	font-weight: 700;
 	padding-bottom: 20px;
 	color: rgb(70, 100, 180);
