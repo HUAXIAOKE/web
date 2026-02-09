@@ -34,6 +34,7 @@ func main() {
 
 	// 写入操作 (需要登录)
 	writeMux := http.NewServeMux()
+	writeMux.HandleFunc("GET /api/auth/verify", handler.VerifyToken)
 	writeMux.HandleFunc("POST /api/activities", handler.CreateActivity)
 	writeMux.HandleFunc("POST /api/timeline/events", handler.CreateTimelineEvent)
 	writeMux.HandleFunc("POST /api/gallery", handler.CreateGallery)
@@ -53,6 +54,7 @@ func main() {
 	writeMux.HandleFunc("DELETE /api/music/{id}", handler.DeleteMusic)
 
 	protected := handler.RequireAuth(writeMux)
+	mux.Handle("GET /api/auth/", protected)
 	mux.Handle("POST /api/", protected)
 	mux.Handle("PUT /api/", protected)
 	mux.Handle("DELETE /api/", protected)

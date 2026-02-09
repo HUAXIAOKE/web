@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>华小科 · 后台管理</title>
+<link rel="icon" type="image/x-icon" href="icon.ico">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -61,7 +62,13 @@ const API = '';
 let token = localStorage.getItem('hxk_token') || '';
 
 function authHeaders() { return { 'Content-Type':'application/json', 'Authorization':'Bearer '+token }; }
-function authFetch(url, opts={}) { opts.headers = { ...opts.headers, 'Authorization':'Bearer '+token }; return fetch(API+url, opts); }
+function authFetch(url, opts={}) {
+  opts.headers = { ...opts.headers, 'Authorization':'Bearer '+token };
+  return fetch(API+url, opts).then(res => {
+    if (res.status === 401) { doLogout(); }
+    return res;
+  });
+}
 
 // ── AUTH ──
 async function doLogin() {
@@ -90,7 +97,8 @@ function doLogout() {
 async function checkAuth() {
   if (!token) return false;
   try {
-    const res = await authFetch('/api/activities');
+    const res = await fetch(API+'/api/auth/verify', { headers:{'Authorization':'Bearer '+token} });
+    if (res.status === 401) { doLogout(); return false; }
     return res.ok;
   } catch(e) { return false; }
 }
@@ -179,7 +187,7 @@ async function doUpload(file, fieldId, dir) {
   const zone = document.getElementById(fieldId+'_drop');
   if (zone) { zone.textContent = '上传中...'; zone.classList.add('uploading'); }
   try {
-    const res = await fetch(API+'/api/upload', { method:'POST', body:fd, headers:{'Authorization':'Bearer '+token} });
+    const res = await authFetch('/api/upload', { method:'POST', body:fd });
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     document.getElementById(fieldId).value = data.url;
@@ -235,14 +243,16 @@ function editActivity(a) {
   `, async()=>{
     const tags=Array.from(document.querySelectorAll('.f_tags:checked')).map(c=>c.value).join(',');
     const body={tags,date:val('f_date'),image:val('f_image'),headline:val('f_headline'),excerpt:val('f_excerpt'),href:val('f_href')};
-    await fetch(API+(isNew?'/api/activities':'/api/activities/'+a.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
+    const res = await authFetch((isNew?'/api/activities':'/api/activities/'+a.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
+    if (!res.ok) { toast('操作失败','error'); return; }
     closeModal();toast(isNew?'创建成功':'保存成功');loadActivity();
   }, [{id:'f_image',dir:'img/activity'}]);
 }
 
 async function delActivity(id) {
   if(!confirm('确定删除？'))return;
-  await fetch(API+'/api/activities/'+id,{method:'DELETE',headers:authHeaders()});
+  const res = await authFetch('/api/activities/'+id,{method:'DELETE',headers:authHeaders()});
+  if (!res.ok) { toast('删除失败','error'); return; }
   toast('已删除');loadActivity();
 }
 
@@ -271,7 +281,8 @@ function editTimelineHeader(h) {
     <div class="form-group"><label>标题</label><input id="f_htitle" value="${h.title||''}"></div>
     <div class="form-group"><label>副标题</label><input id="f_hsub" value="${h.subtitle||''}"></div>
   `,async()=>{
-    await fetch(API+'/api/timeline/header',{method:'PUT',headers:authHeaders(),body:JSON.stringify({title:val('f_htitle'),subtitle:val('f_hsub')})});
+    const res = await authFetch('/api/timeline/header',{method:'PUT',headers:authHeaders(),body:JSON.stringify({title:val('f_htitle'),subtitle:val('f_hsub')})});
+    if (!res.ok) { toast('保存失败','error'); return; }
     closeModal();toast('保存成功');loadTimeline();
   });
 }
@@ -286,14 +297,16 @@ function editTimelineEvent(e) {
     ${imgUploadHTML('f_eimg',e.image,'img/timeline')}
   `,async()=>{
     const body={date:val('f_edate'),title:val('f_etitle'),description:val('f_edesc'),image:val('f_eimg'),label:val('f_elabel')};
-    await fetch(API+(isNew?'/api/timeline/events':'/api/timeline/events/'+e.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
+    const res = await authFetch((isNew?'/api/timeline/events':'/api/timeline/events/'+e.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
+    if (!res.ok) { toast('操作失败','error'); return; }
     closeModal();toast(isNew?'创建成功':'保存成功');loadTimeline();
   }, [{id:'f_eimg',dir:'img/timeline'}]);
 }
 
 async function delTimelineEvent(id) {
   if(!confirm('确定删除？'))return;
-  await fetch(API+'/api/timeline/events/'+id,{method:'DELETE',headers:authHeaders()});
+  const res = await authFetch('/api/timeline/events/'+id,{method:'DELETE',headers:authHeaders()});
+  if (!res.ok) { toast('删除失败','error'); return; }
   toast('已删除');loadTimeline();
 }
 
@@ -319,14 +332,16 @@ function editGallery(g) {
     ${imgUploadHTML('f_gimg',g.image,'img/Illustration')}
   `,async()=>{
     const body={image:val('f_gimg'),illustrator:val('f_gillus'),scene:val('f_gscene'),description:val('f_gdesc')};
-    await fetch(API+(isNew?'/api/gallery':'/api/gallery/'+g.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
+    const res = await authFetch((isNew?'/api/gallery':'/api/gallery/'+g.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
+    if (!res.ok) { toast('操作失败','error'); return; }
     closeModal();toast(isNew?'创建成功':'保存成功');loadGallery();
   }, [{id:'f_gimg',dir:'img/Illustration'}]);
 }
 
 async function delGallery(id) {
   if(!confirm('确定删除？'))return;
-  await fetch(API+'/api/gallery/'+id,{method:'DELETE',headers:authHeaders()});
+  const res = await authFetch('/api/gallery/'+id,{method:'DELETE',headers:authHeaders()});
+  if (!res.ok) { toast('删除失败','error'); return; }
   toast('已删除');loadGallery();
 }
 
@@ -354,14 +369,16 @@ function editAbout(c) {
     ${imgUploadHTML('f_cimg',c.image,'img/about')}
   `,async()=>{
     const body={smallTitle:val('f_cst'),title:val('f_ctitle'),content:val('f_ccontent'),image:val('f_cimg')};
-    await fetch(API+(isNew?'/api/about':'/api/about/'+c.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
+    const res = await authFetch((isNew?'/api/about':'/api/about/'+c.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
+    if (!res.ok) { toast('操作失败','error'); return; }
     closeModal();toast(isNew?'创建成功':'保存成功');loadAbout();
   }, [{id:'f_cimg',dir:'img/about'}]);
 }
 
 async function delAbout(id) {
   if(!confirm('确定删除？'))return;
-  await fetch(API+'/api/about/'+id,{method:'DELETE',headers:authHeaders()});
+  const res = await authFetch('/api/about/'+id,{method:'DELETE',headers:authHeaders()});
+  if (!res.ok) { toast('删除失败','error'); return; }
   toast('已删除');loadAbout();
 }
 
@@ -388,14 +405,16 @@ function editMusic(t) {
     ${imgUploadHTML('f_mcover',t.cover,'img/covers')}
   `,async()=>{
     const body={title:val('f_mtitle'),artist:val('f_martist'),src:val('f_msrc'),cover:val('f_mcover')};
-    await fetch(API+(isNew?'/api/music':'/api/music/'+t.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
+    const res = await authFetch((isNew?'/api/music':'/api/music/'+t.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
+    if (!res.ok) { toast('操作失败','error'); return; }
     closeModal();toast(isNew?'创建成功':'保存成功');loadMusic();
   }, [{id:'f_msrc',dir:'audio'},{id:'f_mcover',dir:'img/covers'}]);
 }
 
 async function delMusic(id) {
   if(!confirm('确定删除？'))return;
-  await fetch(API+'/api/music/'+id,{method:'DELETE',headers:authHeaders()});
+  const res = await authFetch('/api/music/'+id,{method:'DELETE',headers:authHeaders()});
+  if (!res.ok) { toast('删除失败','error'); return; }
   toast('已删除');loadMusic();
 }
 

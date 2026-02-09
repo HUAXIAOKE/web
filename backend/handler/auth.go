@@ -23,6 +23,10 @@ type loginReq struct {
 	Password string `json:"password"`
 }
 
+func VerifyToken(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, map[string]string{"ok": "true"})
+}
+
 func Login(w http.ResponseWriter, r *http.Request) {
 	var req loginReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
