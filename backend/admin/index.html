@@ -1,434 +1,638 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>华小科 · 后台管理</title>
-<link rel="icon" type="image/x-icon" href="icon.ico">
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>华小科 · 后台管理</title>
+		<link rel="icon" type="image/x-icon" href="icon.ico" />
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		<!-- ══ LOGIN ══ -->
+		<div class="login-wrap" id="login-page">
+			<div class="login-box">
+				<h1>华小科 Web</h1>
+				<p>后台管理系统</p>
+				<input id="login-user" placeholder="账号" autocomplete="username" />
+				<input id="login-pass" type="password" placeholder="密码" autocomplete="current-password" />
+				<button class="btn-login" onclick="doLogin()">登 录</button>
+				<div class="login-error" id="login-error"></div>
+			</div>
+		</div>
 
-<!-- ══ LOGIN ══ -->
-<div class="login-wrap" id="login-page">
-  <div class="login-box">
-    <h1>华小科 Web</h1>
-    <p>后台管理系统</p>
-    <input id="login-user" placeholder="账号" autocomplete="username">
-    <input id="login-pass" type="password" placeholder="密码" autocomplete="current-password">
-    <button class="btn-login" onclick="doLogin()">登 录</button>
-    <div class="login-error" id="login-error"></div>
-  </div>
-</div>
+		<!-- ══ APP ══ -->
+		<div class="app" id="app-page" style="display: none">
+			<aside class="sidebar">
+				<div class="sidebar-logo">华小科 Web</div>
+				<nav>
+					<a class="active" data-tab="activity">当期活动</a>
+					<a data-tab="timeline">时间轴</a>
+					<a data-tab="gallery">画廊</a>
+					<a data-tab="about">关于我们</a>
+					<a data-tab="music">音乐</a>
+				</nav>
+				<div class="sidebar-footer">
+					<button class="btn-logout" onclick="doLogout()">退出登录</button>
+				</div>
+			</aside>
 
-<!-- ══ APP ══ -->
-<div class="app" id="app-page" style="display:none">
-  <aside class="sidebar">
-    <div class="sidebar-logo">华小科 Web</div>
-    <nav>
-      <a class="active" data-tab="activity">当期活动</a>
-      <a data-tab="timeline">时间轴</a>
-      <a data-tab="gallery">画廊</a>
-      <a data-tab="about">关于我们</a>
-      <a data-tab="music">音乐</a>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn-logout" onclick="doLogout()">退出登录</button>
-    </div>
-  </aside>
+			<main class="main" id="main-content"></main>
+		</div>
 
-  <main class="main" id="main-content"></main>
-</div>
+		<!-- ══ MODAL ══ -->
+		<div class="modal-mask" id="modal-mask">
+			<div class="modal">
+				<div class="modal-header">
+					<h3 id="modal-title">编辑</h3>
+					<button class="modal-close" onclick="closeModal()">&times;</button>
+				</div>
+				<div class="modal-body" id="modal-body"></div>
+				<div class="modal-footer">
+					<button class="btn btn-ghost" onclick="closeModal()">取消</button>
+					<button class="btn btn-primary" id="modal-save">保存</button>
+				</div>
+			</div>
+		</div>
 
-<!-- ══ MODAL ══ -->
-<div class="modal-mask" id="modal-mask">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="modal-title">编辑</h3>
-      <button class="modal-close" onclick="closeModal()">&times;</button>
-    </div>
-    <div class="modal-body" id="modal-body"></div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
-      <button class="btn btn-primary" id="modal-save">保存</button>
-    </div>
-  </div>
-</div>
+		<div class="toast" id="toast"></div>
 
-<div class="toast" id="toast"></div>
+		<script>
+			const API = '';
+			let token = localStorage.getItem('hxk_token') || '';
 
-<script>
-const API = '';
-let token = localStorage.getItem('hxk_token') || '';
+			function authHeaders() {
+				return { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token };
+			}
+			function authFetch(url, opts = {}) {
+				opts.headers = { ...opts.headers, Authorization: 'Bearer ' + token };
+				return fetch(API + url, opts).then((res) => {
+					if (res.status === 401) {
+						doLogout();
+					}
+					return res;
+				});
+			}
 
-function authHeaders() { return { 'Content-Type':'application/json', 'Authorization':'Bearer '+token }; }
-function authFetch(url, opts={}) {
-  opts.headers = { ...opts.headers, 'Authorization':'Bearer '+token };
-  return fetch(API+url, opts).then(res => {
-    if (res.status === 401) { doLogout(); }
-    return res;
-  });
-}
+			// ── AUTH ──
+			async function doLogin() {
+				const user = document.getElementById('login-user').value.trim();
+				const pass = document.getElementById('login-pass').value;
+				const errEl = document.getElementById('login-error');
+				errEl.textContent = '';
+				try {
+					const res = await fetch(API + '/api/login', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ username: user, password: pass }),
+					});
+					if (!res.ok) {
+						errEl.textContent = '账号或密码错误';
+						return;
+					}
+					const data = await res.json();
+					token = data.token;
+					localStorage.setItem('hxk_token', token);
+					showApp();
+				} catch (e) {
+					errEl.textContent = '网络错误';
+				}
+			}
 
-// ── AUTH ──
-async function doLogin() {
-  const user = document.getElementById('login-user').value.trim();
-  const pass = document.getElementById('login-pass').value;
-  const errEl = document.getElementById('login-error');
-  errEl.textContent = '';
-  try {
-    const res = await fetch(API+'/api/login', { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ username:user, password:pass }) });
-    if (!res.ok) { errEl.textContent = '账号或密码错误'; return; }
-    const data = await res.json();
-    token = data.token;
-    localStorage.setItem('hxk_token', token);
-    showApp();
-  } catch(e) { errEl.textContent = '网络错误'; }
-}
+			function doLogout() {
+				token = '';
+				localStorage.removeItem('hxk_token');
+				document.getElementById('app-page').style.display = 'none';
+				document.getElementById('login-page').style.display = '';
+			}
 
-function doLogout() {
-  token = '';
-  localStorage.removeItem('hxk_token');
-  document.getElementById('app-page').style.display = 'none';
-  document.getElementById('login-page').style.display = '';
-}
+			async function checkAuth() {
+				if (!token) return false;
+				try {
+					const res = await fetch(API + '/api/auth/verify', { headers: { Authorization: 'Bearer ' + token } });
+					if (res.status === 401) {
+						doLogout();
+						return false;
+					}
+					return res.ok;
+				} catch (e) {
+					return false;
+				}
+			}
 
-async function checkAuth() {
-  if (!token) return false;
-  try {
-    const res = await fetch(API+'/api/auth/verify', { headers:{'Authorization':'Bearer '+token} });
-    if (res.status === 401) { doLogout(); return false; }
-    return res.ok;
-  } catch(e) { return false; }
-}
+			async function initApp() {
+				if (await checkAuth()) {
+					showApp();
+				} else {
+					doLogout();
+				}
+			}
 
-async function initApp() {
-  if (await checkAuth()) { showApp(); }
-  else { doLogout(); }
-}
+			function showApp() {
+				document.getElementById('login-page').style.display = 'none';
+				document.getElementById('app-page').style.display = '';
+				loadActivity();
+			}
 
-function showApp() {
-  document.getElementById('login-page').style.display = 'none';
-  document.getElementById('app-page').style.display = '';
-  loadActivity();
-}
+			document.getElementById('login-pass').addEventListener('keydown', (e) => {
+				if (e.key === 'Enter') doLogin();
+			});
 
-document.getElementById('login-pass').addEventListener('keydown', (e) => { if (e.key==='Enter') doLogin(); });
+			// ── TOAST ──
+			function toast(msg, type = 'success') {
+				const el = document.getElementById('toast');
+				el.textContent = msg;
+				el.className = 'toast ' + type + ' show';
+				setTimeout(() => el.classList.remove('show'), 2000);
+			}
 
-// ── TOAST ──
-function toast(msg, type='success') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast ' + type + ' show';
-  setTimeout(() => el.classList.remove('show'), 2000);
-}
+			// ── MODAL ──
+			function openModal(title, html, onSave, dropZones) {
+				document.getElementById('modal-title').textContent = title;
+				document.getElementById('modal-body').innerHTML = html;
+				document.getElementById('modal-mask').classList.add('show');
+				document.getElementById('modal-save').onclick = onSave;
+				if (dropZones) dropZones.forEach((z) => initDropZone(z.id, z.dir));
+			}
+			function closeModal() {
+				document.getElementById('modal-mask').classList.remove('show');
+			}
+			document.getElementById('modal-mask').addEventListener('click', (e) => {
+				if (e.target === e.currentTarget) closeModal();
+			});
 
-// ── MODAL ──
-function openModal(title, html, onSave, dropZones) {
-  document.getElementById('modal-title').textContent = title;
-  document.getElementById('modal-body').innerHTML = html;
-  document.getElementById('modal-mask').classList.add('show');
-  document.getElementById('modal-save').onclick = onSave;
-  if (dropZones) dropZones.forEach(z => initDropZone(z.id, z.dir));
-}
-function closeModal() { document.getElementById('modal-mask').classList.remove('show'); }
-document.getElementById('modal-mask').addEventListener('click', (e) => { if (e.target===e.currentTarget) closeModal(); });
+			// ── UPLOAD ──
+			function fileUploadHTML(fieldId, currentUrl, dir, opts = {}) {
+				const accept = opts.accept || 'image/*';
+				const label = opts.label || '文件';
+				const isAudio = accept.includes('audio');
+				const placeholder = isAudio ? '/audio/...' : '/img/...';
+				const hint = '点击或拖拽文件到此区域上传';
+				const previewTag = isAudio
+					? `<audio controls id="${fieldId}_preview" src="${currentUrl || ''}" style="${currentUrl ? 'display:block' : 'display:none'};width:100%;margin-top:8px"></audio>`
+					: `<img class="img-preview" id="${fieldId}_preview" src="${currentUrl || ''}" style="${currentUrl ? 'display:block' : 'display:none'}">`;
 
-// ── UPLOAD ──
-function fileUploadHTML(fieldId, currentUrl, dir, opts={}) {
-  const accept = opts.accept || 'image/*';
-  const label = opts.label || '文件';
-  const isAudio = accept.includes('audio');
-  const placeholder = isAudio ? '/audio/...' : '/img/...';
-  const hint = '点击或拖拽文件到此区域上传';
-  const previewTag = isAudio
-    ? `<audio controls id="${fieldId}_preview" src="${currentUrl||''}" style="${currentUrl?'display:block':'display:none'};width:100%;margin-top:8px"></audio>`
-    : `<img class="img-preview" id="${fieldId}_preview" src="${currentUrl||''}" style="${currentUrl?'display:block':'display:none'}">`;
-
-  return `<div class="form-group"><label>${label}</label>
-    <input type="hidden" id="${fieldId}" value="${currentUrl||''}">
+				return `<div class="form-group"><label>${label}</label>
+    <input type="hidden" id="${fieldId}" value="${currentUrl || ''}">
     <div class="img-upload-area" id="${fieldId}_drop"
       onclick="document.getElementById('${fieldId}_file').click()">${hint}</div>
     <input type="file" id="${fieldId}_file" accept="${accept}" style="display:none"
       onchange="doUpload(this.files[0],'${fieldId}','${dir}')">
-    <input type="text" id="${fieldId}_path" value="${currentUrl||''}" placeholder="${placeholder}" style="margin-top:8px"
+    <input type="text" id="${fieldId}_path" value="${currentUrl || ''}" placeholder="${placeholder}" style="margin-top:8px"
       oninput="onPathInput('${fieldId}',this.value)">
     ${previewTag}
   </div>`;
-}
-function imgUploadHTML(fid, url, dir) { return fileUploadHTML(fid, url, dir, {accept:'image/*',label:'图片'}); }
-function audioUploadHTML(fid, url, dir) { return fileUploadHTML(fid, url, dir, {accept:'audio/*',label:'音频'}); }
+			}
+			function imgUploadHTML(fid, url, dir) {
+				return fileUploadHTML(fid, url, dir, { accept: 'image/*', label: '图片' });
+			}
+			function audioUploadHTML(fid, url, dir) {
+				return fileUploadHTML(fid, url, dir, { accept: 'audio/*', label: '音频' });
+			}
 
-function onPathInput(fieldId, value) {
-  document.getElementById(fieldId).value = value;
-  const preview = document.getElementById(fieldId+'_preview');
-  if (preview) {
-    if (preview.tagName === 'IMG') { preview.src = value; preview.style.display = value ? 'block' : 'none'; }
-    else if (preview.tagName === 'AUDIO') { preview.src = value; preview.style.display = value ? 'block' : 'none'; }
-  }
-}
+			function onPathInput(fieldId, value) {
+				document.getElementById(fieldId).value = value;
+				const preview = document.getElementById(fieldId + '_preview');
+				if (preview) {
+					if (preview.tagName === 'IMG') {
+						preview.src = value;
+						preview.style.display = value ? 'block' : 'none';
+					} else if (preview.tagName === 'AUDIO') {
+						preview.src = value;
+						preview.style.display = value ? 'block' : 'none';
+					}
+				}
+			}
 
-function initDropZone(fieldId, dir) {
-  const zone = document.getElementById(fieldId+'_drop');
-  if (!zone) return;
-  zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
-  zone.addEventListener('dragleave', () => { zone.classList.remove('drag-over'); });
-  zone.addEventListener('drop', (e) => {
-    e.preventDefault(); zone.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file) doUpload(file, fieldId, dir);
-  });
-}
+			function initDropZone(fieldId, dir) {
+				const zone = document.getElementById(fieldId + '_drop');
+				if (!zone) return;
+				zone.addEventListener('dragover', (e) => {
+					e.preventDefault();
+					zone.classList.add('drag-over');
+				});
+				zone.addEventListener('dragleave', () => {
+					zone.classList.remove('drag-over');
+				});
+				zone.addEventListener('drop', (e) => {
+					e.preventDefault();
+					zone.classList.remove('drag-over');
+					const file = e.dataTransfer.files[0];
+					if (file) doUpload(file, fieldId, dir);
+				});
+			}
 
-async function doUpload(file, fieldId, dir) {
-  if (!file) return;
-  const fd = new FormData(); fd.append('file', file); fd.append('dir', dir);
-  const zone = document.getElementById(fieldId+'_drop');
-  if (zone) { zone.textContent = '上传中...'; zone.classList.add('uploading'); }
-  try {
-    const res = await authFetch('/api/upload', { method:'POST', body:fd });
-    if (!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-    document.getElementById(fieldId).value = data.url;
-    document.getElementById(fieldId+'_path').value = data.url;
-    const preview = document.getElementById(fieldId+'_preview');
-    if (preview) { preview.src = data.url; preview.style.display = 'block'; }
-    if (zone) { zone.textContent = '上传成功，点击或拖拽替换'; zone.classList.remove('uploading'); }
-    toast('上传成功');
-  } catch(e) {
-    if (zone) { zone.textContent = '上传失败，点击或拖拽重试'; zone.classList.remove('uploading'); }
-    toast('上传失败: '+e.message, 'error');
-  }
-}
+			async function doUpload(file, fieldId, dir) {
+				if (!file) return;
+				const fd = new FormData();
+				fd.append('file', file);
+				fd.append('dir', dir);
+				const zone = document.getElementById(fieldId + '_drop');
+				if (zone) {
+					zone.textContent = '上传中...';
+					zone.classList.add('uploading');
+				}
+				try {
+					const res = await authFetch('/api/upload', { method: 'POST', body: fd });
+					if (!res.ok) throw new Error(await res.text());
+					const data = await res.json();
+					document.getElementById(fieldId).value = data.url;
+					document.getElementById(fieldId + '_path').value = data.url;
+					const preview = document.getElementById(fieldId + '_preview');
+					if (preview) {
+						preview.src = data.url;
+						preview.style.display = 'block';
+					}
+					if (zone) {
+						zone.textContent = '上传成功，点击或拖拽替换';
+						zone.classList.remove('uploading');
+					}
+					toast('上传成功');
+				} catch (e) {
+					if (zone) {
+						zone.textContent = '上传失败，点击或拖拽重试';
+						zone.classList.remove('uploading');
+					}
+					toast('上传失败: ' + e.message, 'error');
+				}
+			}
 
-function val(id) { return document.getElementById(id)?.value?.trim()||''; }
+			function val(id) {
+				return document.getElementById(id)?.value?.trim() || '';
+			}
 
-// ══════════════ ACTIVITY ══════════════
-async function loadActivity() {
-  const res = await authFetch('/api/activities');
-  const list = await res.json();
-  const main = document.getElementById('main-content');
-  if (!list||list.length===0) {
-    main.innerHTML = `<div class="page-header"><h2>当期活动</h2><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div><div class="empty"><p>暂无活动数据</p></div>`;
-    return;
-  }
-  main.innerHTML = `<div class="page-header"><h2>当期活动</h2><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div>
-    <div class="card-grid">${list.map(a=>`<div class="card">
+			// ══════════════ ACTIVITY ══════════════
+			async function loadActivity() {
+				const res = await authFetch('/api/activities');
+				const list = await res.json();
+				const main = document.getElementById('main-content');
+				if (!list || list.length === 0) {
+					main.innerHTML = `<div class="page-header"><h2>当期活动</h2><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div><div class="empty"><p>暂无活动数据</p></div>`;
+					return;
+				}
+				main.innerHTML = `<div class="page-header"><h2>当期活动</h2><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div>
+    <div class="card-grid">${list
+			.map(
+				(a) => `<div class="card">
       <img class="card-img" src="${a.image}" onerror="this.style.display='none'">
       <div class="card-body">
-        <div class="meta">${a.tags.split(',').map(t=>`<span class="tag">${t}</span>`).join('')}<span style="font-size:11px;color:var(--text-sub);margin-left:auto">${a.date}</span></div>
+        <div class="meta">${a.tags
+					.split(',')
+					.map((t) => `<span class="tag">${t}</span>`)
+					.join('')}<span style="font-size:11px;color:var(--text-sub);margin-left:auto">${a.date}</span></div>
         <h3>${a.headline}</h3><p>${a.excerpt}</p>
       </div>
       <div class="card-actions">
         <button class="btn btn-ghost" onclick='editActivity(${JSON.stringify(a)})'>编辑</button>
         <button class="btn btn-danger" onclick="delActivity(${a.id})">删除</button>
-      </div></div>`).join('')}</div>`;
-}
+      </div></div>`
+			)
+			.join('')}</div>`;
+			}
 
-function editActivity(a) {
-  const isNew=!a; a=a||{tags:'',date:'',image:'',headline:'',excerpt:'',href:'#'};
-  const ct=a.tags?a.tags.split(','):[];
-  openModal(isNew?'新增活动':'编辑活动',`
+			function editActivity(a) {
+				const isNew = !a;
+				a = a || { tags: '', date: '', image: '', headline: '', excerpt: '', href: '#' };
+				const ct = a.tags ? a.tags.split(',') : [];
+				openModal(
+					isNew ? '新增活动' : '编辑活动',
+					`
     <div class="form-group"><label>标签</label><div class="checkbox-group">
-      <label><input type="checkbox" class="f_tags" value="线上" ${ct.includes('线上')?'checked':''}> 线上</label>
-      <label><input type="checkbox" class="f_tags" value="线下" ${ct.includes('线下')?'checked':''}> 线下</label>
-      <label><input type="checkbox" class="f_tags" value="联动" ${ct.includes('联动')?'checked':''}> 联动</label>
+      <label><input type="checkbox" class="f_tags" value="线上" ${ct.includes('线上') ? 'checked' : ''}> 线上</label>
+      <label><input type="checkbox" class="f_tags" value="线下" ${ct.includes('线下') ? 'checked' : ''}> 线下</label>
+      <label><input type="checkbox" class="f_tags" value="联动" ${ct.includes('联动') ? 'checked' : ''}> 联动</label>
     </div></div>
     <div class="form-group"><label>日期</label><input type="date" id="f_date" value="${a.date}"></div>
     <div class="form-group"><label>标题</label><input id="f_headline" value="${a.headline}"></div>
     <div class="form-group"><label>摘要</label><textarea id="f_excerpt">${a.excerpt}</textarea></div>
     <div class="form-group"><label>链接</label><input id="f_href" value="${a.href}"></div>
-    ${imgUploadHTML('f_image',a.image,'img/activity')}
-  `, async()=>{
-    const tags=Array.from(document.querySelectorAll('.f_tags:checked')).map(c=>c.value).join(',');
-    const body={tags,date:val('f_date'),image:val('f_image'),headline:val('f_headline'),excerpt:val('f_excerpt'),href:val('f_href')};
-    const res = await authFetch((isNew?'/api/activities':'/api/activities/'+a.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
-    if (!res.ok) { toast('操作失败','error'); return; }
-    closeModal();toast(isNew?'创建成功':'保存成功');loadActivity();
-  }, [{id:'f_image',dir:'img/activity'}]);
-}
+    ${imgUploadHTML('f_image', a.image, 'img/activity')}
+  `,
+					async () => {
+						const tags = Array.from(document.querySelectorAll('.f_tags:checked'))
+							.map((c) => c.value)
+							.join(',');
+						const body = {
+							tags,
+							date: val('f_date'),
+							image: val('f_image'),
+							headline: val('f_headline'),
+							excerpt: val('f_excerpt'),
+							href: val('f_href'),
+						};
+						const res = await authFetch(isNew ? '/api/activities' : '/api/activities/' + a.id, {
+							method: isNew ? 'POST' : 'PUT',
+							headers: authHeaders(),
+							body: JSON.stringify(body),
+						});
+						if (!res.ok) {
+							toast('操作失败', 'error');
+							return;
+						}
+						closeModal();
+						toast(isNew ? '创建成功' : '保存成功');
+						loadActivity();
+					},
+					[{ id: 'f_image', dir: 'img/activity' }]
+				);
+			}
 
-async function delActivity(id) {
-  if(!confirm('确定删除？'))return;
-  const res = await authFetch('/api/activities/'+id,{method:'DELETE',headers:authHeaders()});
-  if (!res.ok) { toast('删除失败','error'); return; }
-  toast('已删除');loadActivity();
-}
+			async function delActivity(id) {
+				if (!confirm('确定删除？')) return;
+				const res = await authFetch('/api/activities/' + id, { method: 'DELETE', headers: authHeaders() });
+				if (!res.ok) {
+					toast('删除失败', 'error');
+					return;
+				}
+				toast('已删除');
+				loadActivity();
+			}
 
-// ══════════════ TIMELINE ══════════════
-async function loadTimeline() {
-  const res = await authFetch('/api/timeline');
-  const data = await res.json();
-  const h=data.header||{};const events=data.events||[];
-  const main=document.getElementById('main-content');
-  main.innerHTML=`
+			// ══════════════ TIMELINE ══════════════
+			async function loadTimeline() {
+				const res = await authFetch('/api/timeline');
+				const data = await res.json();
+				const h = data.header || {};
+				const events = data.events || [];
+				const main = document.getElementById('main-content');
+				main.innerHTML = `
     <div class="page-header"><h2>时间轴</h2><div style="display:flex;gap:8px">
       <button class="btn btn-ghost" onclick='editTimelineHeader(${JSON.stringify(h)})'>编辑标题</button>
       <button class="btn btn-primary" onclick="editTimelineEvent()">+ 新增事件</button></div></div>
-    <div class="info-bar"><strong>${h.title||'—'}</strong><span>${h.subtitle||''}</span></div>
+    <div class="info-bar"><strong>${h.title || '—'}</strong><span>${h.subtitle || ''}</span></div>
     <table><thead><tr><th>图片</th><th>日期</th><th>标题</th><th>描述</th><th>标签</th><th>操作</th></tr></thead>
-    <tbody>${events.map(e=>`<tr>
+    <tbody>${events
+			.map(
+				(e) => `<tr>
       <td><img src="${e.image}" onerror="this.style.display='none'"></td>
       <td>${e.date}</td><td>${e.title}</td><td style="max-width:180px;color:var(--text-sub)">${e.description}</td><td style="color:var(--text-sub)">${e.label}</td>
       <td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editTimelineEvent(${JSON.stringify(e)})'>编辑</button>
         <button class="btn btn-danger" style="margin-left:4px" onclick="delTimelineEvent(${e.id})">删除</button></td>
-    </tr>`).join('')}</tbody></table>`;
-}
+    </tr>`
+			)
+			.join('')}</tbody></table>`;
+			}
 
-function editTimelineHeader(h) {
-  openModal('编辑时间轴标题',`
-    <div class="form-group"><label>标题</label><input id="f_htitle" value="${h.title||''}"></div>
-    <div class="form-group"><label>副标题</label><input id="f_hsub" value="${h.subtitle||''}"></div>
-  `,async()=>{
-    const res = await authFetch('/api/timeline/header',{method:'PUT',headers:authHeaders(),body:JSON.stringify({title:val('f_htitle'),subtitle:val('f_hsub')})});
-    if (!res.ok) { toast('保存失败','error'); return; }
-    closeModal();toast('保存成功');loadTimeline();
-  });
-}
+			function editTimelineHeader(h) {
+				openModal(
+					'编辑时间轴标题',
+					`
+    <div class="form-group"><label>标题</label><input id="f_htitle" value="${h.title || ''}"></div>
+    <div class="form-group"><label>副标题</label><input id="f_hsub" value="${h.subtitle || ''}"></div>
+  `,
+					async () => {
+						const res = await authFetch('/api/timeline/header', {
+							method: 'PUT',
+							headers: authHeaders(),
+							body: JSON.stringify({ title: val('f_htitle'), subtitle: val('f_hsub') }),
+						});
+						if (!res.ok) {
+							toast('保存失败', 'error');
+							return;
+						}
+						closeModal();
+						toast('保存成功');
+						loadTimeline();
+					}
+				);
+			}
 
-function editTimelineEvent(e) {
-  const isNew=!e; e=e||{date:'',title:'',description:'',image:'',label:''};
-  openModal(isNew?'新增事件':'编辑事件',`
+			function editTimelineEvent(e) {
+				const isNew = !e;
+				e = e || { date: '', title: '', description: '', image: '', label: '' };
+				openModal(
+					isNew ? '新增事件' : '编辑事件',
+					`
     <div class="form-group"><label>日期</label><input id="f_edate" value="${e.date}"></div>
     <div class="form-group"><label>标题</label><input id="f_etitle" value="${e.title}"></div>
     <div class="form-group"><label>描述</label><textarea id="f_edesc">${e.description}</textarea></div>
     <div class="form-group"><label>标签文字</label><input id="f_elabel" value="${e.label}"></div>
-    ${imgUploadHTML('f_eimg',e.image,'img/timeline')}
-  `,async()=>{
-    const body={date:val('f_edate'),title:val('f_etitle'),description:val('f_edesc'),image:val('f_eimg'),label:val('f_elabel')};
-    const res = await authFetch((isNew?'/api/timeline/events':'/api/timeline/events/'+e.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
-    if (!res.ok) { toast('操作失败','error'); return; }
-    closeModal();toast(isNew?'创建成功':'保存成功');loadTimeline();
-  }, [{id:'f_eimg',dir:'img/timeline'}]);
-}
+    ${imgUploadHTML('f_eimg', e.image, 'img/timeline')}
+  `,
+					async () => {
+						const body = { date: val('f_edate'), title: val('f_etitle'), description: val('f_edesc'), image: val('f_eimg'), label: val('f_elabel') };
+						const res = await authFetch(isNew ? '/api/timeline/events' : '/api/timeline/events/' + e.id, {
+							method: isNew ? 'POST' : 'PUT',
+							headers: authHeaders(),
+							body: JSON.stringify(body),
+						});
+						if (!res.ok) {
+							toast('操作失败', 'error');
+							return;
+						}
+						closeModal();
+						toast(isNew ? '创建成功' : '保存成功');
+						loadTimeline();
+					},
+					[{ id: 'f_eimg', dir: 'img/timeline' }]
+				);
+			}
 
-async function delTimelineEvent(id) {
-  if(!confirm('确定删除？'))return;
-  const res = await authFetch('/api/timeline/events/'+id,{method:'DELETE',headers:authHeaders()});
-  if (!res.ok) { toast('删除失败','error'); return; }
-  toast('已删除');loadTimeline();
-}
+			async function delTimelineEvent(id) {
+				if (!confirm('确定删除？')) return;
+				const res = await authFetch('/api/timeline/events/' + id, { method: 'DELETE', headers: authHeaders() });
+				if (!res.ok) {
+					toast('删除失败', 'error');
+					return;
+				}
+				toast('已删除');
+				loadTimeline();
+			}
 
-// ══════════════ GALLERY ══════════════
-async function loadGallery() {
-  const res=await authFetch('/api/gallery');const list=await res.json();
-  const main=document.getElementById('main-content');
-  main.innerHTML=`<div class="page-header"><h2>画廊</h2><button class="btn btn-primary" onclick="editGallery()">+ 新增</button></div>
-    <div class="card-grid">${(list||[]).map(g=>`<div class="card">
+			// ══════════════ GALLERY ══════════════
+			async function loadGallery() {
+				const res = await authFetch('/api/gallery');
+				const list = await res.json();
+				const main = document.getElementById('main-content');
+				main.innerHTML = `<div class="page-header"><h2>画廊</h2><button class="btn btn-primary" onclick="editGallery()">+ 新增</button></div>
+    <div class="card-grid">${(list || [])
+			.map(
+				(g) => `<div class="card">
       <img class="card-img" src="${g.image}" onerror="this.style.display='none'">
       <div class="card-body"><h3>${g.scene}</h3><p>画师: ${g.illustrator}</p><p>${g.description}</p></div>
       <div class="card-actions">
         <button class="btn btn-ghost" onclick='editGallery(${JSON.stringify(g)})'>编辑</button>
-        <button class="btn btn-danger" onclick="delGallery(${g.id})">删除</button></div></div>`).join('')}</div>`;
-}
+        <button class="btn btn-danger" onclick="delGallery(${g.id})">删除</button></div></div>`
+			)
+			.join('')}</div>`;
+			}
 
-function editGallery(g) {
-  const isNew=!g; g=g||{image:'',illustrator:'',scene:'',description:''};
-  openModal(isNew?'新增画廊':'编辑画廊',`
+			function editGallery(g) {
+				const isNew = !g;
+				g = g || { image: '', illustrator: '', scene: '', description: '' };
+				openModal(
+					isNew ? '新增画廊' : '编辑画廊',
+					`
     <div class="form-group"><label>场景</label><input id="f_gscene" value="${g.scene}"></div>
     <div class="form-group"><label>画师</label><input id="f_gillus" value="${g.illustrator}"></div>
     <div class="form-group"><label>描述</label><textarea id="f_gdesc">${g.description}</textarea></div>
-    ${imgUploadHTML('f_gimg',g.image,'img/Illustration')}
-  `,async()=>{
-    const body={image:val('f_gimg'),illustrator:val('f_gillus'),scene:val('f_gscene'),description:val('f_gdesc')};
-    const res = await authFetch((isNew?'/api/gallery':'/api/gallery/'+g.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
-    if (!res.ok) { toast('操作失败','error'); return; }
-    closeModal();toast(isNew?'创建成功':'保存成功');loadGallery();
-  }, [{id:'f_gimg',dir:'img/Illustration'}]);
-}
+    ${imgUploadHTML('f_gimg', g.image, 'img/Illustration')}
+  `,
+					async () => {
+						const body = { image: val('f_gimg'), illustrator: val('f_gillus'), scene: val('f_gscene'), description: val('f_gdesc') };
+						const res = await authFetch(isNew ? '/api/gallery' : '/api/gallery/' + g.id, {
+							method: isNew ? 'POST' : 'PUT',
+							headers: authHeaders(),
+							body: JSON.stringify(body),
+						});
+						if (!res.ok) {
+							toast('操作失败', 'error');
+							return;
+						}
+						closeModal();
+						toast(isNew ? '创建成功' : '保存成功');
+						loadGallery();
+					},
+					[{ id: 'f_gimg', dir: 'img/Illustration' }]
+				);
+			}
 
-async function delGallery(id) {
-  if(!confirm('确定删除？'))return;
-  const res = await authFetch('/api/gallery/'+id,{method:'DELETE',headers:authHeaders()});
-  if (!res.ok) { toast('删除失败','error'); return; }
-  toast('已删除');loadGallery();
-}
+			async function delGallery(id) {
+				if (!confirm('确定删除？')) return;
+				const res = await authFetch('/api/gallery/' + id, { method: 'DELETE', headers: authHeaders() });
+				if (!res.ok) {
+					toast('删除失败', 'error');
+					return;
+				}
+				toast('已删除');
+				loadGallery();
+			}
 
-// ══════════════ ABOUT ══════════════
-async function loadAbout() {
-  const res=await authFetch('/api/about');const data=await res.json();const cards=data.cards||[];
-  const main=document.getElementById('main-content');
-  main.innerHTML=`<div class="page-header"><h2>关于我们</h2><button class="btn btn-primary" onclick="editAbout()">+ 新增</button></div>
-    <div class="card-grid">${cards.map(c=>`<div class="card">
+			// ══════════════ ABOUT ══════════════
+			async function loadAbout() {
+				const res = await authFetch('/api/about');
+				const data = await res.json();
+				const cards = data.cards || [];
+				const main = document.getElementById('main-content');
+				main.innerHTML = `<div class="page-header"><h2>关于我们</h2><button class="btn btn-primary" onclick="editAbout()">+ 新增</button></div>
+    <div class="card-grid">${cards
+			.map(
+				(c) => `<div class="card">
       <img class="card-img" src="${c.image}" onerror="this.style.display='none'">
       <div class="card-body">
         <p style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:2px">${c.smallTitle}</p>
-        <h3>${c.title}</h3><p>${c.content.substring(0,80)}${c.content.length>80?'...':''}</p></div>
+        <h3>${c.title}</h3><p>${c.content.substring(0, 80)}${c.content.length > 80 ? '...' : ''}</p></div>
       <div class="card-actions">
-        <button class="btn btn-ghost" onclick='editAbout(${JSON.stringify(c).replace(/'/g,"&#39;")})'>编辑</button>
-        <button class="btn btn-danger" onclick="delAbout(${c.id})">删除</button></div></div>`).join('')}</div>`;
-}
+        <button class="btn btn-ghost" onclick='editAbout(${JSON.stringify(c).replace(/'/g, '&#39;')})'>编辑</button>
+        <button class="btn btn-danger" onclick="delAbout(${c.id})">删除</button></div></div>`
+			)
+			.join('')}</div>`;
+			}
 
-function editAbout(c) {
-  const isNew=!c; c=c||{smallTitle:'',title:'',content:'',image:''};
-  openModal(isNew?'新增卡片':'编辑卡片',`
+			function editAbout(c) {
+				const isNew = !c;
+				c = c || { smallTitle: '', title: '', content: '', image: '' };
+				openModal(
+					isNew ? '新增卡片' : '编辑卡片',
+					`
     <div class="form-group"><label>副标题 (英文)</label><input id="f_cst" value="${c.smallTitle}"></div>
     <div class="form-group"><label>主标题</label><input id="f_ctitle" value="${c.title}"></div>
     <div class="form-group"><label>内容 (支持 &lt;br /&gt; 换行)</label><textarea id="f_ccontent" style="min-height:120px">${c.content}</textarea></div>
-    ${imgUploadHTML('f_cimg',c.image,'img/about')}
-  `,async()=>{
-    const body={smallTitle:val('f_cst'),title:val('f_ctitle'),content:val('f_ccontent'),image:val('f_cimg')};
-    const res = await authFetch((isNew?'/api/about':'/api/about/'+c.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
-    if (!res.ok) { toast('操作失败','error'); return; }
-    closeModal();toast(isNew?'创建成功':'保存成功');loadAbout();
-  }, [{id:'f_cimg',dir:'img/about'}]);
-}
+    ${imgUploadHTML('f_cimg', c.image, 'img/about')}
+  `,
+					async () => {
+						const body = { smallTitle: val('f_cst'), title: val('f_ctitle'), content: val('f_ccontent'), image: val('f_cimg') };
+						const res = await authFetch(isNew ? '/api/about' : '/api/about/' + c.id, {
+							method: isNew ? 'POST' : 'PUT',
+							headers: authHeaders(),
+							body: JSON.stringify(body),
+						});
+						if (!res.ok) {
+							toast('操作失败', 'error');
+							return;
+						}
+						closeModal();
+						toast(isNew ? '创建成功' : '保存成功');
+						loadAbout();
+					},
+					[{ id: 'f_cimg', dir: 'img/about' }]
+				);
+			}
 
-async function delAbout(id) {
-  if(!confirm('确定删除？'))return;
-  const res = await authFetch('/api/about/'+id,{method:'DELETE',headers:authHeaders()});
-  if (!res.ok) { toast('删除失败','error'); return; }
-  toast('已删除');loadAbout();
-}
+			async function delAbout(id) {
+				if (!confirm('确定删除？')) return;
+				const res = await authFetch('/api/about/' + id, { method: 'DELETE', headers: authHeaders() });
+				if (!res.ok) {
+					toast('删除失败', 'error');
+					return;
+				}
+				toast('已删除');
+				loadAbout();
+			}
 
-// ══════════════ MUSIC ══════════════
-async function loadMusic() {
-  const res=await authFetch('/api/music');const list=await res.json();
-  const main=document.getElementById('main-content');
-  main.innerHTML=`<div class="page-header"><h2>音乐</h2><button class="btn btn-primary" onclick="editMusic()">+ 新增</button></div>
+			// ══════════════ MUSIC ══════════════
+			async function loadMusic() {
+				const res = await authFetch('/api/music');
+				const list = await res.json();
+				const main = document.getElementById('main-content');
+				main.innerHTML = `<div class="page-header"><h2>音乐</h2><button class="btn btn-primary" onclick="editMusic()">+ 新增</button></div>
     <table><thead><tr><th>封面</th><th>歌曲名</th><th>歌手</th><th>音频路径</th><th>操作</th></tr></thead>
-    <tbody>${(list||[]).map(t=>`<tr>
+    <tbody>${(list || [])
+			.map(
+				(t) => `<tr>
       <td><img src="${t.cover}" onerror="this.style.display='none'"></td>
       <td>${t.title}</td><td>${t.artist}</td><td style="font-size:12px;color:var(--text-sub)">${t.src}</td>
       <td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editMusic(${JSON.stringify(t)})'>编辑</button>
         <button class="btn btn-danger" style="margin-left:4px" onclick="delMusic(${t.id})">删除</button></td>
-    </tr>`).join('')}</tbody></table>`;
-}
+    </tr>`
+			)
+			.join('')}</tbody></table>`;
+			}
 
-function editMusic(t) {
-  const isNew=!t; t=t||{title:'',artist:'',src:'',cover:''};
-  openModal(isNew?'新增歌曲':'编辑歌曲',`
+			function editMusic(t) {
+				const isNew = !t;
+				t = t || { title: '', artist: '', src: '', cover: '' };
+				openModal(
+					isNew ? '新增歌曲' : '编辑歌曲',
+					`
     <div class="form-group"><label>歌曲名</label><input id="f_mtitle" value="${t.title}"></div>
     <div class="form-group"><label>歌手</label><input id="f_martist" value="${t.artist}"></div>
-    ${audioUploadHTML('f_msrc',t.src,'audio')}
-    ${imgUploadHTML('f_mcover',t.cover,'img/covers')}
-  `,async()=>{
-    const body={title:val('f_mtitle'),artist:val('f_martist'),src:val('f_msrc'),cover:val('f_mcover')};
-    const res = await authFetch((isNew?'/api/music':'/api/music/'+t.id),{method:isNew?'POST':'PUT',headers:authHeaders(),body:JSON.stringify(body)});
-    if (!res.ok) { toast('操作失败','error'); return; }
-    closeModal();toast(isNew?'创建成功':'保存成功');loadMusic();
-  }, [{id:'f_msrc',dir:'audio'},{id:'f_mcover',dir:'img/covers'}]);
-}
+    ${audioUploadHTML('f_msrc', t.src, 'audio')}
+    ${imgUploadHTML('f_mcover', t.cover, 'img/covers')}
+  `,
+					async () => {
+						const body = { title: val('f_mtitle'), artist: val('f_martist'), src: val('f_msrc'), cover: val('f_mcover') };
+						const res = await authFetch(isNew ? '/api/music' : '/api/music/' + t.id, {
+							method: isNew ? 'POST' : 'PUT',
+							headers: authHeaders(),
+							body: JSON.stringify(body),
+						});
+						if (!res.ok) {
+							toast('操作失败', 'error');
+							return;
+						}
+						closeModal();
+						toast(isNew ? '创建成功' : '保存成功');
+						loadMusic();
+					},
+					[
+						{ id: 'f_msrc', dir: 'audio' },
+						{ id: 'f_mcover', dir: 'img/covers' },
+					]
+				);
+			}
 
-async function delMusic(id) {
-  if(!confirm('确定删除？'))return;
-  const res = await authFetch('/api/music/'+id,{method:'DELETE',headers:authHeaders()});
-  if (!res.ok) { toast('删除失败','error'); return; }
-  toast('已删除');loadMusic();
-}
+			async function delMusic(id) {
+				if (!confirm('确定删除？')) return;
+				const res = await authFetch('/api/music/' + id, { method: 'DELETE', headers: authHeaders() });
+				if (!res.ok) {
+					toast('删除失败', 'error');
+					return;
+				}
+				toast('已删除');
+				loadMusic();
+			}
 
-// ══════════════ TAB ══════════════
-const loaders={activity:loadActivity,timeline:loadTimeline,gallery:loadGallery,about:loadAbout,music:loadMusic};
-document.querySelectorAll('.sidebar a[data-tab]').forEach(a=>{
-  a.addEventListener('click',()=>{
-    document.querySelectorAll('.sidebar a').forEach(x=>x.classList.remove('active'));
-    a.classList.add('active');
-    loaders[a.dataset.tab]();
-  });
-});
+			// ══════════════ TAB ══════════════
+			const loaders = { activity: loadActivity, timeline: loadTimeline, gallery: loadGallery, about: loadAbout, music: loadMusic };
+			document.querySelectorAll('.sidebar a[data-tab]').forEach((a) => {
+				a.addEventListener('click', () => {
+					document.querySelectorAll('.sidebar a').forEach((x) => x.classList.remove('active'));
+					a.classList.add('active');
+					loaders[a.dataset.tab]();
+				});
+			});
 
-initApp();
-</script>
-</body>
+			initApp();
+		</script>
+	</body>
 </html>
