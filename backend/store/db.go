@@ -33,7 +33,7 @@ func Init() {
 	migrate()
 
 	if needSeed {
-		fmt.Println("首次启动，导入种子数据...")
+		fmt.Println("首次启动，根据json配置初始化...")
 		Seed()
 	}
 }
