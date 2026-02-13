@@ -170,38 +170,19 @@ body {
 #blackboard:hover {
 	transform: translateY(-2px);
 	box-shadow:
-		0 26px 60px rgba(0, 0, 0, 0.3),
-		0 10px 28px rgba(0, 0, 0, 0.22),
+		0 12px 24px rgba(0, 0, 0, 0.3),
+		0 4px 10px rgba(0, 0, 0, 0.22),
 		inset 0 1px 0 rgba(255, 255, 255, 0.6),
 		inset 0 -2px 12px rgba(0, 0, 0, 0.16);
 }
 
 html.dark #blackboard:hover {
 	box-shadow:
-		0 30px 70px rgba(0, 0, 0, 0.65),
-		0 12px 32px rgba(0, 0, 0, 0.5),
+		0 12px 24px rgba(0, 0, 0, 0.65),
+		0 6px 16px rgba(0, 0, 0, 0.5),
 		inset 0 1px 0 rgba(255, 255, 255, 0.12),
 		inset 0 -2px 14px rgba(0, 0, 0, 0.5);
 }
-
-/* #live2d-container {
-    position: fixed;
-    right: 8px;
-    bottom: -300px;
-    width: 510px;
-    height: 900px;
-    pointer-events: none;
-    z-index: 1200;
-    display: block;
-}
-
-#live2d-container canvas {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: block;
-    pointer-events: none;
-} */
 
 @media (max-width: 800px) {
 	#live2d-container {
@@ -229,7 +210,7 @@ html.dark #blackboard:hover {
 	-webkit-backdrop-filter: blur(10px);
 	border-radius: 12px;
 	box-shadow:
-		0 8px 32px rgba(0, 0, 0, 0.25),
+		0 4px 16px rgba(0, 0, 0, 0.25),
 		inset 0 1px 1px rgba(255, 255, 255, 0.2);
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	z-index: 9999;
@@ -281,7 +262,7 @@ html.dark #blackboard:hover {
 html.dark #music-player {
 	background: rgba(40, 40, 40, 0.2);
 	box-shadow:
-		0 8px 32px rgba(0, 0, 0, 0.4),
+		0 4px 12px rgba(0, 0, 0, 0.4),
 		inset 0 1px 1px rgba(255, 255, 255, 0.1);
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	color: #eee;
@@ -668,7 +649,7 @@ html.dark .Tip button:hover {
 	width: 150px;
 	height: 40px;
 	top: 70%;
-	animation: expand 4s infinite;
+	animation: expand 3.7s infinite;
 	position: absolute;
 	border-radius: 50%;
 }
@@ -724,7 +705,7 @@ html.dark .Tip button:hover {
 	border-top: 1px solid rgba(255, 255, 255, 0.9);
 	box-shadow:
 		0 2px 4px rgba(0, 0, 0, 0.06),
-		0 12px 28px rgba(0, 0, 0, 0.12),
+		0 6px 10px rgba(0, 0, 0, 0.12),
 		inset 0 1px 0 rgba(255, 255, 255, 0.8);
 	padding: 10px;
 	align-items: center;

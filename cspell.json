@@ -1,6 +1,12 @@
 {
     "ignorePaths": [
         "src/*",
-        "backend/*"
+        "backend/*",
+        ".gitignore",
+        "*.json"
+    ],
+    "words": [
+        "ehthumbs",
+        "isinline"
     ]
 }

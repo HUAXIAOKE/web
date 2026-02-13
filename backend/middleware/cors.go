@@ -2,7 +2,7 @@ package middleware
 
 import "net/http"
 
-// CORS 开发环境跨域中间件，部署后通过 Nginx 反代可去掉
+// CORS 中间件
 func CORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")

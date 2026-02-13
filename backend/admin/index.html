@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>华小科 · 后台管理</title>
+		<title>华小科Web · 后台管理</title>
 		<link rel="icon" type="image/x-icon" href="icon.ico" />
 		<link rel="stylesheet" href="styles.css" />
 	</head>
@@ -25,11 +25,11 @@
 			<aside class="sidebar">
 				<div class="sidebar-logo">华小科 Web</div>
 				<nav>
-					<a class="active" data-tab="activity">当期活动</a>
-					<a data-tab="timeline">时间轴</a>
-					<a data-tab="gallery">画廊</a>
+					<a class="active" data-tab="activity">活动列表</a>
+					<a data-tab="timeline">心路历程</a>
+					<a data-tab="gallery">插画展示</a>
 					<a data-tab="about">关于我们</a>
-					<a data-tab="music">音乐</a>
+					<a data-tab="music">增添音乐</a>
 				</nav>
 				<div class="sidebar-footer">
 					<button class="btn-logout" onclick="doLogout()">退出登录</button>
@@ -172,15 +172,14 @@
 					: `<img class="img-preview" id="${fieldId}_preview" src="${currentUrl || ''}" style="${currentUrl ? 'display:block' : 'display:none'}">`;
 
 				return `<div class="form-group"><label>${label}</label>
-    <input type="hidden" id="${fieldId}" value="${currentUrl || ''}">
-    <div class="img-upload-area" id="${fieldId}_drop"
-      onclick="document.getElementById('${fieldId}_file').click()">${hint}</div>
-    <input type="file" id="${fieldId}_file" accept="${accept}" style="display:none"
-      onchange="doUpload(this.files[0],'${fieldId}','${dir}')">
-    <input type="text" id="${fieldId}_path" value="${currentUrl || ''}" placeholder="${placeholder}" style="margin-top:8px"
-      oninput="onPathInput('${fieldId}',this.value)">
-    ${previewTag}
-  </div>`;
+						<input type="hidden" id="${fieldId}" value="${currentUrl || ''}">
+						<div class="img-upload-area" id="${fieldId}_drop"
+						onclick="document.getElementById('${fieldId}_file').click()">${hint}</div>
+						<input type="file" id="${fieldId}_file" accept="${accept}" style="display:none"
+						onchange="doUpload(this.files[0],'${fieldId}','${dir}')">
+						<input type="text" id="${fieldId}_path" value="${currentUrl || ''}" placeholder="${placeholder}" style="margin-top:8px"
+						oninput="onPathInput('${fieldId}',this.value)">
+						${previewTag}</div>`;
 			}
 			function imgUploadHTML(fid, url, dir) {
 				return fileUploadHTML(fid, url, dir, { accept: 'image/*', label: '图片' });
@@ -270,21 +269,21 @@
 					return;
 				}
 				main.innerHTML = `<div class="page-header"><h2>当期活动</h2><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div>
-    <div class="card-grid">${list
-			.map(
-				(a) => `<div class="card">
-      <img class="card-img" src="${a.image}" onerror="this.style.display='none'">
-      <div class="card-body">
-        <div class="meta">${a.tags
-					.split(',')
-					.map((t) => `<span class="tag">${t}</span>`)
-					.join('')}<span style="font-size:11px;color:var(--text-sub);margin-left:auto">${a.date}</span></div>
-        <h3>${a.headline}</h3><p>${a.excerpt}</p>
-      </div>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick='editActivity(${JSON.stringify(a)})'>编辑</button>
-        <button class="btn btn-danger" onclick="delActivity(${a.id})">删除</button>
-      </div></div>`
+									<div class="card-grid">${list
+											.map(
+												(a) => `<div class="card">
+									<img class="card-img" src="${a.image}" onerror="this.style.display='none'">
+									<div class="card-body">
+										<div class="meta">${a.tags
+													.split(',')
+													.map((t) => `<span class="tag">${t}</span>`)
+													.join('')}<span style="font-size:11px;color:var(--text-sub);margin-left:auto">${a.date}</span></div>
+										<h3>${a.headline}</h3><p>${a.excerpt}</p>
+									</div>
+									<div class="card-actions">
+										<button class="btn btn-ghost" onclick='editActivity(${JSON.stringify(a)})'>编辑</button>
+										<button class="btn btn-danger" onclick="delActivity(${a.id})">删除</button>
+									</div></div>`
 			)
 			.join('')}</div>`;
 			}
@@ -294,19 +293,17 @@
 				a = a || { tags: '', date: '', image: '', headline: '', excerpt: '', href: '#' };
 				const ct = a.tags ? a.tags.split(',') : [];
 				openModal(
-					isNew ? '新增活动' : '编辑活动',
-					`
-    <div class="form-group"><label>标签</label><div class="checkbox-group">
-      <label><input type="checkbox" class="f_tags" value="线上" ${ct.includes('线上') ? 'checked' : ''}> 线上</label>
-      <label><input type="checkbox" class="f_tags" value="线下" ${ct.includes('线下') ? 'checked' : ''}> 线下</label>
-      <label><input type="checkbox" class="f_tags" value="联动" ${ct.includes('联动') ? 'checked' : ''}> 联动</label>
-    </div></div>
-    <div class="form-group"><label>日期</label><input type="date" id="f_date" value="${a.date}"></div>
-    <div class="form-group"><label>标题</label><input id="f_headline" value="${a.headline}"></div>
-    <div class="form-group"><label>摘要</label><textarea id="f_excerpt">${a.excerpt}</textarea></div>
-    <div class="form-group"><label>链接</label><input id="f_href" value="${a.href}"></div>
-    ${imgUploadHTML('f_image', a.image, 'img/activity')}
-  `,
+					isNew ? '新增活动' : '编辑活动',`
+					<div class="form-group"><label>标签</label><div class="checkbox-group">
+					<label><input type="checkbox" class="f_tags" value="线上" ${ct.includes('线上') ? 'checked' : ''}> 线上</label>
+					<label><input type="checkbox" class="f_tags" value="线下" ${ct.includes('线下') ? 'checked' : ''}> 线下</label>
+					<label><input type="checkbox" class="f_tags" value="联动" ${ct.includes('联动') ? 'checked' : ''}> 联动</label>
+					</div></div>
+					<div class="form-group"><label>日期</label><input type="date" id="f_date" value="${a.date}"></div>
+					<div class="form-group"><label>标题</label><input id="f_headline" value="${a.headline}"></div>
+					<div class="form-group"><label>摘要</label><textarea id="f_excerpt">${a.excerpt}</textarea></div>
+					<div class="form-group"><label>链接</label><input id="f_href" value="${a.href}"></div>
+					${imgUploadHTML('f_image', a.image, 'img/activity')}`,
 					async () => {
 						const tags = Array.from(document.querySelectorAll('.f_tags:checked'))
 							.map((c) => c.value)
@@ -355,19 +352,19 @@
 				const events = data.events || [];
 				const main = document.getElementById('main-content');
 				main.innerHTML = `
-    <div class="page-header"><h2>时间轴</h2><div style="display:flex;gap:8px">
-      <button class="btn btn-ghost" onclick='editTimelineHeader(${JSON.stringify(h)})'>编辑标题</button>
-      <button class="btn btn-primary" onclick="editTimelineEvent()">+ 新增事件</button></div></div>
-    <div class="info-bar"><strong>${h.title || '—'}</strong><span>${h.subtitle || ''}</span></div>
-    <table><thead><tr><th>图片</th><th>日期</th><th>标题</th><th>描述</th><th>标签</th><th>操作</th></tr></thead>
-    <tbody>${events
-			.map(
-				(e) => `<tr>
-      <td><img src="${e.image}" onerror="this.style.display='none'"></td>
-      <td>${e.date}</td><td>${e.title}</td><td style="max-width:180px;color:var(--text-sub)">${e.description}</td><td style="color:var(--text-sub)">${e.label}</td>
-      <td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editTimelineEvent(${JSON.stringify(e)})'>编辑</button>
-        <button class="btn btn-danger" style="margin-left:4px" onclick="delTimelineEvent(${e.id})">删除</button></td>
-    </tr>`
+					<div class="page-header"><h2>时间轴</h2><div style="display:flex;gap:8px">
+					<button class="btn btn-ghost" onclick='editTimelineHeader(${JSON.stringify(h)})'>编辑标题</button>
+					<button class="btn btn-primary" onclick="editTimelineEvent()">+ 新增事件</button></div></div>
+					<div class="info-bar"><strong>${h.title || '—'}</strong><span>${h.subtitle || ''}</span></div>
+					<table><thead><tr><th>图片</th><th>日期</th><th>标题</th><th>描述</th><th>标签</th><th>操作</th></tr></thead>
+					<tbody>${events
+							.map(
+								(e) => `<tr>
+					<td><img src="${e.image}" onerror="this.style.display='none'"></td>
+					<td>${e.date}</td><td>${e.title}</td><td style="max-width:180px;color:var(--text-sub)">${e.description}</td><td style="color:var(--text-sub)">${e.label}</td>
+					<td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editTimelineEvent(${JSON.stringify(e)})'>编辑</button>
+						<button class="btn btn-danger" style="margin-left:4px" onclick="delTimelineEvent(${e.id})">删除</button></td>
+					</tr>`
 			)
 			.join('')}</tbody></table>`;
 			}
@@ -376,9 +373,8 @@
 				openModal(
 					'编辑时间轴标题',
 					`
-    <div class="form-group"><label>标题</label><input id="f_htitle" value="${h.title || ''}"></div>
-    <div class="form-group"><label>副标题</label><input id="f_hsub" value="${h.subtitle || ''}"></div>
-  `,
+					<div class="form-group"><label>标题</label><input id="f_htitle" value="${h.title || ''}"></div>
+					<div class="form-group"><label>副标题</label><input id="f_hsub" value="${h.subtitle || ''}"></div>`,
 					async () => {
 						const res = await authFetch('/api/timeline/header', {
 							method: 'PUT',
@@ -402,12 +398,11 @@
 				openModal(
 					isNew ? '新增事件' : '编辑事件',
 					`
-    <div class="form-group"><label>日期</label><input id="f_edate" value="${e.date}"></div>
-    <div class="form-group"><label>标题</label><input id="f_etitle" value="${e.title}"></div>
-    <div class="form-group"><label>描述</label><textarea id="f_edesc">${e.description}</textarea></div>
-    <div class="form-group"><label>标签文字</label><input id="f_elabel" value="${e.label}"></div>
-    ${imgUploadHTML('f_eimg', e.image, 'img/timeline')}
-  `,
+					<div class="form-group"><label>日期</label><input id="f_edate" value="${e.date}"></div>
+					<div class="form-group"><label>标题</label><input id="f_etitle" value="${e.title}"></div>
+					<div class="form-group"><label>描述</label><textarea id="f_edesc">${e.description}</textarea></div>
+					<div class="form-group"><label>标签文字</label><input id="f_elabel" value="${e.label}"></div>
+					${imgUploadHTML('f_eimg', e.image, 'img/timeline')}`,
 					async () => {
 						const body = { date: val('f_edate'), title: val('f_etitle'), description: val('f_edesc'), image: val('f_eimg'), label: val('f_elabel') };
 						const res = await authFetch(isNew ? '/api/timeline/events' : '/api/timeline/events/' + e.id, {
@@ -443,15 +438,14 @@
 				const res = await authFetch('/api/gallery');
 				const list = await res.json();
 				const main = document.getElementById('main-content');
-				main.innerHTML = `<div class="page-header"><h2>画廊</h2><button class="btn btn-primary" onclick="editGallery()">+ 新增</button></div>
-    <div class="card-grid">${(list || [])
+				main.innerHTML = `<div class="page-header"><h2>画廊</h2><button class="btn btn-primary" onclick="editGallery()">+ 新增</button></div><div class="card-grid">${(list || [])
 			.map(
 				(g) => `<div class="card">
-      <img class="card-img" src="${g.image}" onerror="this.style.display='none'">
-      <div class="card-body"><h3>${g.scene}</h3><p>画师: ${g.illustrator}</p><p>${g.description}</p></div>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick='editGallery(${JSON.stringify(g)})'>编辑</button>
-        <button class="btn btn-danger" onclick="delGallery(${g.id})">删除</button></div></div>`
+				<img class="card-img" src="${g.image}" onerror="this.style.display='none'">
+				<div class="card-body"><h3>${g.scene}</h3><p>画师: ${g.illustrator}</p><p>${g.description}</p></div>
+				<div class="card-actions">
+				<button class="btn btn-ghost" onclick='editGallery(${JSON.stringify(g)})'>编辑</button>
+				<button class="btn btn-danger" onclick="delGallery(${g.id})">删除</button></div></div>`
 			)
 			.join('')}</div>`;
 			}
@@ -462,11 +456,10 @@
 				openModal(
 					isNew ? '新增画廊' : '编辑画廊',
 					`
-    <div class="form-group"><label>场景</label><input id="f_gscene" value="${g.scene}"></div>
-    <div class="form-group"><label>画师</label><input id="f_gillus" value="${g.illustrator}"></div>
-    <div class="form-group"><label>描述</label><textarea id="f_gdesc">${g.description}</textarea></div>
-    ${imgUploadHTML('f_gimg', g.image, 'img/Illustration')}
-  `,
+					<div class="form-group"><label>场景</label><input id="f_gscene" value="${g.scene}"></div>
+					<div class="form-group"><label>画师</label><input id="f_gillus" value="${g.illustrator}"></div>
+					<div class="form-group"><label>描述</label><textarea id="f_gdesc">${g.description}</textarea></div>
+					${imgUploadHTML('f_gimg', g.image, 'img/Illustration')}`,
 					async () => {
 						const body = { image: val('f_gimg'), illustrator: val('f_gillus'), scene: val('f_gscene'), description: val('f_gdesc') };
 						const res = await authFetch(isNew ? '/api/gallery' : '/api/gallery/' + g.id, {
@@ -507,13 +500,13 @@
     <div class="card-grid">${cards
 			.map(
 				(c) => `<div class="card">
-      <img class="card-img" src="${c.image}" onerror="this.style.display='none'">
-      <div class="card-body">
-        <p style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:2px">${c.smallTitle}</p>
-        <h3>${c.title}</h3><p>${c.content.substring(0, 80)}${c.content.length > 80 ? '...' : ''}</p></div>
-      <div class="card-actions">
-        <button class="btn btn-ghost" onclick='editAbout(${JSON.stringify(c).replace(/'/g, '&#39;')})'>编辑</button>
-        <button class="btn btn-danger" onclick="delAbout(${c.id})">删除</button></div></div>`
+						<img class="card-img" src="${c.image}" onerror="this.style.display='none'">
+						<div class="card-body">
+							<p style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:2px">${c.smallTitle}</p>
+							<h3>${c.title}</h3><p>${c.content.substring(0, 80)}${c.content.length > 80 ? '...' : ''}</p></div>
+						<div class="card-actions">
+							<button class="btn btn-ghost" onclick='editAbout(${JSON.stringify(c).replace(/'/g, '&#39;')})'>编辑</button>
+							<button class="btn btn-danger" onclick="delAbout(${c.id})">删除</button></div></div>`
 			)
 			.join('')}</div>`;
 			}
@@ -524,11 +517,10 @@
 				openModal(
 					isNew ? '新增卡片' : '编辑卡片',
 					`
-    <div class="form-group"><label>副标题 (英文)</label><input id="f_cst" value="${c.smallTitle}"></div>
-    <div class="form-group"><label>主标题</label><input id="f_ctitle" value="${c.title}"></div>
-    <div class="form-group"><label>内容 (支持 &lt;br /&gt; 换行)</label><textarea id="f_ccontent" style="min-height:120px">${c.content}</textarea></div>
-    ${imgUploadHTML('f_cimg', c.image, 'img/about')}
-  `,
+					<div class="form-group"><label>副标题 (英文)</label><input id="f_cst" value="${c.smallTitle}"></div>
+					<div class="form-group"><label>主标题</label><input id="f_ctitle" value="${c.title}"></div>
+					<div class="form-group"><label>内容 (支持 &lt;br /&gt; 换行)</label><textarea id="f_ccontent" style="min-height:120px">${c.content}</textarea></div>
+					${imgUploadHTML('f_cimg', c.image, 'img/about')}`,
 					async () => {
 						const body = { smallTitle: val('f_cst'), title: val('f_ctitle'), content: val('f_ccontent'), image: val('f_cimg') };
 						const res = await authFetch(isNew ? '/api/about' : '/api/about/' + c.id, {
@@ -565,15 +557,15 @@
 				const list = await res.json();
 				const main = document.getElementById('main-content');
 				main.innerHTML = `<div class="page-header"><h2>音乐</h2><button class="btn btn-primary" onclick="editMusic()">+ 新增</button></div>
-    <table><thead><tr><th>封面</th><th>歌曲名</th><th>歌手</th><th>音频路径</th><th>操作</th></tr></thead>
-    <tbody>${(list || [])
-			.map(
-				(t) => `<tr>
-      <td><img src="${t.cover}" onerror="this.style.display='none'"></td>
-      <td>${t.title}</td><td>${t.artist}</td><td style="font-size:12px;color:var(--text-sub)">${t.src}</td>
-      <td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editMusic(${JSON.stringify(t)})'>编辑</button>
-        <button class="btn btn-danger" style="margin-left:4px" onclick="delMusic(${t.id})">删除</button></td>
-    </tr>`
+				<table><thead><tr><th>封面</th><th>歌曲名</th><th>歌手</th><th>音频路径</th><th>操作</th></tr></thead>
+				<tbody>${(list || [])
+						.map(
+							(t) => `<tr>
+				<td><img src="${t.cover}" onerror="this.style.display='none'"></td>
+				<td>${t.title}</td><td>${t.artist}</td><td style="font-size:12px;color:var(--text-sub)">${t.src}</td>
+				<td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editMusic(${JSON.stringify(t)})'>编辑</button>
+					<button class="btn btn-danger" style="margin-left:4px" onclick="delMusic(${t.id})">删除</button></td>
+				</tr>`
 			)
 			.join('')}</tbody></table>`;
 			}
@@ -584,11 +576,10 @@
 				openModal(
 					isNew ? '新增歌曲' : '编辑歌曲',
 					`
-    <div class="form-group"><label>歌曲名</label><input id="f_mtitle" value="${t.title}"></div>
-    <div class="form-group"><label>歌手</label><input id="f_martist" value="${t.artist}"></div>
-    ${audioUploadHTML('f_msrc', t.src, 'audio')}
-    ${imgUploadHTML('f_mcover', t.cover, 'img/covers')}
-  `,
+					<div class="form-group"><label>歌曲名</label><input id="f_mtitle" value="${t.title}"></div>
+					<div class="form-group"><label>歌手</label><input id="f_martist" value="${t.artist}"></div>
+					${audioUploadHTML('f_msrc', t.src, 'audio')}
+					${imgUploadHTML('f_mcover', t.cover, 'img/covers')}`,
 					async () => {
 						const body = { title: val('f_mtitle'), artist: val('f_martist'), src: val('f_msrc'), cover: val('f_mcover') };
 						const res = await authFetch(isNew ? '/api/music' : '/api/music/' + t.id, {

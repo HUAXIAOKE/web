@@ -7,7 +7,13 @@
 npm install
 
 # 2) 启动开发
+Frontend:
 npm run dev
+
+Backend:
+cd backend
+go mod tidy
+air
 
 # 3) 生产构建
 npm run build
@@ -65,13 +71,6 @@ public/ 静态资源（img/json/audio/models 等）
 
 - **框架**: Astro
 - **前端**: HTML5, CSS3, JavaScript (ES6+)
+- **后端**: Go + Air
 - **动画**: CSS Animations, PIXI.js
-- **桌宠**: Live2D Cubism SDK
 - **构建**: Vite (Astro 内置)
-
-## 开发注意事项
-
-1. Live2D 模型需要 PIXI.js 和 Cubism SDK 支持
-2. 所有页面切换通过 SPA 导航管理，避免直接修改 DOM
-3. 使用 CSS 变量实现主题切换和响应式设计
-4. JSON 配置文件修改后需要刷新页面生效

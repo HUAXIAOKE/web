@@ -8,7 +8,7 @@ func Seed() {
 	seedGallery()
 	seedAbout()
 	seedMusic()
-	log.Println("种子数据导入完成")
+	log.Println("Seed Init Success!")
 }
 
 func seedActivities() {
@@ -18,6 +18,7 @@ func seedActivities() {
 		{"线上", "2025-09-15", "/img/activity/now_activity.png", "「2025新声歌会」线上直播", "喻见·声生不息，在这里展现你的风采！", "#"},
 		{"线下,联动", "2025-10-15", "/img/activity/Bingke.png", "华小科 x 冰岩作坊", "线下ARG，等你来解密~", "#"},
 		{"线下", "2025-09-27", "/img/activity/Luyan.PNG", "我们来路演啦！", "紫菘、韵苑路口，我们不见不散！", "#"},
+		{"线上,联动", "2026-2-21", "/img/activity/Bainianji.png", "华小科 x 风蓝动漫社", "给各位拜个晚年！", "#"},
 	}
 	for _, a := range data {
 		DB.Exec(`INSERT INTO activity (tags,date,image,headline,excerpt,href) VALUES (?,?,?,?,?,?)`,
@@ -27,7 +28,7 @@ func seedActivities() {
 
 func seedTimeline() {
 	DB.Exec(`INSERT OR REPLACE INTO timeline_header (id,title,subtitle) VALUES (1,?,?)`,
-		"心路历程", "我们的成长足迹")
+		"心路历程", "从零开始的高校势生活")
 
 	events := []struct {
 		Date, Title, Desc, Image, Label string
@@ -73,7 +74,7 @@ func seedAbout() {
 	}{
 		{"HuaXiaoKe", "智慧虚拟女大一枚", "TODO", "/img/temp.png"},
 		{"Daily", "神人的日常生活", "TODO", "/img/about/daily.jpg"},
-		{"Work!", "成分极其复杂", "首先，组内全员颠佬（划掉）~<br />在这里你可以学习视频制作、如何直播、各种妙妙技术，只要你感兴趣的事情都可以在这里找到前辈……<br />我们会使用到OBS、AE、PR等软件，当然也会有一些其他的工具，包括但不限于视频、游戏、音频制作等~<br />当然我们是为爱发电，热爱是我们的核心动力！", "/img/about/work.jpeg"},
+		{"Work!", "成分极其复杂", "首先，组内没有正常人！<br />在这里你可以学习视频制作、如何直播、各种妙妙技术，只要你感兴趣的事情都可以在这里找到前辈……<br />我们会使用到OBS、AE、PR等软件，当然也会有一些其他的工具，包括但不限于视频、游戏、音频制作等~<br />当然我们是为爱发电，热爱是我们的核心动力！", "/img/about/work.jpeg"},
 		{"Join Us!", "加入这里只需热爱", "无论是否来自华中科技大学， 无论年级高低，<br />只要你喜欢华小科这个形象，你就一定可以在这里找到你想做的事情！<br />如果你对我们感兴趣，可以关注每年的秋招与春招~<br />当然也可以加入粉丝群(451141031)哦！", "/img/about/join.png"},
 	}
 	for _, c := range cards {
