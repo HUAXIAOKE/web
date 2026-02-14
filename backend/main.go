@@ -31,6 +31,8 @@ func main() {
 	mux.HandleFunc("GET /api/gallery", handler.GetGallery)
 	mux.HandleFunc("GET /api/about", handler.GetAbout)
 	mux.HandleFunc("GET /api/music", handler.GetMusic)
+	mux.HandleFunc("GET /api/bilibili/latest-video", handler.GetLatestVideo)
+	mux.HandleFunc("GET /api/bilibili/cover", handler.GetBilibiliCover)
 
 	// 写入操作 (需要登录)
 	writeMux := http.NewServeMux()

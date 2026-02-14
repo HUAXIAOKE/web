@@ -1,5 +1,31 @@
 const API = () => window.API_BASE || '';
 
+async function initLatestVideo() {
+	const block = document.getElementById('home-latest-video');
+	if (!block) return;
+	try {
+		const video = await loadAPI('/api/bilibili/latest-video');
+		if (video.error) throw new Error(video.error);
+		const img = block.querySelector('img');
+		const text = block.querySelector('.box-maintext');
+		const link = block.querySelector('.box-main-video-link');
+		if (img) {
+			let coverSrc = video.cover || '/img/temp.png';
+			if (coverSrc.startsWith('/api/')) {
+				coverSrc = API() + coverSrc;
+			}
+			img.src = coverSrc;
+			img.alt = video.title;
+		}
+		if (text) text.textContent = video.title;
+		if (link) link.href = video.url;
+	} catch (e) {
+		console.error('最新视频加载失败:', e);
+		const text = block?.querySelector('.box-maintext');
+		if (text) text.textContent = '此事在Bilibili的华小科Official中亦有记载~';
+	}
+}
+
 async function loadAPI(endpoint) {
 	const res = await fetch(API() + endpoint);
 	if (!res.ok) throw new Error('API 请求失败 ' + endpoint);
@@ -88,6 +114,7 @@ function init() {
 	initTimeline();
 	initAbout();
 	initActivity();
+	initLatestVideo();
 }
 
 document.addEventListener('DOMContentLoaded', init);
