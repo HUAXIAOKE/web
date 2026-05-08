@@ -74,11 +74,13 @@ rm -rf /home/ubuntu/hxk_web_release_tmp
 mkdir -p /home/ubuntu/hxk_web_release_tmp
 unzip -o ${CONFIG.remoteZipPath} -d /home/ubuntu/hxk_web_release_tmp
 rsync -av \\
+  --delete \\
   --exclude '.env' \\
   --exclude 'data.db' \\
   --exclude 'data.db-wal' \\
   --exclude 'data.db-shm' \\
   --exclude 'node_modules/' \\
+  --exclude 'public/img/uploads/' \\
   /home/ubuntu/hxk_web_release_tmp/ ${CONFIG.remoteProjectDir}/
 cd ${CONFIG.remoteProjectDir}
 docker-compose down --remove-orphans
