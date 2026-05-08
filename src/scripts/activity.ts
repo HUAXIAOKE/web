@@ -1,24 +1,33 @@
+interface ActivityItem {
+	tags: string;
+	date: string;
+	headline: string;
+	excerpt: string;
+	href: string;
+	image: string;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-	const section = document.querySelector('.activity');
-	const tabs = document.querySelector('.news-tabs');
+	const section = document.querySelector<HTMLElement>('.activity');
+	const tabs = document.querySelector<HTMLElement>('.news-tabs');
 	const grid = document.getElementById('activity-grid');
 	if (!section || !tabs || !grid) return;
 
-	const inputs = Array.from(section.querySelectorAll('input.news-filter'));
-	const labels = Array.from(tabs.querySelectorAll('.tab'));
+	const inputs = Array.from(section.querySelectorAll<HTMLInputElement>('input.news-filter'));
+	const labels = Array.from(tabs.querySelectorAll<HTMLElement>('.tab'));
 	let currentFilter = 'all';
-	let fadeTimer = null;
+	let fadeTimer: ReturnType<typeof setTimeout> | null = null;
 
-	const filterMap = { all: 'all', online: '线上', offline: '线下', collab: '联动' };
-	const getFilterTag = (input) => filterMap[input.id.replace('filter-', '')] || 'all';
+	const filterMap: Record<string, string> = { all: 'all', online: '线上', offline: '线下', collab: '联动' };
+	const getFilterTag = (input: HTMLInputElement): string => filterMap[input.id.replace('filter-', '')] || 'all';
 
-	const getInputByLabel = (label) => {
+	const getInputByLabel = (label: HTMLElement): HTMLInputElement | null => {
 		const id = label.getAttribute('for');
-		return section.querySelector(`#${id}`);
+		return id ? section.querySelector<HTMLInputElement>(`#${id}`) : null;
 	};
 
-	const applyFilter = (tag) => {
-		const cards = Array.from(grid.querySelectorAll('.news-card'));
+	const applyFilter = (tag: string): void => {
+		const cards = Array.from(grid.querySelectorAll<HTMLElement>('.news-card'));
 		cards.forEach((card) => {
 			const cardTags = card.getAttribute('data-tags') || '';
 			if (tag === 'all' || cardTags.split(',').includes(tag)) {
@@ -29,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	};
 
-	const filterCards = (tag) => {
+	const filterCards = (tag: string): void => {
 		if (tag === currentFilter) return;
 		if (fadeTimer) clearTimeout(fadeTimer);
 
@@ -43,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		}, 180);
 	};
 
-	const setChecked = (input) => {
+	const setChecked = (input: HTMLInputElement): void => {
 		inputs.forEach((i) => (i.checked = false));
 		input.checked = true;
 

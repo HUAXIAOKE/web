@@ -44,8 +44,6 @@ function zipProject(rootDir, zipPath) {
 		'*.db',
 		'dist/*',
 		'backend/tmp/*',
-		'Joinus/node_modules/*',
-		'Joinus/dist/*',
 		'.cursor/*',
 		'.astro/*',
 		'*.zip',
@@ -81,7 +79,6 @@ rsync -av \\
   --exclude 'data.db-wal' \\
   --exclude 'data.db-shm' \\
   --exclude 'node_modules/' \\
-  --exclude 'Joinus/node_modules/' \\
   /home/ubuntu/hxk_web_release_tmp/ ${CONFIG.remoteProjectDir}/
 cd ${CONFIG.remoteProjectDir}
 docker-compose down --remove-orphans

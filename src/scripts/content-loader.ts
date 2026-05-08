@@ -1,16 +1,37 @@
-const API = () => window.API_BASE || '';
+interface ActivityItem {
+	tags: string;
+	date: string;
+	headline: string;
+	excerpt: string;
+	href: string;
+	image: string;
+}
 
-async function initLatestVideo() {
+interface AboutCard {
+	id: number;
+	smallTitle: string;
+	title: string;
+	content: string;
+	image: string;
+}
+
+interface TimelineHeader {
+	title: string;
+	subtitle: string;
+}
+
+const API = () => (window.API_BASE || '') as string;
+
+async function initLatestVideo(): Promise<void> {
 	const block = document.getElementById('home-latest-video');
 	if (!block) return;
 	try {
-		const video = await loadAPI('/api/bilibili/latest-video');
+		const video = await loadAPI<any>('/api/bilibili/latest-video');
 		if (video.error) throw new Error(video.error);
-		const img = block.querySelector('img');
-		const text = block.querySelector('.box-maintext');
-		const link = block.querySelector('.box-main-video-link');
+		const img = block.querySelector<HTMLImageElement>('img');
+		const text = block.querySelector<HTMLElement>('.box-maintext');
 		if (img) {
-			let coverSrc = video.cover || '/img/temp.png';
+			let coverSrc: string = video.cover || '/img/temp.png';
 			if (coverSrc.startsWith('/api/')) {
 				coverSrc = API() + coverSrc;
 			}
@@ -18,27 +39,26 @@ async function initLatestVideo() {
 			img.alt = video.title;
 		}
 		if (text) text.textContent = video.title;
-		if (link) link.href = video.url;
 	} catch (e) {
 		console.error('最新视频加载失败:', e);
-		const text = block?.querySelector('.box-maintext');
+		const text = block.querySelector<HTMLElement>('.box-maintext');
 		if (text) text.textContent = '此事在Bilibili的华小科Official中亦有记载~';
 	}
 }
 
-async function loadAPI(endpoint) {
+async function loadAPI<T>(endpoint: string): Promise<T> {
 	const res = await fetch(API() + endpoint);
 	if (!res.ok) throw new Error('API 请求失败 ' + endpoint);
 	return res.json();
 }
 
-async function initTimeline() {
-	const shell = document.querySelector('#page-live .timeline-header');
+async function initTimeline(): Promise<void> {
+	const shell = document.querySelector<HTMLElement>('#page-live .timeline-header');
 	if (!shell) return;
 	try {
-		const data = await loadAPI('/api/timeline');
-		const titleEl = shell.querySelector('.timeline-title');
-		const subEl = shell.querySelector('.timeline-subtitle');
+		const data = await loadAPI<{ header: TimelineHeader }>('/api/timeline');
+		const titleEl = shell.querySelector<HTMLElement>('.timeline-title');
+		const subEl = shell.querySelector<HTMLElement>('.timeline-subtitle');
 		if (titleEl) titleEl.textContent = data.header.title;
 		if (subEl) subEl.textContent = data.header.subtitle;
 	} catch (e) {
@@ -46,15 +66,14 @@ async function initTimeline() {
 	}
 }
 
-async function initAbout() {
-	const container = document.querySelector('#page-about #card-section');
+async function initAbout(): Promise<void> {
+	const container = document.querySelector<HTMLElement>('#page-about #card-section');
 	if (!container) return;
 	try {
-		const data = await loadAPI('/api/about');
+		const data = await loadAPI<{ cards: AboutCard[] }>('/api/about');
 		const cards = data.cards || [];
 		container.innerHTML = cards
-		.map(
-			(c) => {
+			.map((c) => {
 				const isJoinUs = c.id === 4 || c.smallTitle === '加入我们';
 				const titleHtml = isJoinUs
 					? `<a href="/joinus">${c.title}</a>`
@@ -65,17 +84,16 @@ async function initAbout() {
 	  <div class="card-content">${c.content}</div>
 	  <div class="card-img"><img src="${c.image}" alt="" /></div>
 	</div>`;
-			}
-		)
-		.join('\n');
+			})
+			.join('\n');
 	} catch (e) {
 		console.error(e);
 	}
 }
 
-async function initActivity() {
+async function initActivity(): Promise<void> {
 	try {
-		const activities = await loadAPI('/api/activities');
+		const activities = await loadAPI<ActivityItem[]>('/api/activities');
 		if (!activities || activities.length === 0) return;
 
 		const grid = document.getElementById('activity-grid');
@@ -102,8 +120,8 @@ async function initActivity() {
 		const latest = activities.reduce((a, b) => (a.date > b.date ? a : b));
 		const homeBlock = document.getElementById('home-latest-activity');
 		if (homeBlock && latest) {
-			const img = homeBlock.querySelector('img');
-			const text = homeBlock.querySelector('.box-maintext');
+			const img = homeBlock.querySelector<HTMLImageElement>('img');
+			const text = homeBlock.querySelector<HTMLElement>('.box-maintext');
 			if (img) {
 				img.src = latest.image;
 				img.alt = latest.headline;
@@ -115,7 +133,7 @@ async function initActivity() {
 	}
 }
 
-function init() {
+function init(): void {
 	initTimeline();
 	initAbout();
 	initActivity();

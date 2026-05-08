@@ -513,11 +513,7 @@
 	}
 
 	.timeline-scroll-indicator {
-		right: 8px;
-	}
-
-	.scroll-indicator-track {
-		height: 90px;
+		display: none;
 	}
 
 	.timeline-pointer {

@@ -1,9 +1,8 @@
-// 自定义滚动函数
-function scrollToTop(duration) {
+function scrollToTop(duration: number): void {
 	const start = window.pageYOffset;
 	const startTime = 'now' in window.performance ? performance.now() : new Date().getTime();
 
-	function scroll() {
+	function scroll(): void {
 		const now = 'now' in window.performance ? performance.now() : new Date().getTime();
 		const timeElapsed = now - startTime;
 		const progress = Math.min(timeElapsed / duration, 1);
@@ -18,6 +17,6 @@ function scrollToTop(duration) {
 	requestAnimationFrame(scroll);
 }
 
-document.getElementById('backToTopBtn').addEventListener('click', function () {
+document.getElementById('backToTopBtn')!.addEventListener('click', () => {
 	scrollToTop(600);
 });

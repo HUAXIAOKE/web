@@ -7,7 +7,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "release": "bun script/build.mjs"
+    "optimize": "bun script/optimize-assets.mjs",
+    "release": "bun run optimize && bun run build && bun script/build.mjs --no-build"
   },
   "keywords": [],
   "author": "",

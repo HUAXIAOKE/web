@@ -6,8 +6,12 @@
         "*.json"
     ],
     "words": [
+        "Alimama",
         "ehthumbs",
+        "fonttools",
         "isinline",
-        "joinus"
+        "joinus",
+        "pyftsubset",
+        "unicodes"
     ]
 }

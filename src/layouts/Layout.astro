@@ -1,5 +1,4 @@
 ---
-
 export interface Props {
   title: string;
   description?: string;
@@ -85,17 +84,30 @@ const { title, description = "Huaxiaoke" } = Astro.props;
       </a>
     </footer>
 
-    <script src="/src/scripts/api-config.js"></script>
-    <script src="/src/scripts/roll.js"></script>
-    <script src="/src/scripts/spa-navigation.js"></script>
-    <script src="/src/scripts/imageGallery.js"></script>
-    <script src="/src/scripts/slide.js"></script>
-    <script src="/src/scripts/stars.js"></script>
-    <script src="/src/scripts/timeline.js"></script>
-    <script src="/src/scripts/dayornight.js"></script>
-    <script src="/src/scripts/isinline.js"></script>
-    <script src="/src/scripts/music-player.js"></script>
-    <script src="/src/scripts/activity.js"></script>
-    <script src="/src/scripts/content-loader.js"></script>
+    <script>
+      (function() {
+        var p = window.location.pathname;
+        if (p === '/' || p === '/index.html') return;
+        var mapping = { '/live': 'live', '/gallery': 'gallery', '/activity': 'activity', '/about': 'about' };
+        var page = mapping[p] || 'index';
+        ['index','live','gallery','activity','about'].forEach(function(id) {
+          var el = document.getElementById('page-' + id);
+          if (el) el.style.display = id === page ? 'block' : 'none';
+        });
+      })();
+    </script>
+
+    <script src="/src/scripts/api-config.ts"></script>
+    <script src="/src/scripts/roll.ts"></script>
+    <script src="/src/scripts/spa-navigation.ts"></script>
+    <script src="/src/scripts/imageGallery.ts"></script>
+    <script src="/src/scripts/slide.ts"></script>
+    <script src="/src/scripts/stars.ts"></script>
+    <script src="/src/scripts/timeline.ts"></script>
+    <script src="/src/scripts/dayornight.ts"></script>
+    <script src="/src/scripts/isinline.ts"></script>
+    <script src="/src/scripts/music-player.ts"></script>
+    <script src="/src/scripts/activity.ts"></script>
+    <script src="/src/scripts/content-loader.ts"></script>
   </body>
 </html>
