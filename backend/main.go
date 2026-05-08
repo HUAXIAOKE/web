@@ -30,10 +30,6 @@ func main() {
 	store.Init()
 	defer store.DB.Close()
 
-	if err := store.RunMigrations(); err != nil {
-		log.Fatalf("数据库迁移失败: %v", err)
-	}
-
 	tryAbs := func(rel string) {
 		if handler.StaticDir != "" && handler.StaticDir != "../public" {
 			return
@@ -55,7 +51,12 @@ func main() {
 			handler.StaticDir = abs
 		}
 	}
+	store.PublicAssetsDir = handler.StaticDir
 	fmt.Printf("静态目录 StaticDir = %s\n", handler.StaticDir)
+
+	if err := store.RunMigrations(); err != nil {
+		log.Fatalf("数据库迁移失败: %v", err)
+	}
 
 	mux := http.NewServeMux()
 

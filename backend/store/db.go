@@ -14,6 +14,9 @@ import (
 
 var DB *sql.DB
 
+// PublicAssetsDir 与 handler.StaticDir 一致，由 main 在 RunMigrations 之前设置（解析后的 public 绝对路径）。
+var PublicAssetsDir string
+
 // Init 初始化数据库连接，建表，导入种子数据
 func Init() {
 	needSeed := false

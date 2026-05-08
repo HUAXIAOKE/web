@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"huaxiaoke-backend/config"
@@ -46,6 +47,10 @@ func RunMigrations() error {
 		case 3:
 			if err := migrateV3ToV4(); err != nil {
 				return fmt.Errorf("v4: %w", err)
+			}
+		case 4:
+			if err := migrateV4ToV5(); err != nil {
+				return fmt.Errorf("v5: %w", err)
 			}
 		}
 	}
@@ -188,5 +193,74 @@ func exportJoinusData() error {
 	}
 
 	fmt.Printf("[migrate] backup: %s (%d records)\n", backupPath, len(submissions))
+	return nil
+}
+
+func migrateV4ToV5() error {
+	var candidates []string
+	if PublicAssetsDir != "" {
+		candidates = append(candidates, filepath.Join(PublicAssetsDir, "img", "Illustration"))
+	}
+	candidates = append(candidates,
+		filepath.Join(filepath.Dir(config.DBPath), "..", "public", "img", "Illustration"),
+		filepath.Join("..", "public", "img", "Illustration"),
+		filepath.Join("public", "img", "Illustration"),
+	)
+	seen := make(map[string]bool)
+	galleryDir := ""
+	for _, c := range candidates {
+		c = filepath.Clean(c)
+		if seen[c] {
+			continue
+		}
+		seen[c] = true
+		fi, err := os.Stat(c)
+		if err == nil && fi.IsDir() {
+			galleryDir = c
+			break
+		}
+	}
+	if galleryDir == "" {
+		return fmt.Errorf("gallery dir not found (tried paths relative to cwd and PublicAssetsDir)")
+	}
+	entries, err := os.ReadDir(galleryDir)
+	if err != nil {
+		return fmt.Errorf("read gallery dir: %w", err)
+	}
+
+	type galleryInfo struct {
+		Image, Illustrator, Scene, Desc string
+	}
+	existing := make(map[string]galleryInfo)
+	rows, err := DB.Query(`SELECT image, illustrator, scene, description FROM gallery`)
+	if err != nil {
+		return fmt.Errorf("query gallery: %w", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var info galleryInfo
+		if rows.Scan(&info.Image, &info.Illustrator, &info.Scene, &info.Desc) == nil {
+			existing[filepath.Base(info.Image)] = info
+		}
+	}
+
+	added := 0
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		name := entry.Name()
+		if !strings.HasSuffix(strings.ToLower(name), ".webp") {
+			continue
+		}
+		if _, ok := existing[name]; ok {
+			continue
+		}
+		DB.Exec(`INSERT INTO gallery (image,illustrator,scene,description) VALUES (?,?,?,?)`,
+			"/img/Illustration/"+name, "xxx", "xxx", "xxx")
+		added++
+	}
+
+	fmt.Printf("[migrate] v5: added %d gallery records from filesystem\n", added)
 	return nil
 }
