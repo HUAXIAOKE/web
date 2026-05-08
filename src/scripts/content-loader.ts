@@ -31,7 +31,7 @@ async function initLatestVideo(): Promise<void> {
 		const img = block.querySelector<HTMLImageElement>('img');
 		const text = block.querySelector<HTMLElement>('.box-maintext');
 		if (img) {
-			let coverSrc: string = video.cover || '/img/temp.png';
+			let coverSrc: string = video.cover || '/img/temp.webp';
 			if (coverSrc.startsWith('/api/')) {
 				coverSrc = API() + coverSrc;
 			}

@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'AlimamaShuHeiTi-Bold';
-	src: url('/font/AlimamaShuHeiTi-Bold.ttf');
+	src: url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');
 }
 
 :root {
@@ -24,15 +24,30 @@
 	text-align: center;
 	margin-top: 0.5rem;
 	margin-bottom: 1.5rem;
-	font-size: 12px;
-	line-height: 1.4;
+	font-size: 13px;
+	line-height: 1.6;
+	color: rgba(255, 255, 255, 0.45);
+}
+.site-footer p {
+	margin: 0 0 2px;
+	padding: 0;
 }
 .site-footer a {
-	color: rgba(255, 255, 255, 0.45);
+	color: rgba(255, 255, 255, 0.35);
 	text-decoration: none;
+	font-size: 12px;
 }
 .site-footer a:hover {
-	color: rgba(255, 255, 255, 0.65);
+	color: rgba(255, 255, 255, 0.55);
+}
+html.dark .site-footer {
+	color: rgba(255, 255, 255, 0.3);
+}
+html.dark .site-footer a {
+	color: rgba(255, 255, 255, 0.2);
+}
+html.dark .site-footer a:hover {
+	color: rgba(255, 255, 255, 0.4);
 }
 
 html.dark {
@@ -65,7 +80,7 @@ body {
 	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
 	background:
 		linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.8)),
-		url(/img/bg.png) no-repeat center center fixed;
+		url(/img/bg.webp) no-repeat center center fixed;
 	background-size: cover;
 	overflow-x: hidden;
 	overscroll-behavior-y: none;
@@ -116,13 +131,18 @@ body {
 	left: 0;
 	width: 100%;
 	font-size: 1.5rem;
-	padding-bottom: 1.5rem;
+	padding: 1rem 1rem 1.5rem;
 	text-align: center;
 	z-index: 2;
 	opacity: 0;
 	transform: translateY(100%);
 	transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
 	background: linear-gradient(to top, rgba(190, 198, 244, 0.8), transparent);
+	overflow: hidden;
+	display: -webkit-box;
+	line-clamp: 3;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
 }
 
 .box-main::before {
@@ -491,13 +511,12 @@ html.dark .volume-slider::-moz-range-thumb {
 	top: 2rem;
 	left: 4rem;
 	z-index: 1199;
-	pointer-events: none;
 }
 
 html.dark body {
 	background:
 		linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)),
-		url(/img/bg.png) no-repeat center center fixed;
+		url(/img/bg.webp) no-repeat center center fixed;
 	background-size: cover;
 }
 
@@ -831,6 +850,7 @@ html.dark #nav-hamburger .bar {
 	pointer-events: none;
 	transform: translateY(-8px);
 	transition: opacity 0.3s ease, transform 0.3s ease;
+	flex-direction: column;
 }
 
 #nav-mobile.open {
@@ -845,10 +865,41 @@ html.dark #nav-mobile {
 
 #nav-mobile ul {
 	list-style: none;
-	padding: 80px 32px 32px;
+	padding: 72px 32px 32px;
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
+}
+.nav-mobile-icon {
+	position: absolute;
+	top: 16px;
+	left: 36px;
+	width: 52px;
+	height: 52px;
+	border-radius: 50%;
+	object-fit: cover;
+	margin: 0;
+	display: block;
+}
+
+#nav-mobile .nav-mobile-footer {
+	padding: 32px;
+	margin-top: auto;
+	text-align: center;
+	font-size: 11px;
+	color: rgba(255, 255, 255, 0.35);
+	line-height: 1.6;
+}
+#nav-mobile .nav-mobile-footer p {
+	margin: 0 0 4px;
+}
+#nav-mobile .nav-mobile-footer a {
+	display: inline;
+	padding: 0;
+	color: rgba(255, 255, 255, 0.3);
+	text-decoration: none;
+	font-size: 11px;
+	font-weight: 400;
 }
 
 #nav-mobile li {
@@ -1051,8 +1102,7 @@ canvas {
 		padding: 1rem;
 	}
 	.site-footer {
-		font-size: 10px;
-		margin-bottom: 80px;
+		display: none;
 	}
 }
 

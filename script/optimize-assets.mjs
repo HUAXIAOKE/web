@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process';
-import { readdirSync, statSync, existsSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs';
+import { readdirSync, statSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, extname, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -43,14 +43,12 @@ function convertImages() {
 		const webpPath = file.replace(/\.(png|jpe?g)$/i, '.webp');
 
 		try {
-			execSync(`bun x sharp-cli --input "${file}" --output "${webpPath}" --webp.quality 80`, { stdio: 'pipe' });
+			execSync(`bun x sharp-cli --input "${file}" --output "${webpPath}" --format webp --quality 80`, { stdio: 'pipe' });
 
 			if (existsSync(webpPath)) {
 				const dstSize = statSync(webpPath).size;
 				if (dstSize < srcSize) {
 					saved += (srcSize - dstSize);
-				} else {
-					unlinkSync(webpPath);
 				}
 			}
 		} catch (e) {
@@ -87,20 +85,34 @@ function convertFont() {
 
 function updateCssFontRef() {
 	const cssFile = join(root, 'src', 'styles', 'index.css');
+	const woff2File = join(publicDir, 'font', 'AlimamaShuHeiTi-Bold.woff2');
 	if (!existsSync(cssFile)) return;
 
 	let content = readFileSync(cssFile, 'utf-8');
-	if (content.includes('woff2')) {
-		console.log('  font CSS already updated');
-		return;
+	if (existsSync(woff2File)) {
+		if (!content.includes("AlimamaShuHeiTi-Bold.woff2")) {
+			content = content.replace(
+				"src: url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');",
+				"src: url('/font/AlimamaShuHeiTi-Bold.woff2') format('woff2'), url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');"
+			);
+		}
+	} else {
+		content = content.replace(
+			"src: url('/font/AlimamaShuHeiTi-Bold.woff2') format('woff2'), url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');",
+			"src: url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');"
+		);
 	}
-
-	content = content.replace(
-		'src: url(\'/font/AlimamaShuHeiTi-Bold.ttf\')',
-		'src: url(\'/font/AlimamaShuHeiTi-Bold.woff2\') format(\'woff2\'), url(\'/font/AlimamaShuHeiTi-Bold.ttf\') format(\'truetype\')'
-	);
 	writeFileSync(cssFile, content, 'utf-8');
 	console.log('  updated font reference in CSS');
+}
+
+function updateCssImageRefs() {
+	const cssFile = join(root, 'src', 'styles', 'index.css');
+	if (!existsSync(cssFile)) return;
+	let content = readFileSync(cssFile, 'utf-8');
+	content = content.replaceAll("url(/img/bg.png)", "url(/img/bg.webp)");
+	writeFileSync(cssFile, content, 'utf-8');
+	console.log('  updated background image reference in CSS');
 }
 
 console.log('\n===== Asset Optimization =====\n');
@@ -113,5 +125,6 @@ convertFont();
 
 console.log('\n[3/3] Updating CSS references...');
 updateCssFontRef();
+updateCssImageRefs();
 
 console.log('\n===== Done =====\n');

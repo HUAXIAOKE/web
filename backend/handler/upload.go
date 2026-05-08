@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -47,11 +48,8 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "不支持的文件类型", http.StatusBadRequest)
 		return
 	}
-	if ok {
-		fileExt := filepath.Ext(header.Filename)
-		if fileExt == "" {
-			header.Filename = header.Filename + ext
-		}
+	if ok && filepath.Ext(header.Filename) == "" {
+		header.Filename = header.Filename + ext
 	}
 
 	for prefix, limit := range maxUploadSizes {
@@ -82,19 +80,55 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newName := fmt.Sprintf("%d%s", time.Now().UnixMilli(), filepath.Ext(header.Filename))
+	contentType := header.Header.Get("Content-Type")
+	shouldConvertWebP := contentType == "image/jpeg" || contentType == "image/png"
+
+	extName := filepath.Ext(header.Filename)
+	if extName == "" && ok {
+		extName = ext
+	}
+	if extName == "" {
+		extName = ".bin"
+	}
+
+	newName := fmt.Sprintf("%d%s", time.Now().UnixMilli(), extName)
 	destPath := filepath.Join(destDir, newName)
 
-	out, err := os.Create(destPath)
-	if err != nil {
-		http.Error(w, "保存文件失败: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer out.Close()
+	if shouldConvertWebP {
+		tmpName := fmt.Sprintf("%d_raw%s", time.Now().UnixNano(), extName)
+		tmpPath := filepath.Join(destDir, tmpName)
+		tmpOut, err := os.Create(tmpPath)
+		if err != nil {
+			http.Error(w, "保存临时文件失败: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if _, err := io.Copy(tmpOut, file); err != nil {
+			tmpOut.Close()
+			os.Remove(tmpPath)
+			http.Error(w, "写入临时文件失败: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		tmpOut.Close()
+		defer os.Remove(tmpPath)
 
-	if _, err := io.Copy(out, file); err != nil {
-		http.Error(w, "写入文件失败: "+err.Error(), http.StatusInternalServerError)
-		return
+		newName = fmt.Sprintf("%d.webp", time.Now().UnixMilli())
+		destPath = filepath.Join(destDir, newName)
+		cmd := exec.Command("cwebp", "-quiet", "-q", "82", tmpPath, "-o", destPath)
+		if output, err := cmd.CombinedOutput(); err != nil {
+			http.Error(w, "转换 WebP 失败: "+string(output), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		out, err := os.Create(destPath)
+		if err != nil {
+			http.Error(w, "保存文件失败: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer out.Close()
+		if _, err := io.Copy(out, file); err != nil {
+			http.Error(w, "写入文件失败: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	urlPath := "/" + subDir + "/" + newName

@@ -5,7 +5,16 @@ export async function GET() {
 	try {
 		const illustrationPath = path.join(process.cwd(), 'public/img/Illustration');
 		const files = await fs.readdir(illustrationPath);
-		const images = files.filter((file: string) => /\.(jpg|jpeg|png|gif|webp)$/i.test(file)).map((file: string) => `/img/Illustration/${file}`);
+		const fileSet = new Set(files);
+		const images = files
+			.filter((file: string) => /\.(jpg|jpeg|png|gif|webp)$/i.test(file))
+			.map((file: string) => {
+				const webpName = file.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+				if (webpName !== file && fileSet.has(webpName)) {
+					return `/img/Illustration/${webpName}`;
+				}
+				return `/img/Illustration/${file}`;
+			});
 
 		return new Response(JSON.stringify(images), {
 			status: 200,

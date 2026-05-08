@@ -8,10 +8,12 @@
     "words": [
         "Alimama",
         "ehthumbs",
+        "fontawesome",
         "fonttools",
         "isinline",
         "joinus",
         "pyftsubset",
-        "unicodes"
+        "unicodes",
+        "webfonts"
     ]
 }

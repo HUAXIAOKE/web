@@ -43,6 +43,10 @@ func RunMigrations() error {
 			if err := migrateV2ToV3(); err != nil {
 				return fmt.Errorf("v3: %w", err)
 			}
+		case 3:
+			if err := migrateV3ToV4(); err != nil {
+				return fmt.Errorf("v4: %w", err)
+			}
 		}
 	}
 
@@ -99,6 +103,44 @@ func migrateV2ToV3() error {
 	if err := addCol("created_at", "DATETIME DEFAULT CURRENT_TIMESTAMP"); err != nil {
 		return fmt.Errorf("add created_at: %w", err)
 	}
+	return nil
+}
+
+func migrateV3ToV4() error {
+	tables := []struct {
+		table string
+		col   string
+	}{
+		{"activity", "image"},
+		{"timeline_event", "image"},
+		{"gallery", "image"},
+		{"about_card", "image"},
+		{"music", "cover"},
+	}
+
+	for _, t := range tables {
+		sql := fmt.Sprintf(`
+			UPDATE %s
+			SET %s = REPLACE(
+				REPLACE(
+					REPLACE(
+						REPLACE(
+							REPLACE(
+								REPLACE(%s, '.jpeg', '.webp'),
+							'.jpg', '.webp'),
+						'.png', '.webp'),
+					'.JPEG', '.webp'),
+				'.JPG', '.webp'),
+			'.PNG', '.webp')
+			WHERE %s LIKE '%%.jpeg' OR %s LIKE '%%.jpg' OR %s LIKE '%%.png'
+				OR %s LIKE '%%.JPEG' OR %s LIKE '%%.JPG' OR %s LIKE '%%.PNG'`,
+			t.table, t.col, t.col, t.col, t.col, t.col, t.col, t.col, t.col)
+
+		if _, err := DB.Exec(sql); err != nil {
+			return fmt.Errorf("update %s.%s: %w", t.table, t.col, err)
+		}
+	}
+
 	return nil
 }
 
