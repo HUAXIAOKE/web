@@ -100,9 +100,10 @@ func migrateV2ToV3() error {
 	if err := addCol("sort_order", "INTEGER NOT NULL DEFAULT 0"); err != nil {
 		return fmt.Errorf("add sort_order: %w", err)
 	}
-	if err := addCol("created_at", "DATETIME DEFAULT CURRENT_TIMESTAMP"); err != nil {
+	if err := addCol("created_at", "TEXT"); err != nil {
 		return fmt.Errorf("add created_at: %w", err)
 	}
+	DB.Exec(`UPDATE music SET created_at = datetime('now') WHERE created_at IS NULL`)
 	return nil
 }
 
