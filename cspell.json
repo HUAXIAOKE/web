@@ -1,19 +1,4 @@
 {
-    "ignorePaths": [
-        "src/*",
-        "backend/*",
-        ".gitignore",
-        "*.json"
-    ],
-    "words": [
-        "Alimama",
-        "ehthumbs",
-        "fontawesome",
-        "fonttools",
-        "isinline",
-        "joinus",
-        "pyftsubset",
-        "unicodes",
-        "webfonts"
-    ]
+	"ignorePaths": ["src/*", "backend/*", ".gitignore", "*.json"],
+	"words": ["Alimama", "ehthumbs", "fontawesome", "fonttools", "isinline", "joinus", "pyftsubset", "unicodes", "webfonts"]
 }

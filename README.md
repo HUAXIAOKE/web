@@ -35,6 +35,7 @@ public/ 静态资源（img/json/audio/models 等）
 ```
 
 ## 定制与主题
+
 - 调整全局配色/阴影：`src/styles/index.css` 与各页 `:root` 变量
 - 主题切换：`src/scripts/isinline.js` + `dayornight.js`
 - 活动页样式与卡片：`src/styles/activity.css`（支持分类筛选）
@@ -60,10 +61,12 @@ public/ 静态资源（img/json/audio/models 等）
    - 触摸操作支持
 
 ## 数据与内容
+
 - 活动/时间轴/画廊内容位于 `public/json`，按需增删字段即可生效
 - 图片放置于 `public/img/...`；Live2D 模型位于 `public/models/...`
 
 ## 发布
+
 - 纯静态产物位于 `dist/`，任意静态服务可托管
 - Vercel/静态空间均可直接部署
 

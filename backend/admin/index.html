@@ -266,22 +266,22 @@
 				}
 				main.innerHTML = `<div class="page-header"><h2>当期活动</h2><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div>
 									<div class="card-grid">${list
-											.map(
-												(a) => `<div class="card">
+										.map(
+											(a) => `<div class="card">
 									<img class="card-img" src="${a.image}" onerror="this.style.display='none'">
 									<div class="card-body">
 										<div class="meta">${a.tags
-													.split(',')
-													.map((t) => `<span class="tag">${t}</span>`)
-													.join('')}<span style="font-size:11px;color:var(--text-sub);margin-left:auto">${a.date}</span></div>
+											.split(',')
+											.map((t) => `<span class="tag">${t}</span>`)
+											.join('')}<span style="font-size:11px;color:var(--text-sub);margin-left:auto">${a.date}</span></div>
 										<h3>${a.headline}</h3><p>${a.excerpt}</p>
 									</div>
 									<div class="card-actions">
 										<button class="btn btn-ghost" onclick='editActivity(${JSON.stringify(a)})'>编辑</button>
 										<button class="btn btn-danger" onclick="delActivity(${a.id})">删除</button>
 									</div></div>`
-			)
-			.join('')}</div>`;
+										)
+										.join('')}</div>`;
 			}
 
 			function editActivity(a) {
@@ -289,7 +289,8 @@
 				a = a || { tags: '', date: '', image: '', headline: '', excerpt: '', href: '#' };
 				const ct = a.tags ? a.tags.split(',') : [];
 				openModal(
-					isNew ? '新增活动' : '编辑活动',`
+					isNew ? '新增活动' : '编辑活动',
+					`
 					<div class="form-group"><label>标签</label><div class="checkbox-group">
 					<label><input type="checkbox" class="f_tags" value="线上" ${ct.includes('线上') ? 'checked' : ''}> 线上</label>
 					<label><input type="checkbox" class="f_tags" value="线下" ${ct.includes('线下') ? 'checked' : ''}> 线下</label>
@@ -353,15 +354,15 @@
 					<div class="info-bar"><strong>${h.title || '—'}</strong><span>${h.subtitle || ''}</span></div>
 					<table><thead><tr><th>图片</th><th>日期</th><th>标题</th><th>描述</th><th>标签</th><th>操作</th></tr></thead>
 					<tbody>${events
-							.map(
-								(e) => `<tr>
+						.map(
+							(e) => `<tr>
 					<td><img src="${e.image}" onerror="this.style.display='none'"></td>
 					<td>${e.date}</td><td>${e.title}</td><td style="max-width:180px;color:var(--text-sub)">${e.description}</td><td style="color:var(--text-sub)">${e.label}</td>
 					<td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editTimelineEvent(${JSON.stringify(e)})'>编辑</button>
 						<button class="btn btn-danger" style="margin-left:4px" onclick="delTimelineEvent(${e.id})">删除</button></td>
 					</tr>`
-			)
-			.join('')}</tbody></table>`;
+						)
+						.join('')}</tbody></table>`;
 			}
 
 			function editTimelineHeader(h) {
@@ -432,16 +433,18 @@
 				const res = await authFetch('/api/gallery');
 				const list = await res.json();
 				const main = document.getElementById('main-content');
-				main.innerHTML = `<div class="page-header"><h2>画廊</h2><button class="btn btn-primary" onclick="editGallery()">+ 新增</button></div><div class="card-grid">${(list || [])
-			.map(
-				(g) => `<div class="card">
+				main.innerHTML = `<div class="page-header"><h2>画廊</h2><button class="btn btn-primary" onclick="editGallery()">+ 新增</button></div><div class="card-grid">${(
+					list || []
+				)
+					.map(
+						(g) => `<div class="card">
 				<img class="card-img" src="${g.image}" onerror="this.style.display='none'">
 				<div class="card-body"><h3>${g.scene}</h3><p>画师: ${g.illustrator}</p><p>${g.description}</p></div>
 				<div class="card-actions">
 				<button class="btn btn-ghost" onclick='editGallery(${JSON.stringify(g)})'>编辑</button>
 				<button class="btn btn-danger" onclick="delGallery(${g.id})">删除</button></div></div>`
-			)
-			.join('')}</div>`;
+					)
+					.join('')}</div>`;
 			}
 
 			function editGallery(g) {
@@ -551,17 +554,17 @@
 				main.innerHTML = `<div class="page-header"><h2>音乐</h2><div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="editMusic()">+ 新增</button><button class="btn btn-ghost" onclick="batchImportMusic()">批量导入</button></div></div>
 				<table><thead><tr><th>封面</th><th>歌曲名</th><th>歌手</th><th>BV号</th><th>时长</th><th>排序</th><th>操作</th></tr></thead>
 				<tbody>${(list || [])
-						.map(
-							(t) => `<tr>
+					.map(
+						(t) => `<tr>
 				<td><img src="${t.cover}" onerror="this.style.display='none'"></td>
 				<td>${t.title}</td><td>${t.artist}</td><td style="font-size:12px;color:var(--text-sub)">${t.bvid || '—'}</td>
-				<td>${t.duration ? Math.floor(t.duration/60)+':'+String(t.duration%60).padStart(2,'0') : '—'}</td>
+				<td>${t.duration ? Math.floor(t.duration / 60) + ':' + String(t.duration % 60).padStart(2, '0') : '—'}</td>
 				<td>${t.sortOrder || 0}</td>
 				<td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editMusic(${JSON.stringify(t).replace(/'/g, '&#39;')})'>编辑</button>
 					<button class="btn btn-danger" style="margin-left:4px" onclick="delMusic(${t.id})">删除</button></td>
 				</tr>`
-			)
-			.join('')}</tbody></table>`;
+					)
+					.join('')}</tbody></table>`;
 			}
 
 			function editMusic(t) {
@@ -577,7 +580,15 @@
 					<div class="form-group"><label>时长(秒)</label><input id="f_mduration" type="number" value="${t.duration || 0}"></div>
 					<div class="form-group"><label>排序</label><input id="f_msort" type="number" value="${t.sortOrder || 0}"></div>`,
 					async () => {
-						const body = { bvid: val('f_mbvid'), title: val('f_mtitle'), artist: val('f_martist'), src: '', cover: val('f_mcover'), duration: parseInt(val('f_mduration'))||0, sortOrder: parseInt(val('f_msort'))||0 };
+						const body = {
+							bvid: val('f_mbvid'),
+							title: val('f_mtitle'),
+							artist: val('f_martist'),
+							src: '',
+							cover: val('f_mcover'),
+							duration: parseInt(val('f_mduration')) || 0,
+							sortOrder: parseInt(val('f_msort')) || 0,
+						};
 						const res = await authFetch(isNew ? '/api/music' : '/api/music/' + t.id, {
 							method: isNew ? 'POST' : 'PUT',
 							headers: authHeaders(),
@@ -596,18 +607,29 @@
 
 			async function fetchBVIDInfo() {
 				const bvid = val('f_mbvid');
-				if (!bvid) { toast('请先输入BV号', 'error'); return; }
+				if (!bvid) {
+					toast('请先输入BV号', 'error');
+					return;
+				}
 				try {
 					const res = await authFetch('/api/bilibili/info?bvid=' + encodeURIComponent(bvid));
-					if (!res.ok) { toast('获取失败', 'error'); return; }
+					if (!res.ok) {
+						toast('获取失败', 'error');
+						return;
+					}
 					const info = await res.json();
-					if (info.error) { toast(info.error, 'error'); return; }
+					if (info.error) {
+						toast(info.error, 'error');
+						return;
+					}
 					document.getElementById('f_mtitle').value = info.Title || '';
 					document.getElementById('f_martist').value = info.Owner || '';
 					document.getElementById('f_mcover').value = info.Cover || '';
 					document.getElementById('f_mduration').value = info.Duration || 0;
 					toast('已自动填充');
-				} catch(e) { toast('获取失败', 'error'); }
+				} catch (e) {
+					toast('获取失败', 'error');
+				}
 			}
 
 			function batchImportMusic() {
@@ -616,14 +638,23 @@
 					`<div class="form-group"><label>BV号列表（每行一个）</label><textarea id="f_bvids" style="min-height:200px" placeholder="BVxxxxxxxxxx&#10;BVyyyyyyyyyy"></textarea></div>`,
 					async () => {
 						const text = val('f_bvids');
-						const bvids = text.split(/[\n\r]+/).map(s => s.trim()).filter(s => s.length > 0);
-						if (!bvids.length) { toast('请至少输入一个BV号', 'error'); return; }
+						const bvids = text
+							.split(/[\n\r]+/)
+							.map((s) => s.trim())
+							.filter((s) => s.length > 0);
+						if (!bvids.length) {
+							toast('请至少输入一个BV号', 'error');
+							return;
+						}
 						const res = await authFetch('/api/music/sync', {
 							method: 'POST',
 							headers: authHeaders(),
 							body: JSON.stringify({ bvids }),
 						});
-						if (!res.ok) { toast('批量导入失败', 'error'); return; }
+						if (!res.ok) {
+							toast('批量导入失败', 'error');
+							return;
+						}
 						const data = await res.json();
 						closeModal();
 						toast('成功导入 ' + (data.added || 0) + ' 首歌曲');

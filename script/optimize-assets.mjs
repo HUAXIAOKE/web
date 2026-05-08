@@ -48,7 +48,7 @@ function convertImages() {
 			if (existsSync(webpPath)) {
 				const dstSize = statSync(webpPath).size;
 				if (dstSize < srcSize) {
-					saved += (srcSize - dstSize);
+					saved += srcSize - dstSize;
 				}
 			}
 		} catch (e) {
@@ -71,7 +71,9 @@ function convertFont() {
 	const srcSize = statSync(ttfFile).size;
 
 	try {
-		execSync(`pyftsubset "${ttfFile}" --output-file="${woff2File}" --flavor=woff2 --unicodes="U+20-7E,U+4E00-9FFF,U+3000-303F,U+FF00-FFEF"`, { stdio: 'pipe' });
+		execSync(`pyftsubset "${ttfFile}" --output-file="${woff2File}" --flavor=woff2 --unicodes="U+20-7E,U+4E00-9FFF,U+3000-303F,U+FF00-FFEF"`, {
+			stdio: 'pipe',
+		});
 	} catch {
 		console.log('  fonttools not available, skipping woff2 conversion');
 		return;
@@ -90,7 +92,7 @@ function updateCssFontRef() {
 
 	let content = readFileSync(cssFile, 'utf-8');
 	if (existsSync(woff2File)) {
-		if (!content.includes("AlimamaShuHeiTi-Bold.woff2")) {
+		if (!content.includes('AlimamaShuHeiTi-Bold.woff2')) {
 			content = content.replace(
 				"src: url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');",
 				"src: url('/font/AlimamaShuHeiTi-Bold.woff2') format('woff2'), url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');"
@@ -110,7 +112,7 @@ function updateCssImageRefs() {
 	const cssFile = join(root, 'src', 'styles', 'index.css');
 	if (!existsSync(cssFile)) return;
 	let content = readFileSync(cssFile, 'utf-8');
-	content = content.replaceAll("url(/img/bg.png)", "url(/img/bg.webp)");
+	content = content.replaceAll('url(/img/bg.png)', 'url(/img/bg.webp)');
 	writeFileSync(cssFile, content, 'utf-8');
 	console.log('  updated background image reference in CSS');
 }

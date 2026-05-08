@@ -75,9 +75,7 @@ async function initAbout(): Promise<void> {
 		container.innerHTML = cards
 			.map((c) => {
 				const isJoinUs = c.id === 4 || c.smallTitle === '加入我们';
-				const titleHtml = isJoinUs
-					? `<a href="/joinus">${c.title}</a>`
-					: c.title;
+				const titleHtml = isJoinUs ? `<a href="/joinus">${c.title}</a>` : c.title;
 				return `<div id="card${c.id}" class="card">
 	  <div class="card-small-title">${c.smallTitle}</div>
 	  <div class="card-title">${titleHtml}</div>

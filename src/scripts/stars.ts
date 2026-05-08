@@ -49,12 +49,12 @@ function generate(): void {
 	}
 }
 
-function placeStar(star: typeof stars[0]): void {
+function placeStar(star: (typeof stars)[0]): void {
 	star.x = Math.random() * width;
 	star.y = Math.random() * height;
 }
 
-function recycleStar(star: typeof stars[0]): void {
+function recycleStar(star: (typeof stars)[0]): void {
 	let direction = 'z';
 
 	const vx = Math.abs(velocity.x);
@@ -172,8 +172,8 @@ function movePointer(x: number, y: number): void {
 		const ox = x - pointerX;
 		const oy = y - pointerY;
 
-		velocity.tx += (ox / 8) / scale;
-		velocity.ty += (oy / 8) / scale;
+		velocity.tx += ox / 8 / scale;
+		velocity.ty += oy / 8 / scale;
 	}
 
 	pointerX = x;

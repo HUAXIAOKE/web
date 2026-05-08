@@ -189,10 +189,16 @@ class SPANavigation {
 	}
 
 	private setActiveByPath(): void {
-		const navIndex = this.currentPage === 'index' ? 3 :
-			this.currentPage === 'live' ? 4 :
-			this.currentPage === 'gallery' ? 5 :
-			this.currentPage === 'activity' ? 6 : 7;
+		const navIndex =
+			this.currentPage === 'index'
+				? 3
+				: this.currentPage === 'live'
+					? 4
+					: this.currentPage === 'gallery'
+						? 5
+						: this.currentPage === 'activity'
+							? 6
+							: 7;
 
 		const activeNavItem = document.querySelector<HTMLElement>(`#nav li:nth-of-type(${navIndex})`);
 		if (activeNavItem && this.slide1) {

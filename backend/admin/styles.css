@@ -274,7 +274,7 @@ body {
 }
 
 /* ── 招新报名 ── */
-.joinus-refresh-label input[type="checkbox"] {
+.joinus-refresh-label input[type='checkbox'] {
 	accent-color: var(--accent);
 	cursor: pointer;
 }

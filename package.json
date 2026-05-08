@@ -1,39 +1,39 @@
 {
-  "name": "html",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "optimize": "bun script/optimize-assets.mjs",
-    "release": "bun run optimize && bun run build && bun script/build.mjs --no-build",
-    "download-vendor": "bun script/download-vendor.mjs"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "@astrojs/db": "0.21.1",
-    "@astrojs/vercel": "10.0.6",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@mui/material": "^7.1.2",
-    "aplayer": "^1.10.1",
-    "astro": "6.3.1",
-    "cspell": "^9.6.4",
-    "jszip": "^3.10.1",
-    "pixi-live2d-display": "^0.3.1",
-    "prettier": "^3.8.1",
-    "remixicon": "^4.9.1",
-    "ttf2woff2": "8.0.1",
-    "xlsx": "^0.18.5"
-  },
-  "devDependencies": {
-    "@types/prop-types": "^15.7.15",
-    "@types/react": "^19.1.8",
-    "@types/react-transition-group": "^4.4.12"
-  }
+	"name": "html",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"optimize": "bun script/optimize-assets.mjs",
+		"release": "bun run optimize && bun run build && bun script/build.mjs --no-build",
+		"download-vendor": "bun script/download-vendor.mjs"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "commonjs",
+	"dependencies": {
+		"@astrojs/db": "0.21.1",
+		"@astrojs/vercel": "10.0.6",
+		"@emotion/react": "^11.14.0",
+		"@emotion/styled": "^11.14.0",
+		"@mui/material": "^7.1.2",
+		"aplayer": "^1.10.1",
+		"astro": "6.3.1",
+		"cspell": "^9.6.4",
+		"jszip": "^3.10.1",
+		"pixi-live2d-display": "^0.3.1",
+		"prettier": "^3.8.1",
+		"remixicon": "^4.9.1",
+		"ttf2woff2": "8.0.1",
+		"xlsx": "^0.18.5"
+	},
+	"devDependencies": {
+		"@types/prop-types": "^15.7.15",
+		"@types/react": "^19.1.8",
+		"@types/react-transition-group": "^4.4.12"
+	}
 }

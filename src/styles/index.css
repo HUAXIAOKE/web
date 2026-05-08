@@ -1,6 +1,8 @@
 @font-face {
 	font-family: 'AlimamaShuHeiTi-Bold';
-	src: url('/font/AlimamaShuHeiTi-Bold.woff2') format('woff2'), url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');
+	src:
+		url('/font/AlimamaShuHeiTi-Bold.woff2') format('woff2'),
+		url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');
 }
 
 :root {
@@ -807,7 +809,9 @@ html.dark .Tip button:hover {
 	border-radius: 8px;
 	cursor: pointer;
 	padding: 0;
-	transition: background 0.3s ease, border-color 0.3s ease;
+	transition:
+		background 0.3s ease,
+		border-color 0.3s ease;
 }
 
 #nav-hamburger .bar {
@@ -816,7 +820,9 @@ html.dark .Tip button:hover {
 	height: 1.5px;
 	background: #4664b4;
 	border-radius: 1px;
-	transition: transform 0.3s ease, opacity 0.3s ease;
+	transition:
+		transform 0.3s ease,
+		opacity 0.3s ease;
 }
 
 html.dark #nav-hamburger .bar {
@@ -849,7 +855,9 @@ html.dark #nav-hamburger .bar {
 	opacity: 0;
 	pointer-events: none;
 	transform: translateY(-8px);
-	transition: opacity 0.3s ease, transform 0.3s ease;
+	transition:
+		opacity 0.3s ease,
+		transform 0.3s ease;
 	flex-direction: column;
 }
 
@@ -915,7 +923,9 @@ html.dark #nav-mobile {
 	text-decoration: none;
 	font-size: 1.1rem;
 	font-weight: 500;
-	transition: color 0.22s ease, padding-left 0.22s ease;
+	transition:
+		color 0.22s ease,
+		padding-left 0.22s ease;
 }
 
 html.dark #nav-mobile a {

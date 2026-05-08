@@ -12,13 +12,13 @@ go run .           # 启动开发服务器 (默认 :1037)
 
 ## API 列表
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | `/api/activities` | 当期活动列表（按日期倒序） |
-| GET | `/api/timeline` | 时间轴（标题 + 事件列表） |
-| GET | `/api/gallery` | 画廊作品列表 |
-| GET | `/api/about` | 关于我们卡片 |
-| GET | `/api/music` | 歌曲列表 |
+| 方法 | 路径              | 说明                       |
+| ---- | ----------------- | -------------------------- |
+| GET  | `/api/activities` | 当期活动列表（按日期倒序） |
+| GET  | `/api/timeline`   | 时间轴（标题 + 事件列表）  |
+| GET  | `/api/gallery`    | 画廊作品列表               |
+| GET  | `/api/about`      | 关于我们卡片               |
+| GET  | `/api/music`      | 歌曲列表                   |
 
 ## 项目结构
 
@@ -43,6 +43,7 @@ CGO_ENABLED=0 go build -o huaxiaoke-server .
 ```
 
 Nginx 参考（招新报名含附件上传，需调大请求体限制）：
+
 ```nginx
 client_max_body_size 200M;
 location /api/ {
