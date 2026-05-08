@@ -87,6 +87,8 @@ docker-compose down --remove-orphans
 docker ps -a --format '{{.Names}}' | grep -E 'huaxiaoke-web' | xargs -r docker rm -f
 docker-compose build --no-cache
 docker-compose up -d
+docker image prune -af
+docker builder prune -af
 echo "部署完成."
 `;
 }
