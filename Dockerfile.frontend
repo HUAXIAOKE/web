@@ -1,0 +1,16 @@
+# 构建 Astro 前端
+FROM oven/bun:latest AS builder
+
+WORKDIR /app
+
+COPY package.json bun.lock ./
+RUN bun install
+
+COPY . .
+RUN bun run build
+
+# Nginx 托管
+FROM nginx:latest
+
+COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist /usr/share/nginx/html

@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Backend storage
+server/data/
+*.local
+
+# Bun
+.bun/
+# 注：bun.lockb 建议提交，保证依赖版本一致
+
+# Vite
+.vite/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log*
+bun-error.log*
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing / Coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# Cache
+.cache/
+.turbo/
+.eslintcache
+*.tsbuildinfo
+
+# 后端端口缓存，供前端 dev 自动匹配（先启后端再启前端）
+.backend-port
+
+# Optional: 本地调试/临时文件
+*.tmp
+*.temp
+.temp/
+tmp/
+
+.npmrc

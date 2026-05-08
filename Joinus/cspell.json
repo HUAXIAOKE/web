@@ -1,0 +1,19 @@
+{
+	"words": [
+		"ehthumbs",
+		"eslintcache",
+		"joinus",
+		"officedocument",
+		"openxmlformats",
+		"spreadsheetml"
+	],
+	"ignorePaths": [
+		"node_modules",
+		"dist",
+		"build",
+		"public",
+		"src",
+		"test",
+		"coverage"
+	]
+}

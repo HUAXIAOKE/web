@@ -1,0 +1,101 @@
+---
+
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+import "../styles/index.css";
+import "../styles/gallery.css";
+import "../styles/about.css";
+import "../styles/calender.css";
+import "../styles/activity.css";
+
+import MusicPlayer from "../components/MusicPlayer.astro";
+import Navigation from "../components/Navigation.astro";
+import HomePage from "../components/HomePage.astro";
+import LivePage from "../components/LivePage.astro";
+import GalleryPage from "../components/GalleryPage.astro";
+import ActivityPage from "../components/ActivityPage.astro";
+import AboutPage from "../components/AboutPage.astro";
+
+const { title, description = "Huaxiaoke" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="icon" type="image/x-icon" sizes="32x32" href="img/icon.ico" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.2/dist/browser/pixi.min.js"
+      defer></script>
+    <script defer>
+      // @ts-ignore
+      window.PIXI = window.PIXI || globalThis.PIXI;
+    </script>
+    <script
+      src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"
+      defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/pixi-live2d-display/dist/cubism4.min.js"
+      defer></script>
+    <!-- <script src="/src/scripts/live2d.js" defer></script> -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <div id="theme-toggle-container">
+      <theme-button id="theme-btn" size="1"></theme-button>
+    </div>
+
+    <MusicPlayer />
+    <canvas transition:persist="stars-canvas"></canvas>
+    <Navigation />
+
+    <main>
+      <HomePage />
+    </main>
+
+    <LivePage />
+    <GalleryPage />
+    <ActivityPage />
+    <AboutPage />
+
+    <div class="Tip">
+      <button id="backToTopBtn">到底啦</button>
+    </div>
+
+    <footer class="site-footer">
+      <a
+        href="https://beian.miit.gov.cn/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span>辽ICP备2026003216号</span>
+      </a>
+    </footer>
+
+    <script src="/src/scripts/api-config.js"></script>
+    <script src="/src/scripts/roll.js"></script>
+    <script src="/src/scripts/spa-navigation.js"></script>
+    <script src="/src/scripts/imageGallery.js"></script>
+    <script src="/src/scripts/slide.js"></script>
+    <script src="/src/scripts/stars.js"></script>
+    <script src="/src/scripts/timeline.js"></script>
+    <script src="/src/scripts/dayornight.js"></script>
+    <script src="/src/scripts/isinline.js"></script>
+    <script src="/src/scripts/music-player.js"></script>
+    <script src="/src/scripts/activity.js"></script>
+    <script src="/src/scripts/content-loader.js"></script>
+  </body>
+</html>
