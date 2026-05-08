@@ -39,6 +39,10 @@ func RunMigrations() error {
 			if err := migrateV1ToV2(); err != nil {
 				return fmt.Errorf("v2: %w", err)
 			}
+		case 2:
+			if err := migrateV2ToV3(); err != nil {
+				return fmt.Errorf("v3: %w", err)
+			}
 		}
 	}
 
@@ -70,6 +74,31 @@ func migrateV1ToV2() error {
 		return fmt.Errorf("drop joinus_submission: %w", err)
 	}
 
+	return nil
+}
+
+func migrateV2ToV3() error {
+	addCol := func(col, def string) error {
+		var count int
+		row := DB.QueryRow(`SELECT COUNT(*) FROM pragma_table_info('music') WHERE name=?`, col)
+		if err := row.Scan(&count); err != nil || count > 0 {
+			return nil
+		}
+		_, err := DB.Exec(fmt.Sprintf(`ALTER TABLE music ADD COLUMN %s %s`, col, def))
+		return err
+	}
+	if err := addCol("bvid", "TEXT NOT NULL DEFAULT ''"); err != nil {
+		return fmt.Errorf("add bvid: %w", err)
+	}
+	if err := addCol("duration", "INTEGER NOT NULL DEFAULT 0"); err != nil {
+		return fmt.Errorf("add duration: %w", err)
+	}
+	if err := addCol("sort_order", "INTEGER NOT NULL DEFAULT 0"); err != nil {
+		return fmt.Errorf("add sort_order: %w", err)
+	}
+	if err := addCol("created_at", "DATETIME DEFAULT CURRENT_TIMESTAMP"); err != nil {
+		return fmt.Errorf("add created_at: %w", err)
+	}
 	return nil
 }
 

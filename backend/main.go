@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"huaxiaoke-backend/config"
 	"huaxiaoke-backend/handler"
@@ -17,6 +18,13 @@ import (
 
 //go:embed admin
 var adminFS embed.FS
+
+func cacheStatic(next http.Handler, maxAge time.Duration) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", fmt.Sprintf("public, max-age=%d", int(maxAge.Seconds())))
+		next.ServeHTTP(w, r)
+	})
+}
 
 func main() {
 	store.Init()
@@ -60,6 +68,8 @@ func main() {
 	mux.HandleFunc("GET /api/music", handler.GetMusic)
 	mux.HandleFunc("GET /api/bilibili/latest-video", handler.GetLatestVideo)
 	mux.HandleFunc("GET /api/bilibili/cover", handler.GetBilibiliCover)
+	mux.HandleFunc("GET /api/bilibili/info", handler.GetBilibiliVideoInfo)
+	mux.HandleFunc("GET /api/bilibili/audio", handler.StreamBilibiliAudio)
 
 	writeMux := http.NewServeMux()
 	writeMux.HandleFunc("GET /api/auth/verify", handler.VerifyToken)
@@ -68,6 +78,7 @@ func main() {
 	writeMux.HandleFunc("POST /api/gallery", handler.CreateGallery)
 	writeMux.HandleFunc("POST /api/about", handler.CreateAbout)
 	writeMux.HandleFunc("POST /api/music", handler.CreateMusic)
+	writeMux.HandleFunc("POST /api/music/sync", handler.SyncMusic)
 	writeMux.HandleFunc("POST /api/upload", handler.UploadFile)
 	writeMux.HandleFunc("PUT /api/activities/{id}", handler.UpdateActivity)
 	writeMux.HandleFunc("PUT /api/timeline/header", handler.UpdateTimelineHeader)
@@ -89,8 +100,8 @@ func main() {
 	mux.Handle("DELETE /api/", protected)
 
 	staticDir := handler.StaticDir
-	mux.Handle("/img/", http.FileServer(http.Dir(staticDir)))
-	mux.Handle("/audio/", http.FileServer(http.Dir(staticDir)))
+	mux.Handle("/img/", cacheStatic(http.FileServer(http.Dir(staticDir)), 30*24*time.Hour))
+	mux.Handle("/audio/", cacheStatic(http.FileServer(http.Dir(staticDir)), 7*24*time.Hour))
 
 	adminSub, _ := fs.Sub(adminFS, "admin")
 	mux.Handle("GET /admin/", http.StripPrefix("/admin/", http.FileServer(http.FS(adminSub))))

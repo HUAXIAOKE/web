@@ -8,7 +8,6 @@
 		<link rel="stylesheet" href="styles.css" />
 	</head>
 	<body>
-		<!-- ══ LOGIN ══ -->
 		<div class="login-wrap" id="login-page">
 			<div class="login-box">
 				<h1>华小科 Web</h1>
@@ -20,7 +19,6 @@
 			</div>
 		</div>
 
-		<!-- ══ APP ══ -->
 		<div class="app" id="app-page" style="display: none">
 			<aside class="sidebar">
 				<div class="sidebar-logo">华小科 Web</div>
@@ -30,7 +28,6 @@
 					<a data-tab="gallery">插画展示</a>
 					<a data-tab="about">关于我们</a>
 					<a data-tab="music">增添音乐</a>
-					<a data-tab="joinus">招新报名</a>
 				</nav>
 				<div class="sidebar-footer">
 					<button class="btn-logout" onclick="doLogout()">退出登录</button>
@@ -40,7 +37,6 @@
 			<main class="main" id="main-content"></main>
 		</div>
 
-		<!-- ══ MODAL ══ -->
 		<div class="modal-mask" id="modal-mask">
 			<div class="modal">
 				<div class="modal-header">
@@ -74,7 +70,6 @@
 				});
 			}
 
-			// ── AUTH ──
 			async function doLogin() {
 				const user = document.getElementById('login-user').value.trim();
 				const pass = document.getElementById('login-pass').value;
@@ -138,7 +133,6 @@
 				if (e.key === 'Enter') doLogin();
 			});
 
-			// ── TOAST ──
 			function toast(msg, type = 'success') {
 				const el = document.getElementById('toast');
 				el.textContent = msg;
@@ -146,7 +140,6 @@
 				setTimeout(() => el.classList.remove('show'), 2000);
 			}
 
-			// ── MODAL ──
 			function openModal(title, html, onSave, dropZones) {
 				document.getElementById('modal-title').textContent = title;
 				document.getElementById('modal-body').innerHTML = html;
@@ -165,7 +158,6 @@
 				if (e.target === e.currentTarget) closeModal();
 			});
 
-			// ── UPLOAD ──
 			function fileUploadHTML(fieldId, currentUrl, dir, opts = {}) {
 				const accept = opts.accept || 'image/*';
 				const label = opts.label || '文件';
@@ -264,7 +256,6 @@
 				return document.getElementById(id)?.value?.trim() || '';
 			}
 
-			// ══════════════ ACTIVITY ══════════════
 			async function loadActivity() {
 				const res = await authFetch('/api/activities');
 				const list = await res.json();
@@ -349,7 +340,6 @@
 				loadActivity();
 			}
 
-			// ══════════════ TIMELINE ══════════════
 			async function loadTimeline() {
 				const res = await authFetch('/api/timeline');
 				const data = await res.json();
@@ -438,7 +428,6 @@
 				loadTimeline();
 			}
 
-			// ══════════════ GALLERY ══════════════
 			async function loadGallery() {
 				const res = await authFetch('/api/gallery');
 				const list = await res.json();
@@ -495,7 +484,6 @@
 				loadGallery();
 			}
 
-			// ══════════════ ABOUT ══════════════
 			async function loadAbout() {
 				const res = await authFetch('/api/about');
 				const data = await res.json();
@@ -556,19 +544,20 @@
 				loadAbout();
 			}
 
-			// ══════════════ MUSIC ══════════════
 			async function loadMusic() {
 				const res = await authFetch('/api/music');
 				const list = await res.json();
 				const main = document.getElementById('main-content');
-				main.innerHTML = `<div class="page-header"><h2>音乐</h2><button class="btn btn-primary" onclick="editMusic()">+ 新增</button></div>
-				<table><thead><tr><th>封面</th><th>歌曲名</th><th>歌手</th><th>音频路径</th><th>操作</th></tr></thead>
+				main.innerHTML = `<div class="page-header"><h2>音乐</h2><div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="editMusic()">+ 新增</button><button class="btn btn-ghost" onclick="batchImportMusic()">批量导入</button></div></div>
+				<table><thead><tr><th>封面</th><th>歌曲名</th><th>歌手</th><th>BV号</th><th>时长</th><th>排序</th><th>操作</th></tr></thead>
 				<tbody>${(list || [])
 						.map(
 							(t) => `<tr>
 				<td><img src="${t.cover}" onerror="this.style.display='none'"></td>
-				<td>${t.title}</td><td>${t.artist}</td><td style="font-size:12px;color:var(--text-sub)">${t.src}</td>
-				<td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editMusic(${JSON.stringify(t)})'>编辑</button>
+				<td>${t.title}</td><td>${t.artist}</td><td style="font-size:12px;color:var(--text-sub)">${t.bvid || '—'}</td>
+				<td>${t.duration ? Math.floor(t.duration/60)+':'+String(t.duration%60).padStart(2,'0') : '—'}</td>
+				<td>${t.sortOrder || 0}</td>
+				<td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editMusic(${JSON.stringify(t).replace(/'/g, '&#39;')})'>编辑</button>
 					<button class="btn btn-danger" style="margin-left:4px" onclick="delMusic(${t.id})">删除</button></td>
 				</tr>`
 			)
@@ -577,16 +566,18 @@
 
 			function editMusic(t) {
 				const isNew = !t;
-				t = t || { title: '', artist: '', src: '', cover: '' };
+				t = t || { bvid: '', title: '', artist: '', src: '', cover: '', duration: 0, sortOrder: 0 };
 				openModal(
 					isNew ? '新增歌曲' : '编辑歌曲',
 					`
+					<div class="form-group"><label>BV号</label><div style="display:flex;gap:8px"><input id="f_mbvid" value="${t.bvid || ''}" placeholder="BVxxxxxxxxxx"><button type="button" class="btn btn-ghost" onclick="fetchBVIDInfo()">自动填充</button></div></div>
 					<div class="form-group"><label>歌曲名</label><input id="f_mtitle" value="${t.title}"></div>
-					<div class="form-group"><label>歌手</label><input id="f_martist" value="${t.artist}"></div>
-					${audioUploadHTML('f_msrc', t.src, 'audio')}
-					${imgUploadHTML('f_mcover', t.cover, 'img/covers')}`,
+					<div class="form-group"><label>歌手/UP主</label><input id="f_martist" value="${t.artist}"></div>
+					<div class="form-group"><label>封面URL</label><input id="f_mcover" value="${t.cover}"></div>
+					<div class="form-group"><label>时长(秒)</label><input id="f_mduration" type="number" value="${t.duration || 0}"></div>
+					<div class="form-group"><label>排序</label><input id="f_msort" type="number" value="${t.sortOrder || 0}"></div>`,
 					async () => {
-						const body = { title: val('f_mtitle'), artist: val('f_martist'), src: val('f_msrc'), cover: val('f_mcover') };
+						const body = { bvid: val('f_mbvid'), title: val('f_mtitle'), artist: val('f_martist'), src: '', cover: val('f_mcover'), duration: parseInt(val('f_mduration'))||0, sortOrder: parseInt(val('f_msort'))||0 };
 						const res = await authFetch(isNew ? '/api/music' : '/api/music/' + t.id, {
 							method: isNew ? 'POST' : 'PUT',
 							headers: authHeaders(),
@@ -599,11 +590,45 @@
 						closeModal();
 						toast(isNew ? '创建成功' : '保存成功');
 						loadMusic();
-					},
-					[
-						{ id: 'f_msrc', dir: 'audio' },
-						{ id: 'f_mcover', dir: 'img/covers' },
-					]
+					}
+				);
+			}
+
+			async function fetchBVIDInfo() {
+				const bvid = val('f_mbvid');
+				if (!bvid) { toast('请先输入BV号', 'error'); return; }
+				try {
+					const res = await authFetch('/api/bilibili/info?bvid=' + encodeURIComponent(bvid));
+					if (!res.ok) { toast('获取失败', 'error'); return; }
+					const info = await res.json();
+					if (info.error) { toast(info.error, 'error'); return; }
+					document.getElementById('f_mtitle').value = info.Title || '';
+					document.getElementById('f_martist').value = info.Owner || '';
+					document.getElementById('f_mcover').value = info.Cover || '';
+					document.getElementById('f_mduration').value = info.Duration || 0;
+					toast('已自动填充');
+				} catch(e) { toast('获取失败', 'error'); }
+			}
+
+			function batchImportMusic() {
+				openModal(
+					'批量导入 BV 号',
+					`<div class="form-group"><label>BV号列表（每行一个）</label><textarea id="f_bvids" style="min-height:200px" placeholder="BVxxxxxxxxxx&#10;BVyyyyyyyyyy"></textarea></div>`,
+					async () => {
+						const text = val('f_bvids');
+						const bvids = text.split(/[\n\r]+/).map(s => s.trim()).filter(s => s.length > 0);
+						if (!bvids.length) { toast('请至少输入一个BV号', 'error'); return; }
+						const res = await authFetch('/api/music/sync', {
+							method: 'POST',
+							headers: authHeaders(),
+							body: JSON.stringify({ bvids }),
+						});
+						if (!res.ok) { toast('批量导入失败', 'error'); return; }
+						const data = await res.json();
+						closeModal();
+						toast('成功导入 ' + (data.added || 0) + ' 首歌曲');
+						loadMusic();
+					}
 				);
 			}
 
@@ -618,181 +643,7 @@
 				loadMusic();
 			}
 
-			// ══════════════ JOINUS ══════════════
-			let joinusRefreshTimer = null;
-
-			function formatJoinusTime(isoStr) {
-				if (!isoStr) return '—';
-				const d = new Date(isoStr);
-				if (isNaN(d.getTime())) return isoStr;
-				const y = d.getFullYear();
-				const m = d.getMonth() + 1;
-				const day = d.getDate();
-				const h = String(d.getHours()).padStart(2, '0');
-				const min = String(d.getMinutes()).padStart(2, '0');
-				return y + '年' + m + '月' + day + '日 ' + h + ':' + min;
-			}
-
-			var JOINUS_EMPTY_INTRO = '这个人很懒，什么都没写';
-			async function openJoinusPreview(btn) {
-				var intro = (btn && btn.dataset.intro) != null ? btn.dataset.intro : '';
-				var subId = btn && btn.dataset.subid;
-				var introDisplay = (intro && intro.trim()) ? intro : JOINUS_EMPTY_INTRO;
-				var bodyHtml = '<div class="joinus-preview-intro hide-scrollbar" style="white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;margin-bottom:16px">' + escapeHtml(introDisplay) + '</div>';
-				if (subId) {
-					try {
-						var filesRes = await authFetch('/api/joinus/submissions/' + subId + '/files');
-						var filesData = await filesRes.json();
-						var files = filesData.files || [];
-						var base = (window.API && window.API.indexOf('http') === 0) ? window.API.replace(/\/$/, '') : (window.location.origin + (window.API || ''));
-						var baseUrl = base + '/api/joinus/submissions/' + subId + '/files/';
-						var imgExt = /\.(jpe?g|png|gif|webp|bmp|svg)(\?|$)/i;
-						var videoExt = /\.(mp4|webm|ogg|mov)(\?|$)/i;
-						var audioExt = /\.(mp3|wav|ogg|m4a|aac|flac|webm)(\?|$)/i;
-						var zipExt = /\.(zip|rar|7z)(\?|$)/i;
-						if (files.length) {
-							bodyHtml += '<div class="joinus-preview-media"><strong>附件预览</strong><div class="joinus-media-list" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:12px">';
-							for (var i = 0; i < files.length; i++) {
-								var f = files[i];
-								var url = baseUrl + encodeURIComponent(f);
-								var urlAttr = url.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-								if (imgExt.test(f)) {
-									bodyHtml += '<div class="joinus-media-item"><img src="' + urlAttr + '" alt="" style="max-width:100%;max-height:240px;border-radius:8px;object-fit:contain;background:var(--surface)" onerror="this.style.display=\'none\'"></div>';
-								} else if (videoExt.test(f)) {
-									bodyHtml += '<div class="joinus-media-item"><video src="' + urlAttr + '" controls style="max-width:100%;max-height:240px;border-radius:8px;background:var(--surface)"></video></div>';
-								} else if (audioExt.test(f)) {
-									bodyHtml += '<div class="joinus-media-item"><audio src="' + urlAttr + '" controls style="max-width:100%;min-width:200px"></audio><span style="font-size:12px;color:var(--text-sub);display:block;margin-top:4px">' + escapeHtml(f) + '</span></div>';
-								} else if (zipExt.test(f)) {
-									bodyHtml += '<div class="joinus-media-item"><a href="' + urlAttr + '" download="' + escapeHtmlAttr(f) + '" target="_blank" rel="noopener" style="color:var(--accent);display:inline-flex;align-items:center;gap:6px"><span style="font-size:18px">📦</span> 下载 ' + escapeHtml(f) + '</a></div>';
-								} else {
-									bodyHtml += '<div class="joinus-media-item"><a href="' + urlAttr + '" target="_blank" rel="noopener" style="color:var(--accent)">' + escapeHtml(f) + '</a></div>';
-								}
-							}
-							bodyHtml += '</div></div>';
-						}
-					} catch (e) {}
-				}
-				openModal('简介与附件', bodyHtml, function () { closeModal(); });
-				document.querySelector('.modal-footer').style.display = 'none';
-			}
-			function escapeHtmlAttr(s) {
-				if (s == null) return '';
-				return String(s)
-					.replace(/&/g, '&amp;')
-					.replace(/"/g, '&quot;')
-					.replace(/'/g, '&#39;')
-					.replace(/</g, '&lt;')
-					.replace(/>/g, '&gt;')
-					.replace(/\r/g, '')
-					.replace(/\n/g, '&#10;');
-			}
-
-			function startJoinusRefresh() {
-				if (joinusRefreshTimer) return;
-				joinusRefreshTimer = setInterval(loadJoinus, 30 * 60 * 1000); // 每 30 分钟刷新
-			}
-
-			function stopJoinusRefresh() {
-				if (joinusRefreshTimer) {
-					clearInterval(joinusRefreshTimer);
-					joinusRefreshTimer = null;
-				}
-			}
-
-			async function loadJoinus() {
-				const res = await authFetch('/api/joinus/submissions');
-				if (!res.ok) {
-					document.getElementById('main-content').innerHTML = '<div class="page-header"><h2>招新报名</h2></div><div class="empty"><p>加载失败或未登录</p></div>';
-					return;
-				}
-				const list = await res.json();
-				const main = document.getElementById('main-content');
-
-				const columns = ['_submittedAt', 'name', 'contact', 'qq', 'department', 'student', 'intro'];
-				const labels = { _submittedAt: '提交时间', name: '姓名', contact: '联系方式', qq: 'QQ', department: '意向部门', student: '在校生', intro: '简介' };
-
-				function rowCell(col, row) {
-					if (col === '_submittedAt') {
-						return '<td style="white-space:nowrap">' + escapeHtml(formatJoinusTime(row._submittedAt)) + '</td>';
-					}
-					if (col === 'intro') {
-						var intro = row.intro != null ? String(row.intro) : '';
-						var introShort = (intro && intro.trim()) ? (intro.length > 25 ? intro.slice(0, 25) + '…' : intro) : '这个人很懒，什么都没写';
-						var attachCount = (row.portfolio && String(row.portfolio).trim()) ? String(row.portfolio).split(/\s*;\s*/).length : 0;
-						var subId = row.id;
-						return '<td style="max-width:200px;word-break:break-all"><button type="button" class="btn btn-ghost joinus-preview-btn" style="padding:4px 8px;font-size:12px;text-align:center;width:100%" data-intro="' + escapeHtmlAttr(intro) + '" data-subid="' + (subId || '') + '" data-attachcount="' + attachCount + '" onclick="openJoinusPreview(this)">' + ' <span style="color:var(--accent)">→</span></button></td>';
-					}
-					var v = row[col];
-					var text = v == null ? '' : (typeof v === 'string' ? v : String(v));
-					return '<td style="max-width:200px;word-break:break-all">' + escapeHtml(text) + '</td>';
-				}
-
-				main.innerHTML = ''
-					+ '<div class="page-header">'
-					+ '<h2>招新报名</h2>'
-					+ '<div class="page-header-actions" style="display:flex;gap:12px;align-items:center">'
-					+ '<button class="btn btn-primary" onclick="loadJoinus()">刷新</button>'
-					+ '<button class="btn btn-primary" onclick="exportJoinus()">一键导出</button>'
-					+ '<button class="btn btn-ghost" style="color:var(--danger, #c00)" onclick="clearJoinus()">清除全部</button>'
-					+ '</div></div>'
-					+ '<div class="table-wrap" style="overflow-x:auto"><table>'
-					+ '<thead><tr>' + columns.map(function (c) { return '<th>' + (labels[c] || c) + '</th>'; }).join('') + '</tr></thead>'
-					+ '<tbody>'
-					+ (list || []).map(function (row) {
-						return '<tr>' + columns.map(function (col) { return rowCell(col, row); }).join('') + '</tr>';
-					}).join('')
-					+ '</tbody></table></div>'
-					+ (!(list && list.length) ? '<div class="empty"><p>暂无报名记录</p></div>' : '');
-
-				startJoinusRefresh();
-			}
-
-			async function clearJoinus() {
-				if (!confirm('确定要清除所有报名记录和附件吗？此操作不可恢复。')) return;
-				try {
-					var res = await authFetch('/api/joinus/clear', { method: 'POST' });
-					var data = await res.json().catch(function () { return {}; });
-					if (!res.ok || !data.ok) {
-						toast(data.error || '清除失败', 'error');
-						return;
-					}
-					toast(data.message || '已清除');
-					loadJoinus();
-				} catch (e) {
-					toast('清除失败: ' + (e.message || e), 'error');
-				}
-			}
-
-			async function exportJoinus() {
-				try {
-					var res = await authFetch('/api/joinus/export');
-					if (!res.ok) {
-						toast('导出失败', 'error');
-						return;
-					}
-					var blob = await res.blob();
-					var url = URL.createObjectURL(blob);
-					var a = document.createElement('a');
-					a.href = url;
-					a.download = '报名导出_' + new Date().toISOString().slice(0, 10) + '.zip';
-					document.body.appendChild(a);
-					a.click();
-					document.body.removeChild(a);
-					URL.revokeObjectURL(url);
-					toast('导出成功');
-				} catch (e) {
-					toast('导出失败: ' + (e.message || e), 'error');
-				}
-			}
-
-			function escapeHtml(s) {
-				const div = document.createElement('div');
-				div.textContent = s;
-				return div.innerHTML;
-			}
-
-			// ══════════════ TAB ══════════════
-			const loaders = { activity: loadActivity, timeline: loadTimeline, gallery: loadGallery, about: loadAbout, music: loadMusic, joinus: loadJoinus};
+			const loaders = { activity: loadActivity, timeline: loadTimeline, gallery: loadGallery, about: loadAbout, music: loadMusic };
 			document.querySelectorAll('.sidebar a[data-tab]').forEach((a) => {
 				a.addEventListener('click', () => {
 					document.querySelectorAll('.sidebar a').forEach((x) => x.classList.remove('active'));

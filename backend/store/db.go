@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"huaxiaoke-backend/config"
 
@@ -18,6 +19,10 @@ func Init() {
 	needSeed := false
 	if _, err := os.Stat(config.DBPath); os.IsNotExist(err) {
 		needSeed = true
+	}
+
+	if err := os.MkdirAll(filepath.Dir(config.DBPath), 0755); err != nil {
+		log.Fatalf("创建数据目录失败: %v", err)
 	}
 
 	var err error
@@ -77,11 +82,15 @@ func migrate() {
 			image       TEXT NOT NULL DEFAULT ''
 		)`,
 		`CREATE TABLE IF NOT EXISTS music (
-			id     INTEGER PRIMARY KEY AUTOINCREMENT,
-			title  TEXT NOT NULL,
-			artist TEXT NOT NULL DEFAULT '',
-			src    TEXT NOT NULL,
-			cover  TEXT NOT NULL DEFAULT ''
+			id         INTEGER PRIMARY KEY AUTOINCREMENT,
+			bvid       TEXT NOT NULL DEFAULT '',
+			title      TEXT NOT NULL,
+			artist     TEXT NOT NULL DEFAULT '',
+			src        TEXT NOT NULL DEFAULT '',
+			cover      TEXT NOT NULL DEFAULT '',
+			duration   INTEGER NOT NULL DEFAULT 0,
+			sort_order INTEGER NOT NULL DEFAULT 0,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		)`,
 	}
 

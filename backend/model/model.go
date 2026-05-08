@@ -68,9 +68,12 @@ type AboutData struct {
 
 // MusicTrack 歌曲
 type MusicTrack struct {
-	ID     int    `json:"id"`
-	Title  string `json:"title"`
-	Artist string `json:"artist"`
-	Src    string `json:"src"`
-	Cover  string `json:"cover"`
+	ID        int    `json:"id"`
+	BVID      string `json:"bvid"`
+	Title     string `json:"title"`
+	Artist    string `json:"artist"`
+	Src       string `json:"src"`
+	Cover     string `json:"cover"`
+	Duration  int    `json:"duration"`
+	SortOrder int    `json:"sortOrder"`
 }

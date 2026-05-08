@@ -85,13 +85,14 @@ func seedAbout() {
 
 func seedMusic() {
 	tracks := []struct {
-		Title, Artist, Src, Cover string
+		BVID, Title, Artist, Cover string
+		Duration                    int
 	}{
-		{"ハレハレヤ", "羽生迷子", "/audio/song1.mp3", "/img/covers/cover1.jpg"},
-		{"ヒッチコック", "ヨルシカ", "/audio/song2.mp3", "/img/covers/cover2.jpg"},
+		{"", "ハレハレヤ", "羽生迷子", "/img/covers/cover1.jpg", 0},
+		{"", "ヒッチコック", "ヨルシカ", "/img/covers/cover2.jpg", 0},
 	}
 	for _, t := range tracks {
-		DB.Exec(`INSERT INTO music (title,artist,src,cover) VALUES (?,?,?,?)`,
-			t.Title, t.Artist, t.Src, t.Cover)
+		DB.Exec(`INSERT INTO music (bvid,title,artist,cover,duration,sort_order) VALUES (?,?,?,?,?,0)`,
+			t.BVID, t.Title, t.Artist, t.Cover, t.Duration)
 	}
 }
