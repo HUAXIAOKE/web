@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'AlimamaShuHeiTi-Bold';
-	src: url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');
+	src: url('/font/AlimamaShuHeiTi-Bold.woff2') format('woff2'), url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');
 }
 
 :root {
