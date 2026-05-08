@@ -22,6 +22,10 @@ func main() {
 	store.Init()
 	defer store.DB.Close()
 
+	if err := store.RunMigrations(); err != nil {
+		log.Fatalf("数据库迁移失败: %v", err)
+	}
+
 	tryAbs := func(rel string) {
 		if handler.StaticDir != "" && handler.StaticDir != "../public" {
 			return
@@ -47,10 +51,8 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// 登录
 	mux.HandleFunc("POST /api/login", handler.Login)
 
-	// GET (公开)
 	mux.HandleFunc("GET /api/activities", handler.GetActivities)
 	mux.HandleFunc("GET /api/timeline", handler.GetTimeline)
 	mux.HandleFunc("GET /api/gallery", handler.GetGallery)
@@ -58,10 +60,7 @@ func main() {
 	mux.HandleFunc("GET /api/music", handler.GetMusic)
 	mux.HandleFunc("GET /api/bilibili/latest-video", handler.GetLatestVideo)
 	mux.HandleFunc("GET /api/bilibili/cover", handler.GetBilibiliCover)
-	mux.HandleFunc("POST /api/joinus/submit", handler.SubmitJoinus)
-	mux.HandleFunc("GET /api/joinus/submissions/{id}/files/{filename}", handler.ServeJoinusSubmissionFile)
 
-	// 写入操作 (需要登录)
 	writeMux := http.NewServeMux()
 	writeMux.HandleFunc("GET /api/auth/verify", handler.VerifyToken)
 	writeMux.HandleFunc("POST /api/activities", handler.CreateActivity)
@@ -81,10 +80,6 @@ func main() {
 	writeMux.HandleFunc("DELETE /api/gallery/{id}", handler.DeleteGallery)
 	writeMux.HandleFunc("DELETE /api/about/{id}", handler.DeleteAbout)
 	writeMux.HandleFunc("DELETE /api/music/{id}", handler.DeleteMusic)
-	writeMux.HandleFunc("GET /api/joinus/submissions", handler.GetJoinusSubmissions)
-	writeMux.HandleFunc("GET /api/joinus/submissions/{id}/files", handler.GetJoinusSubmissionFiles)
-	writeMux.HandleFunc("GET /api/joinus/export", handler.ExportJoinus)
-	writeMux.HandleFunc("POST /api/joinus/clear", handler.ClearJoinus)
 
 	protected := handler.RequireAuth(writeMux)
 	mux.Handle("GET /api/auth/", protected)
@@ -93,13 +88,10 @@ func main() {
 	mux.Handle("PUT /api/", protected)
 	mux.Handle("DELETE /api/", protected)
 
-	// 静态资源
 	staticDir := handler.StaticDir
 	mux.Handle("/img/", http.FileServer(http.Dir(staticDir)))
 	mux.Handle("/audio/", http.FileServer(http.Dir(staticDir)))
-	mux.Handle("/joinus_uploads/", http.StripPrefix("/joinus_uploads", http.FileServer(http.Dir(filepath.Join(handler.StaticDir, handler.JoinusUploadDir)))))
 
-	// 管理界面
 	adminSub, _ := fs.Sub(adminFS, "admin")
 	mux.Handle("GET /admin/", http.StripPrefix("/admin/", http.FileServer(http.FS(adminSub))))
 	mux.HandleFunc("GET /admin", func(w http.ResponseWriter, r *http.Request) {

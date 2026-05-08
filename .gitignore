@@ -107,3 +107,11 @@ backend/huaxiaoke-server
 
 # Zip
 *.zip
+
+# Docker
+Dockerfile.backend
+Dockerfile.frontend
+docker-compose.yml
+
+# Deploy
+deploy/nginx.conf
