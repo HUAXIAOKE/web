@@ -87,7 +87,6 @@ dist
 
 # Gatsby 文件
 .cache/
-public
 
 # Storybook 构建输出
 .out
@@ -115,3 +114,6 @@ docker-compose.yml
 
 # Deploy
 deploy/nginx.conf
+
+# Public
+public/
