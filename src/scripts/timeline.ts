@@ -7,6 +7,20 @@ interface TimelineEvent {
 }
 
 let timelineData: TimelineEvent[] = [];
+let timelineCreateTimer: ReturnType<typeof setTimeout> | null = null;
+let isTimelineCreating = false;
+let isTimelineInitialized = false;
+let currentTimelineScrollHandler: ((e: Event) => void) | null = null;
+let currentIndicatorScrollHandler: (() => void) | null = null;
+let timelineKeydownBound = false;
+
+function scheduleCreateTimeline(delay = 100): void {
+	if (timelineCreateTimer) clearTimeout(timelineCreateTimer);
+	timelineCreateTimer = setTimeout(() => {
+		timelineCreateTimer = null;
+		void createTimeline();
+	}, delay);
+}
 
 async function loadTimelineData(): Promise<TimelineEvent[]> {
 	try {
@@ -21,20 +35,23 @@ async function loadTimelineData(): Promise<TimelineEvent[]> {
 }
 
 async function createTimeline(): Promise<void> {
+	if (isTimelineCreating) return;
 	const container = document.querySelector<HTMLElement>('#timeline-container');
 	if (!container) return;
+	isTimelineCreating = true;
 
-	await loadTimelineData();
+	try {
+		await loadTimelineData();
 
-	container.innerHTML = '';
+		container.innerHTML = '';
 
-	timelineData.forEach((item, index) => {
-		const timelineItem = document.createElement('div');
-		timelineItem.className = 'timeline-item';
-		timelineItem.setAttribute('data-text', item.label);
-		timelineItem.setAttribute('data-index', String(index));
+		timelineData.forEach((item, index) => {
+			const timelineItem = document.createElement('div');
+			timelineItem.className = 'timeline-item';
+			timelineItem.setAttribute('data-text', item.label);
+			timelineItem.setAttribute('data-index', String(index));
 
-		timelineItem.innerHTML = `
+			timelineItem.innerHTML = `
             <div class="timeline-content">
                 <img src="${item.image}" alt="${item.title}" class="timeline-img">
                 <h2 class="timeline-content-title">${item.date}</h2>
@@ -43,10 +60,14 @@ async function createTimeline(): Promise<void> {
             </div>
         `;
 
-		container.appendChild(timelineItem);
-	});
+			container.appendChild(timelineItem);
+		});
 
-	initTimelineAnimation();
+		initTimelineAnimation();
+		isTimelineInitialized = true;
+	} finally {
+		isTimelineCreating = false;
+	}
 }
 
 function initTimelineAnimation(): void {
@@ -175,20 +196,27 @@ function initTimelineAnimation(): void {
 		}
 	}
 
-	timeline!.addEventListener('scroll', handleTimelineScroll);
+	if (currentTimelineScrollHandler) {
+		timeline!.removeEventListener('scroll', currentTimelineScrollHandler);
+	}
+	currentTimelineScrollHandler = handleTimelineScroll;
+	timeline!.addEventListener('scroll', currentTimelineScrollHandler);
 
-	document.addEventListener('keydown', (e) => {
-		const pageElement = document.querySelector<HTMLElement>('#page-live');
-		if (!pageElement || pageElement.style.display === 'none') return;
+	if (!timelineKeydownBound) {
+		document.addEventListener('keydown', (e) => {
+			const pageElement = document.querySelector<HTMLElement>('#page-live');
+			if (!pageElement || pageElement.style.display === 'none') return;
 
-		if (e.key === 'ArrowUp' && currentIndex > 0) {
-			e.preventDefault();
-			scrollToItem(currentIndex - 1);
-		} else if (e.key === 'ArrowDown' && currentIndex < items.length - 1) {
-			e.preventDefault();
-			scrollToItem(currentIndex + 1);
-		}
-	});
+			if (e.key === 'ArrowUp' && currentIndex > 0) {
+				e.preventDefault();
+				scrollToItem(currentIndex - 1);
+			} else if (e.key === 'ArrowDown' && currentIndex < items.length - 1) {
+				e.preventDefault();
+				scrollToItem(currentIndex + 1);
+			}
+		});
+		timelineKeydownBound = true;
+	}
 
 	function scrollToItem(index: number): void {
 		if (index >= 0 && index < items.length) {
@@ -242,7 +270,11 @@ function initTimelineAnimation(): void {
 			}
 		}
 
-		timeline!.addEventListener('scroll', updateIndicator);
+		if (currentIndicatorScrollHandler) {
+			timeline!.removeEventListener('scroll', currentIndicatorScrollHandler);
+		}
+		currentIndicatorScrollHandler = updateIndicator;
+		timeline!.addEventListener('scroll', currentIndicatorScrollHandler);
 		updateIndicator();
 	}
 }
@@ -253,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
 				const target = mutation.target as HTMLElement;
 				if (target.id === 'page-live' && target.style.display !== 'none') {
-					setTimeout(() => createTimeline(), 100);
+					scheduleCreateTimeline(100);
 				}
 			}
 		});
@@ -264,7 +296,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		observer.observe(livePageElement, { attributes: true });
 
 		if (livePageElement.style.display !== 'none') {
-			createTimeline();
+			if (!isTimelineInitialized) {
+				scheduleCreateTimeline(0);
+			}
 		}
 	}
 });

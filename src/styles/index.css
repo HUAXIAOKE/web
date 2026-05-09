@@ -1057,6 +1057,21 @@ canvas {
 }
 
 @media (max-width: 900px) {
+	#nav {
+		display: none;
+	}
+	#nav-hamburger {
+		display: flex;
+	}
+	#nav-mobile {
+		display: block;
+	}
+	#music-player {
+		display: none;
+	}
+	.box2 {
+		display: none;
+	}
 	#blackboard {
 		width: 90%;
 		height: auto;
@@ -1106,27 +1121,28 @@ canvas {
 		padding-top: 8dvh;
 		padding-bottom: 6dvh;
 	}
+	#page-live,
+	#page-activity {
+		padding: 1rem;
+	}
+	#page-activity {
+		position: relative;
+		top: -1.2rem;
+	}
+	#page-live {
+		min-height: 100dvh;
+		padding: 0.75rem;
+		align-items: stretch;
+	}
+	.site-footer {
+		display: none;
+	}
 }
 
 @media (max-width: 768px) {
-	#nav {
-		display: none;
-	}
-	#nav-hamburger {
-		display: flex;
-	}
-	#nav-mobile {
-		display: block;
-	}
 	#theme-toggle-container {
 		top: 2.3rem;
 		left: 2.5rem;
-	}
-	#music-player {
-		display: none;
-	}
-	.box2 {
-		display: none;
 	}
 	.partOne {
 		height: auto;
@@ -1136,26 +1152,13 @@ canvas {
 	#page-index.partTwo {
 		padding-bottom: 5dvh;
 	}
-	#live2d-container {
-		width: 200px;
-		height: 350px;
-		right: -20px;
-		opacity: 0.7;
-	}
 	.Tip button {
 		font-size: 24px;
-	}
-	#page-live,
-	#page-activity {
-		padding: 1rem;
 	}
 	#page-gallery {
 		min-height: 100dvh;
 		padding-top: 30dvh;
 		padding-bottom: 6dvh;
-	}
-	.site-footer {
-		display: none;
 	}
 }
 
@@ -1188,6 +1191,12 @@ canvas {
 		min-height: 105dvh;
 		padding-top: 30dvh;
 		padding-bottom: 8dvh;
+	}
+	#page-live {
+		padding: 0.5rem;
+	}
+	#page-activity {
+		top: -12rem;
 	}
 	.box-main {
 		height: 90px;
