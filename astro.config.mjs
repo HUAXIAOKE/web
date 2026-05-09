@@ -19,6 +19,12 @@ export default defineConfig({
 					changeOrigin: true,
 					agent: false,
 				},
+				'/joinus': {
+					target: 'https://huaxiaoke.work',
+					changeOrigin: true,
+					secure: true,
+					agent: false,
+				},
 			},
 		},
 	},

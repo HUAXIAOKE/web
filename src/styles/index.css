@@ -30,6 +30,9 @@
 	line-height: 1.6;
 	color: rgba(255, 255, 255, 0.45);
 }
+html:not(.dark) .site-footer {
+	color: rgba(72, 82, 102, 0.72);
+}
 .site-footer p {
 	margin: 0 0 2px;
 	padding: 0;
@@ -39,8 +42,14 @@
 	text-decoration: none;
 	font-size: 12px;
 }
+html:not(.dark) .site-footer a {
+	color: rgba(72, 82, 102, 0.58);
+}
 .site-footer a:hover {
 	color: rgba(255, 255, 255, 0.55);
+}
+html:not(.dark) .site-footer a:hover {
+	color: rgba(72, 82, 102, 0.78);
 }
 html.dark .site-footer {
 	color: rgba(255, 255, 255, 0.3);
@@ -447,9 +456,20 @@ html.dark #music-player .controls button#play-pause-btn {
 	color: #333;
 	font-size: 1.1rem;
 	cursor: pointer;
-	padding: 5px;
+	padding: 0;
 	margin-right: 5px;
 	transition: color 0.2s ease;
+	width: 2rem;
+	height: 2rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.volume-container #volume-btn i {
+	width: 1.25em;
+	text-align: center;
 }
 
 html.dark .volume-container #volume-btn {
@@ -898,6 +918,9 @@ html.dark #nav-mobile {
 	color: rgba(255, 255, 255, 0.35);
 	line-height: 1.6;
 }
+html:not(.dark) #nav-mobile .nav-mobile-footer {
+	color: rgba(72, 82, 102, 0.65);
+}
 #nav-mobile .nav-mobile-footer p {
 	margin: 0 0 4px;
 }
@@ -908,6 +931,12 @@ html.dark #nav-mobile {
 	text-decoration: none;
 	font-size: 11px;
 	font-weight: 400;
+}
+html:not(.dark) #nav-mobile .nav-mobile-footer a {
+	color: rgba(72, 82, 102, 0.52);
+}
+html:not(.dark) #nav-mobile .nav-mobile-footer a:hover {
+	color: rgba(72, 82, 102, 0.75);
 }
 
 #nav-mobile li {

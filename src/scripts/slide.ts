@@ -23,7 +23,7 @@ function slideTo(slideNumber: SlideNumber): void {
 	barOffset += (chosenSlideNumber - previousSlideNumber) * 100;
 	barSlide(barOffset);
 
-	const slides = document.querySelectorAll<HTMLElement>('.card');
+	const slides = document.querySelectorAll<HTMLElement>('#page-about #card-section .card');
 	Array.from(slides).forEach((slide) => {
 		slide.style.transform = `translateY(${offset}%)`;
 	});

@@ -49,6 +49,10 @@ class SPANavigation {
 		this.showCurrentPage();
 	}
 
+	private resetScroll(): void {
+		window.scrollTo(0, 0);
+	}
+
 	private showCurrentPage(): void {
 		document.querySelectorAll<HTMLElement>('[id^="page-"]').forEach((el) => {
 			el.style.display = 'none';
@@ -57,6 +61,7 @@ class SPANavigation {
 		if (target) {
 			target.style.display = 'block';
 		}
+		this.resetScroll();
 		this.initializePage(this.currentPage);
 		this.updatePageTitle(this.currentPage);
 	}
@@ -149,6 +154,7 @@ class SPANavigation {
 		}
 
 		this.currentPage = targetPage;
+		this.resetScroll();
 		this.initializePage(targetPage);
 		this.updatePageTitle(targetPage);
 	}
@@ -224,4 +230,5 @@ window.addEventListener('popstate', () => {
 	const target = document.getElementById(`page-${page}`);
 	if (target) target.style.display = 'block';
 	document.title = PAGE_TITLES[page] || 'Huaxiaoke';
+	window.scrollTo(0, 0);
 });

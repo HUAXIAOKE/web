@@ -9,6 +9,20 @@
 	perspective: 1000px;
 }
 
+@keyframes slide-fade-in-mobile {
+	from {
+		opacity: 0;
+		box-shadow: none;
+		transform: scale(0.96) translateY(10px);
+	}
+
+	to {
+		opacity: 1;
+		box-shadow: 0px 8px 20px #00000022;
+		transform: scale(1) translateY(0);
+	}
+}
+
 .cards .card {
 	position: relative;
 	animation: slide-fade-in both;
@@ -167,6 +181,12 @@ html.dark .info-card p i {
 		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 		padding: 1rem 1rem 3rem 1rem;
 		gap: 1rem;
+	}
+
+	.cards .card {
+		animation: slide-fade-in-mobile 0.45s ease forwards;
+		animation-timeline: unset;
+		animation-range: unset;
 	}
 
 	.cards .card:nth-of-type(4n),
