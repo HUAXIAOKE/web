@@ -11,6 +11,9 @@
 	--bb-drop-1: 0 20px 46px rgba(0, 0, 0, 0.28);
 	--bb-drop-2: 0 8px 22px rgba(0, 0, 0, 0.2);
 	--bb-inner: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -3px 10px rgba(0, 0, 0, 0.14);
+	--music-player-top: 1rem;
+	--music-player-height: 72px;
+	--music-player-center-y: calc(var(--music-player-top) + (var(--music-player-height) / 2));
 	--bb-rim: linear-gradient(
 		145deg,
 		rgba(255, 255, 255, 0.6) 0%,
@@ -244,7 +247,7 @@ html.dark #blackboard:hover {
 #music-player {
 	box-sizing: content-box;
 	position: fixed;
-	top: 1rem;
+	top: var(--music-player-top);
 	right: 1rem;
 	display: flex;
 	align-items: center;
@@ -530,8 +533,9 @@ html.dark .volume-slider::-moz-range-thumb {
 /* Other Page Styles */
 #theme-toggle-container {
 	position: absolute;
-	top: 2rem;
+	top: var(--music-player-center-y);
 	left: 4rem;
+	transform: translateY(-50%);
 	z-index: 1199;
 }
 
@@ -1097,6 +1101,11 @@ canvas {
 		height: 80vh;
 		padding-top: 10vh;
 	}
+	#page-gallery {
+		min-height: 100dvh;
+		padding-top: 8dvh;
+		padding-bottom: 6dvh;
+	}
 }
 
 @media (max-width: 768px) {
@@ -1140,6 +1149,11 @@ canvas {
 	#page-activity {
 		padding: 1rem;
 	}
+	#page-gallery {
+		min-height: 100dvh;
+		padding-top: 30dvh;
+		padding-bottom: 6dvh;
+	}
 	.site-footer {
 		display: none;
 	}
@@ -1169,6 +1183,11 @@ canvas {
 	}
 	#page-index.partTwo {
 		padding-bottom: 20dvh;
+	}
+	#page-gallery {
+		min-height: 105dvh;
+		padding-top: 30dvh;
+		padding-bottom: 8dvh;
 	}
 	.box-main {
 		height: 90px;
