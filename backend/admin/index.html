@@ -429,6 +429,19 @@
 				loadTimeline();
 			}
 
+			function markImgMissing(imgEl) {
+				const src = imgEl.dataset.src || imgEl.getAttribute('src') || '';
+				const ph = document.createElement('div');
+				ph.className = 'img-missing card-img';
+				const label = document.createElement('span');
+				label.textContent = '图片缺失';
+				const code = document.createElement('code');
+				code.textContent = src;
+				ph.appendChild(label);
+				ph.appendChild(code);
+				imgEl.replaceWith(ph);
+			}
+
 			async function loadGallery() {
 				const res = await authFetch('/api/gallery');
 				const list = await res.json();
@@ -438,7 +451,7 @@
 				)
 					.map(
 						(g) => `<div class="card">
-				<img class="card-img" src="${g.image}" onerror="this.style.display='none'">
+				<img class="card-img" src="${g.image}" data-src="${g.image}" onerror="markImgMissing(this)">
 				<div class="card-body"><h3>${g.scene}</h3><p>画师: ${g.illustrator}</p><p>${g.description}</p></div>
 				<div class="card-actions">
 				<button class="btn btn-ghost" onclick='editGallery(${JSON.stringify(g)})'>编辑</button>

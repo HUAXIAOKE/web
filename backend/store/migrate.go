@@ -52,6 +52,10 @@ func RunMigrations() error {
 			if err := migrateV4ToV5(); err != nil {
 				return fmt.Errorf("v5: %w", err)
 			}
+		case 5:
+			if err := migrateV5ToV6(); err != nil {
+				return fmt.Errorf("v6: %w", err)
+			}
 		}
 	}
 
@@ -262,5 +266,47 @@ func migrateV4ToV5() error {
 	}
 
 	fmt.Printf("[migrate] v5: added %d gallery records from filesystem\n", added)
+	return nil
+}
+
+func migrateV5ToV6() error {
+	if PublicAssetsDir == "" {
+		return fmt.Errorf("PublicAssetsDir is empty, cannot resolve image paths")
+	}
+
+	rows, err := DB.Query(`SELECT id, image FROM gallery`)
+	if err != nil {
+		return fmt.Errorf("query gallery: %w", err)
+	}
+
+	type row struct {
+		id    int
+		image string
+	}
+	var toDelete []row
+	for rows.Next() {
+		var r row
+		if err := rows.Scan(&r.id, &r.image); err != nil {
+			continue
+		}
+		if !strings.HasPrefix(r.image, "/img/") {
+			continue
+		}
+		absPath := filepath.Join(PublicAssetsDir, filepath.FromSlash(strings.TrimPrefix(r.image, "/")))
+		if _, err := os.Stat(absPath); os.IsNotExist(err) {
+			toDelete = append(toDelete, r)
+		}
+	}
+	rows.Close()
+
+	for _, r := range toDelete {
+		if _, err := DB.Exec(`DELETE FROM gallery WHERE id=?`, r.id); err != nil {
+			log.Printf("[migrate] v6: delete gallery id=%d failed: %v", r.id, err)
+			continue
+		}
+		log.Printf("[migrate] v6: removed orphan gallery id=%d image=%s", r.id, r.image)
+	}
+
+	fmt.Printf("[migrate] v6: removed %d orphan gallery records\n", len(toDelete))
 	return nil
 }

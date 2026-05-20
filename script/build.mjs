@@ -87,6 +87,22 @@ docker-compose down --remove-orphans
 docker ps -a --format '{{.Names}}' | grep -E 'huaxiaoke-web' | xargs -r docker rm -f
 docker-compose build --no-cache
 docker-compose up -d
+
+OLD_VOL=$(docker volume ls -q | grep -E '_uploads_img$' | head -n1 || true)
+NEW_VOL=$(docker volume ls -q | grep -E '_public_img$' | head -n1 || true)
+if [ -n "$OLD_VOL" ] && [ -n "$NEW_VOL" ]; then
+  echo "[migrate-volume] $OLD_VOL → $NEW_VOL/uploads"
+  docker run --rm \\
+    -v "$OLD_VOL":/old:ro \\
+    -v "$NEW_VOL":/new \\
+    alpine sh -c "mkdir -p /new/uploads && cp -an /old/. /new/uploads/ 2>/dev/null || true"
+  if docker volume rm "$OLD_VOL" 2>/dev/null; then
+    echo "[migrate-volume] 旧卷已删除"
+  else
+    echo "[migrate-volume] 旧卷保留（仍被引用或删除失败，可手动清理）"
+  fi
+fi
+
 docker image prune -af
 docker builder prune -af
 echo "部署完成."
