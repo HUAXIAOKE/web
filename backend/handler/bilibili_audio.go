@@ -91,8 +91,8 @@ func StreamBilibiliAudio(w http.ResponseWriter, r *http.Request) {
 	}
 	cidReq.Header.Set("User-Agent", bilibiliUA)
 	cidReq.Header.Set("Referer", bilibiliReferer)
-	if bilibiliCookie != "" {
-		cidReq.Header.Set("Cookie", bilibiliCookie)
+	if ck := getBilibiliCookie(); ck != "" {
+		cidReq.Header.Set("Cookie", ck)
 	}
 
 	cidResp, err := http.DefaultClient.Do(cidReq)
@@ -124,8 +124,8 @@ func StreamBilibiliAudio(w http.ResponseWriter, r *http.Request) {
 	}
 	playReq.Header.Set("User-Agent", bilibiliUA)
 	playReq.Header.Set("Referer", bilibiliReferer)
-	if bilibiliCookie != "" {
-		playReq.Header.Set("Cookie", bilibiliCookie)
+	if ck := getBilibiliCookie(); ck != "" {
+		playReq.Header.Set("Cookie", ck)
 	}
 
 	playResp, err := http.DefaultClient.Do(playReq)

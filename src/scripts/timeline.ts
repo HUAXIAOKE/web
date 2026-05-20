@@ -28,8 +28,7 @@ async function loadTimelineData(): Promise<TimelineEvent[]> {
 		const result = await data.json();
 		timelineData = result.events || [];
 		return timelineData;
-	} catch (error) {
-		console.error('加载时间轴数据失败:', error);
+	} catch {
 		return [];
 	}
 }

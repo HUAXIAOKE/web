@@ -20,7 +20,11 @@
 		</div>
 
 		<div class="app" id="app-page" style="display: none">
-			<aside class="sidebar">
+			<button class="sidebar-toggle" id="sidebar-toggle" aria-label="打开菜单" onclick="toggleSidebar()">
+				<span></span><span></span><span></span>
+			</button>
+			<div class="sidebar-mask" id="sidebar-mask" onclick="toggleSidebar(false)"></div>
+			<aside class="sidebar" id="sidebar">
 				<div class="sidebar-logo">华小科 Web</div>
 				<nav>
 					<a class="active" data-tab="activity">活动列表</a>
@@ -28,6 +32,7 @@
 					<a data-tab="gallery">插画展示</a>
 					<a data-tab="about">关于我们</a>
 					<a data-tab="music">增添音乐</a>
+					<a data-tab="bilibili">B站绑定</a>
 				</nav>
 				<div class="sidebar-footer">
 					<button class="btn-logout" onclick="doLogout()">退出登录</button>
@@ -687,12 +692,129 @@
 				loadMusic();
 			}
 
-			const loaders = { activity: loadActivity, timeline: loadTimeline, gallery: loadGallery, about: loadAbout, music: loadMusic };
+			let bilibiliPollTimer = null;
+
+			async function loadBilibili() {
+				if (bilibiliPollTimer) {
+					clearInterval(bilibiliPollTimer);
+					bilibiliPollTimer = null;
+				}
+				const main = document.getElementById('main-content');
+				main.innerHTML = `<div class="page-header"><h2>B 站绑定</h2></div>
+					<div class="bilibili-bind" id="bili-panel">
+						<div class="bili-status" id="bili-status">检测中...</div>
+					</div>`;
+				try {
+					const res = await authFetch('/api/bilibili/status');
+					const data = await res.json();
+					if (data.bound) {
+						renderBilibiliBound(data.bili_uid);
+					} else {
+						startBilibiliBind();
+					}
+				} catch (e) {
+					document.getElementById('bili-status').textContent = '状态获取失败';
+				}
+			}
+
+			function renderBilibiliBound(uid) {
+				const panel = document.getElementById('bili-panel');
+				panel.innerHTML = `
+					<div class="bili-status ok">已绑定 B 站账号 UID: <strong>${uid}</strong></div>
+					<p style="color:var(--text-sub);font-size:13px;margin:12px 0">如发现主页"风控校验失败"或 cookie 失效，可重新扫码绑定。</p>
+					<button class="btn btn-primary" onclick="startBilibiliBind()">重新绑定</button>`;
+			}
+
+			async function startBilibiliBind() {
+				const panel = document.getElementById('bili-panel');
+				panel.innerHTML = `<div class="bili-status">正在生成二维码...</div>`;
+				try {
+					const res = await authFetch('/api/bilibili/qrcode', { method: 'POST' });
+					const data = await res.json();
+					if (data.error || !data.qrcode_key) {
+						panel.innerHTML = `<div class="bili-status err">${data.error || '二维码生成失败'}</div>
+							<button class="btn btn-ghost" onclick="startBilibiliBind()">重试</button>`;
+						return;
+					}
+					panel.innerHTML = `
+						<div class="bili-qrcode-wrap">
+							<img class="bili-qrcode" src="${data.qr_data_url}" alt="B站登录二维码">
+							<div class="bili-status" id="bili-status">请使用 B 站手机 App 扫码登录</div>
+						</div>`;
+					pollBilibiliQrcode(data.qrcode_key);
+				} catch (e) {
+					panel.innerHTML = `<div class="bili-status err">二维码生成失败</div>
+						<button class="btn btn-ghost" onclick="startBilibiliBind()">重试</button>`;
+				}
+			}
+
+			function pollBilibiliQrcode(key) {
+				const statusEl = () => document.getElementById('bili-status');
+				const tick = async () => {
+					try {
+						const res = await authFetch('/api/bilibili/qrcode/status?key=' + encodeURIComponent(key));
+						const data = await res.json();
+						if (data.code === 0) {
+							clearInterval(bilibiliPollTimer);
+							bilibiliPollTimer = null;
+							statusEl().textContent = '扫码成功，正在保存...';
+							const biliUID = extractBiliUID(data.cookies);
+							const bindRes = await authFetch('/api/bilibili/bind', {
+								method: 'POST',
+								headers: authHeaders(),
+								body: JSON.stringify({
+									refresh_token: data.refresh_token || '',
+									cookies: data.cookies || '',
+									bili_uid: biliUID,
+								}),
+							});
+							if (!bindRes.ok) {
+								statusEl().textContent = '保存失败';
+								return;
+							}
+							toast('B 站绑定成功');
+							renderBilibiliBound(biliUID || '已绑定');
+						} else if (data.code === 86038) {
+							clearInterval(bilibiliPollTimer);
+							bilibiliPollTimer = null;
+							const el = statusEl();
+							if (el) el.textContent = '二维码已过期，请重试';
+							const panel = document.getElementById('bili-panel');
+							panel.innerHTML += `<button class="btn btn-ghost" onclick="startBilibiliBind()" style="margin-top:12px">重新生成二维码</button>`;
+						} else if (data.code === 86090) {
+							const el = statusEl();
+							if (el) el.textContent = '已扫码，请在手机上确认登录';
+						} else if (data.code === 86101) {
+							const el = statusEl();
+							if (el) el.textContent = '请使用 B 站 App 扫码';
+						}
+					} catch (e) {}
+				};
+				tick();
+				bilibiliPollTimer = setInterval(tick, 2500);
+			}
+
+			function extractBiliUID(cookies) {
+				if (!cookies) return '';
+				const m = cookies.match(/DedeUserID=(\d+)/);
+				return m ? m[1] : '';
+			}
+
+			function toggleSidebar(force) {
+				const sb = document.getElementById('sidebar');
+				const mask = document.getElementById('sidebar-mask');
+				const open = force === undefined ? !sb.classList.contains('open') : force;
+				sb.classList.toggle('open', open);
+				mask.classList.toggle('show', open);
+			}
+
+			const loaders = { activity: loadActivity, timeline: loadTimeline, gallery: loadGallery, about: loadAbout, music: loadMusic, bilibili: loadBilibili };
 			document.querySelectorAll('.sidebar a[data-tab]').forEach((a) => {
 				a.addEventListener('click', () => {
 					document.querySelectorAll('.sidebar a').forEach((x) => x.classList.remove('active'));
 					a.classList.add('active');
 					loaders[a.dataset.tab]();
+					toggleSidebar(false);
 				});
 			});
 

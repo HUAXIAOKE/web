@@ -40,7 +40,6 @@ async function initLatestVideo(): Promise<void> {
 		}
 		if (text) text.textContent = video.title;
 	} catch (e) {
-		console.error('最新视频加载失败:', e);
 		const text = block.querySelector<HTMLElement>('.box-maintext');
 		if (text) text.textContent = '此事在Bilibili的华小科Official中亦有记载~';
 	}
@@ -62,7 +61,6 @@ async function initTimeline(): Promise<void> {
 		if (titleEl) titleEl.textContent = data.header.title;
 		if (subEl) subEl.textContent = data.header.subtitle;
 	} catch (e) {
-		console.error(e);
 	}
 }
 
@@ -85,7 +83,6 @@ async function initAbout(): Promise<void> {
 			})
 			.join('\n');
 	} catch (e) {
-		console.error(e);
 	}
 }
 
@@ -126,8 +123,7 @@ async function initActivity(): Promise<void> {
 			}
 			if (text) text.textContent = latest.headline;
 		}
-	} catch (e) {
-		console.error(e);
+	} catch {
 	}
 }
 

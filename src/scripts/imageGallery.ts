@@ -59,14 +59,12 @@ async function generateImageCards(): Promise<void> {
 			};
 
 			img.onerror = () => {
-				console.error(`Failed to load image: ${item.image}`);
 				card.style.display = 'none';
 			};
 
 			gallery!.appendChild(card);
 		});
-	} catch (error) {
-		console.error('Error loading images:', error);
+	} catch {
 		if (gallery) {
 			gallery.innerHTML = '<p style="text-align: center; color: #666;">加载图片时出错，请稍后重试</p>';
 		}

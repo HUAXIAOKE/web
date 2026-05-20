@@ -95,6 +95,13 @@ func migrate() {
 			sort_order INTEGER NOT NULL DEFAULT 0,
 			created_at TEXT DEFAULT (datetime('now'))
 		)`,
+		`CREATE TABLE IF NOT EXISTS bilibili_state (
+			id            INTEGER PRIMARY KEY CHECK (id = 1),
+			refresh_token TEXT NOT NULL DEFAULT '',
+			bili_uid      TEXT NOT NULL DEFAULT '',
+			bili_cookie   TEXT NOT NULL DEFAULT '',
+			updated_at    TEXT NOT NULL DEFAULT ''
+		)`,
 	}
 
 	for _, s := range statements {
