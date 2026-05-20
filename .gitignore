@@ -117,3 +117,8 @@ deploy/nginx.conf
 
 # Public
 public/
+
+# Go 后端
+backend/data.db
+backend/data/
+backend/huaxiaoke-server
