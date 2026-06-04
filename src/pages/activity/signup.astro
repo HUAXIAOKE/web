@@ -1,0 +1,84 @@
+---
+import SubLayout from "../../layouts/SubLayout.astro";
+
+const activityTitle = "「2026 新生歌会」线上直播";
+const activityDate = "2026-09-15";
+const activityTags = ["线上"];
+const activityImage = "/img/activity/Xinshenggehui.webp";
+---
+
+<SubLayout title="活动报名 - Huaxiaoke" description="华小科活动报名">
+  <div class="signup-page">
+    <div class="signup-hero">
+      <div class="signup-hero-media" style={`background-image: url('${activityImage}')`}></div>
+      <div class="signup-hero-overlay"></div>
+      <div class="signup-hero-content">
+        <p class="signup-hero-kicker">ACTIVITY SIGN UP</p>
+        <h1 class="signup-hero-title">{activityTitle}</h1>
+        <div class="signup-hero-meta">
+          {activityTags.map((tag: string) => <span class="signup-hero-tag">{tag}</span>)}
+          <span class="signup-hero-date">{activityDate}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="signup-form-card">
+      <h2>请报名</h2>
+      <p class="form-subtitle">提交前请先阅读注意事项哦～</p>
+
+      <form class="signup-form" id="signup-form">
+        <div class="signup-form-row">
+          <div class="signup-field">
+            <label for="name">昵称<span class="required">*</span></label>
+            <input type="text" id="name" name="name" placeholder="该如何称呼呢～" required />
+          </div>
+          <div class="signup-field">
+            <label for="qq">QQ 号<span class="required">*</span></label>
+            <input type="text" id="qq" name="qq" placeholder="留个QQ让我们联系你！" required />
+          </div>
+        </div>
+
+        <div class="signup-field">
+          <label for="department">院系<span class="required">*</span></label>
+          <input type="text" id="department" name="department" placeholder="Where are you from?" required />
+        </div>
+
+        <div class="signup-field">
+          <label for="remark">备注</label>
+          <textarea id="remark" name="remark" placeholder="还有什么想告诉我们的？"></textarea>
+        </div>
+
+        <div class="signup-field">
+          <label for="attachment">附件<span class="required">*</span></label>
+          <div class="signup-file-wrap">
+            <input type="file" id="attachment" name="attachment" multiple />
+            <label for="attachment" class="signup-file-trigger">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span>点击或拖拽上传文件</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="signup-actions">
+          <button type="submit" class="signup-submit">提交报名</button>
+          <a href="/activity" class="signup-back">
+            <i class="fas fa-arrow-left"></i>
+            返回活动列表
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <div class="signup-detail-card">
+      <h3>递交须知</h3>
+      <ul>
+        <li>请确保填写信息真实有效</li>
+        <li>请递交至少包含完整视频文件的压缩包</li>
+        <li>压缩包命名需要包含歌名</li>
+        <li>报名成功后我们可以重复提交来覆盖</li>
+        <li>会根据报名情况与作品质量甄选，会尽可能让每一份稿件都被看到</li>
+        <li>如有疑问请通过 B 站私信或在 QQ 相关群聊内联系我们</li>
+      </ul>
+    </div>
+  </div>
+</SubLayout>

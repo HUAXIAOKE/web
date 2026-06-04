@@ -1,0 +1,45 @@
+---
+import SubLayout from "../../layouts/SubLayout.astro";
+
+export const prerender = false;
+
+const slug = Astro.params.slug;
+const activityTitle = "活动详情";
+const activityDate = "2026-09-15";
+const activityTags = ["线上"];
+const activityImage = "/img/activity/Xinshenggehui.webp";
+---
+
+<SubLayout title={`${activityTitle} - Huaxiaoke`} description={activityTitle}>
+  <div class="activity-detail-page">
+    <div class="detail-hero">
+      <div class="detail-hero-media" style={`background-image: url('${activityImage}')`}></div>
+      <div class="detail-hero-overlay"></div>
+      <div class="detail-hero-content">
+        <p class="detail-hero-kicker">ACTIVITY DETAIL</p>
+        <h1 class="detail-hero-title">{activityTitle}</h1>
+        <div class="detail-hero-meta">
+          {activityTags.map((tag: string) => <span class="detail-hero-tag">{tag}</span>)}
+          <span class="detail-hero-date">{activityDate}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-content-card">
+      <h2>活动介绍</h2>
+      <p>这里是活动的详细内容介绍。活动详细信息将通过后端 API 动态加载，当前为静态占位展示。</p>
+      <p>点击下方按钮报名参加活动，或返回活动列表查看更多活动。</p>
+
+      <div class="detail-actions">
+        <a href="/activity/signup" class="detail-signup-link">
+          <i class="fas fa-pen-to-square"></i>
+          立即报名
+        </a>
+        <a href="/activity" class="detail-back">
+          <i class="fas fa-arrow-left"></i>
+          返回活动列表
+        </a>
+      </div>
+    </div>
+  </div>
+</SubLayout>
