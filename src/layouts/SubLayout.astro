@@ -1,0 +1,53 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+}
+
+import "../styles/index.css";
+import "../styles/signup.css";
+
+import MusicPlayer from "../components/MusicPlayer.astro";
+
+const { title, description = "Huaxiaoke" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" sizes="32x32" href="/img/icon.ico" />
+    <link rel="preload" as="style" href="/vendor/fontawesome/all.min.css" />
+    <link rel="stylesheet" href="/vendor/fontawesome/all.min.css" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <div id="theme-toggle-container">
+      <theme-button id="theme-btn" size="1" value="dark"></theme-button>
+    </div>
+
+    <MusicPlayer />
+    <script>
+      document.querySelector('#music-player')?.classList.add('collapsed');
+    </script>
+    <canvas></canvas>
+
+    <main class="sub-page-main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <p>&copy; 2026 HXK Huaxiaoke Official Team<br>All Rights Reserved</p>
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">辽ICP备2026003216号</a>
+    </footer>
+
+    <script src="/src/scripts/api-config.ts"></script>
+    <script src="/src/scripts/dayornight.ts"></script>
+    <script src="/src/scripts/isinline.ts"></script>
+    <script src="/src/scripts/music-player.ts"></script>
+    <script src="/src/scripts/stars.ts"></script>
+  </body>
+</html>
