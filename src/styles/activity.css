@@ -28,6 +28,73 @@ html.dark {
 	padding: 2rem 2rem 4rem;
 }
 
+/* 趴头角色 */
+.activity-character-overlay {
+	position: absolute;
+	top: 0;
+	right: 0;
+	pointer-events: none;
+	z-index: 10;
+	width: 180px;
+	opacity: 0;
+	transform: translateY(-56%);
+	transition:
+		top 0.45s cubic-bezier(0.25, 0.8, 0.25, 1),
+		right 0.45s cubic-bezier(0.25, 0.8, 0.25, 1),
+		opacity 0.35s ease;
+	will-change: top, right;
+}
+
+.activity-character-overlay.active {
+	opacity: 1;
+}
+
+.activity-character-overlay img {
+	width: 100%;
+	height: auto;
+	display: block;
+	filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+}
+
+/* 残影 */
+.activity-character-ghost {
+	position: absolute;
+	top: 0;
+	right: 0;
+	pointer-events: none;
+	z-index: 9;
+	width: 180px;
+	opacity: 0.5;
+	transform: translateY(-56%);
+}
+
+.activity-character-ghost.fade-out {
+	animation: character-ghost-fade 0.55s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes character-ghost-fade {
+	0% {
+		opacity: 0.5;
+		transform: translateY(-56%) scale(1);
+		filter: blur(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(-56%) scale(0.94);
+		filter: blur(5px);
+	}
+}
+
+.activity-character-ghost img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+.activity-feed {
+	position: relative;
+}
+
 .news-hero {
 	position: relative;
 	overflow: hidden;
@@ -162,6 +229,7 @@ html.dark #filter-collab:checked ~ .tab[for='filter-collab'] {
 	grid-template-columns: repeat(12, 1fr);
 	gap: 1.25rem;
 	margin-top: 1.25rem;
+	position: relative;
 }
 
 /* 3列卡片：在 1320px 下每列 4 栅格 */
@@ -181,7 +249,6 @@ html.dark #filter-collab:checked ~ .tab[for='filter-collab'] {
 	-webkit-backdrop-filter: blur(8px);
 
 	transition:
-		transform 0.25s ease,
 		box-shadow 0.25s ease,
 		border-color 0.25s ease,
 		background 0.25s ease;
@@ -192,7 +259,7 @@ html.dark #filter-collab:checked ~ .tab[for='filter-collab'] {
 }
 
 .news-card.card-signup::before {
-	content: '立即报名';
+	content: '火热进行';
 	position: absolute;
 	top: 12px;
 	right: 12px;
@@ -216,10 +283,10 @@ html.dark #filter-collab:checked ~ .tab[for='filter-collab'] {
 }
 
 .news-card:hover {
-	transform: translateY(-4px);
 	box-shadow:
 		0 8px 12px rgba(0, 0, 0, 0.22),
 		0 4px 8px rgba(0, 0, 0, 0.18);
+	border-color: var(--news-accent);
 }
 
 .news-card .thumb {

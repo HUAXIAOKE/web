@@ -7,6 +7,112 @@ interface ActivityItem {
 	image: string;
 }
 
+function initActivityCharacter(grid: HTMLElement): void {
+	if (grid.dataset.characterInit === 'true') return;
+
+	const cards = Array.from(grid.querySelectorAll<HTMLElement>('.news-card'));
+	if (cards.length === 0) return;
+
+	grid.dataset.characterInit = 'true';
+
+	const isMobile = () => window.innerWidth <= 900;
+
+	const overlay = document.createElement('div');
+	overlay.className = 'activity-character-overlay';
+	overlay.innerHTML = '<img src="/img/activity/here.webp" alt="" decoding="async" fetchpriority="high" />';
+	grid.appendChild(overlay);
+
+	let currentCard: HTMLElement | null = null;
+
+	const spawnGhost = (top: number, right: number): void => {
+		const el = document.createElement('div');
+		el.className = 'activity-character-ghost';
+		el.innerHTML = '<img src="/img/activity/here.webp" alt="" decoding="async" />';
+		el.style.top = top + 'px';
+		el.style.right = right + 'px';
+		grid.appendChild(el);
+		requestAnimationFrame(() => el.classList.add('fade-out'));
+		el.addEventListener('animationend', () => el.remove(), { once: true });
+	};
+
+	const positionCharacter = (card: HTMLElement, leaveTrail: boolean): void => {
+		const cardRect = card.getBoundingClientRect();
+		const gridRect = grid.getBoundingClientRect();
+
+		const targetTop = cardRect.top - gridRect.top;
+		const targetRight = gridRect.right - cardRect.right - 8;
+
+		if (leaveTrail && overlay.classList.contains('active')) {
+			const prevTop = parseFloat(overlay.style.top);
+			const prevRight = parseFloat(overlay.style.right);
+			if (!Number.isNaN(prevTop) && !Number.isNaN(prevRight)) {
+				spawnGhost(prevTop, prevRight);
+			}
+		}
+
+		overlay.style.top = targetTop + 'px';
+		overlay.style.right = targetRight + 'px';
+	};
+
+	const moveCharacter = (card: HTMLElement): void => {
+		if (currentCard === card) {
+			positionCharacter(card, false);
+			return;
+		}
+
+		const hadCharacter = currentCard !== null;
+		currentCard = card;
+		overlay.classList.add('active');
+		positionCharacter(card, hadCharacter);
+	};
+
+	const syncAfterFilter = (): void => {
+		const visible = Array.from(grid.querySelectorAll<HTMLElement>('.news-card:not(.card-hidden)'));
+		if (!visible.length) return;
+		if (!currentCard || currentCard.classList.contains('card-hidden')) {
+			moveCharacter(visible[0]);
+		} else {
+			positionCharacter(currentCard, false);
+		}
+	};
+
+	const defaultCard = cards.find((c) => !c.classList.contains('card-hidden')) ?? cards[0];
+	moveCharacter(defaultCard);
+
+	if (isMobile()) {
+		cards.forEach((card) => {
+			card.addEventListener('click', (e) => {
+				if (currentCard === card) return;
+				e.preventDefault();
+				moveCharacter(card);
+			});
+		});
+	} else {
+		cards.forEach((card) => {
+			card.addEventListener('mouseenter', () => moveCharacter(card));
+		});
+	}
+
+	grid.addEventListener('input', () => {
+		setTimeout(syncAfterFilter, 200);
+	});
+
+	window.addEventListener('resize', () => {
+		if (currentCard && !currentCard.classList.contains('card-hidden')) {
+			positionCharacter(currentCard, false);
+		}
+	});
+
+	const img = overlay.querySelector('img') as HTMLImageElement;
+	if (img) {
+		const onImgReady = (): void => {
+			if (currentCard) positionCharacter(currentCard, false);
+		};
+		if (img.complete) onImgReady();
+		else img.addEventListener('load', onImgReady, { once: true });
+	}
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	const section = document.querySelector<HTMLElement>('.activity');
 	const tabs = document.querySelector<HTMLElement>('.news-tabs');
@@ -83,7 +189,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	});
 
-
 	tabs.addEventListener('keydown', (e) => {
 		const current = inputs.findIndex((i) => i.checked);
 		if (current < 0) return;
@@ -93,5 +198,11 @@ document.addEventListener('DOMContentLoaded', () => {
 			const next = (current + delta + inputs.length) % inputs.length;
 			setChecked(inputs[next]);
 		}
+	});
+
+	initActivityCharacter(grid);
+
+	document.addEventListener('activity-cards-loaded', () => {
+		initActivityCharacter(grid);
 	});
 });

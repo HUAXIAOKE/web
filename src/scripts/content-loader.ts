@@ -121,6 +121,7 @@ async function initActivity(): Promise<void> {
 </a>`
 				)
 				.join('\n');
+			document.dispatchEvent(new CustomEvent('activity-cards-loaded'));
 		}
 
 		const latest = activities.reduce((a, b) => (a.date > b.date ? a : b));
