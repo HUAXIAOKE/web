@@ -91,12 +91,23 @@ async function initActivity(): Promise<void> {
 		const activities = await loadAPI<ActivityItem[]>('/api/activities');
 		if (!activities || activities.length === 0) return;
 
+		const getCardHref = (a: ActivityItem, index: number): string => {
+			if (index === 0) return '/activity/signup';
+			const slug = a.headline
+				.replace(/[「」]/g, '')
+				.replace(/[^\w\u4e00-\u9fa5]/g, '-')
+				.replace(/-+/g, '-')
+				.replace(/^-|-$/g, '')
+				|| `activity-${index}`;
+			return `/activity/${slug}`;
+		};
+
 		const grid = document.getElementById('activity-grid');
 		if (grid) {
 			grid.innerHTML = activities
 				.map(
-					(a) =>
-						`<a class="news-card" data-tags="${a.tags}" href="${a.href}" target="_blank" rel="noopener">
+					(a, i) =>
+						`<a class="news-card${i === 0 ? ' card-signup' : ''}" data-tags="${a.tags}" href="${getCardHref(a, i)}">
   <div class="thumb" style="background-image:url(${a.image})"></div>
   <div class="meta">
     ${a.tags

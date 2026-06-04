@@ -83,12 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	});
 
-	// 临时关闭活动卡片跳转，后续再恢复
-	grid.addEventListener('click', (e) => {
-		const card = (e.target as HTMLElement).closest('.news-card');
-		if (!card) return;
-		e.preventDefault();
-	});
 
 	tabs.addEventListener('keydown', (e) => {
 		const current = inputs.findIndex((i) => i.checked);
