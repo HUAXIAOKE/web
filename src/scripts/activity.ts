@@ -35,7 +35,7 @@ function initActivityCharacter(grid: HTMLElement): void {
 		el.addEventListener('animationend', () => el.remove(), { once: true });
 	};
 
-	const positionCharacter = (card: HTMLElement, leaveTrail: boolean): void => {
+	const positionCharacter = (card: HTMLElement, leaveTrail: boolean, instant = false): void => {
 		const cardRect = card.getBoundingClientRect();
 		const gridRect = grid.getBoundingClientRect();
 
@@ -50,8 +50,17 @@ function initActivityCharacter(grid: HTMLElement): void {
 			}
 		}
 
-		overlay.style.top = targetTop + 'px';
-		overlay.style.right = targetRight + 'px';
+		if (instant) {
+			const prev = overlay.style.transition;
+			overlay.style.transition = 'none';
+			overlay.style.top = targetTop + 'px';
+			overlay.style.right = targetRight + 'px';
+			void overlay.offsetWidth;
+			overlay.style.transition = prev;
+		} else {
+			overlay.style.top = targetTop + 'px';
+			overlay.style.right = targetRight + 'px';
+		}
 	};
 
 	const moveCharacter = (card: HTMLElement): void => {
@@ -62,8 +71,8 @@ function initActivityCharacter(grid: HTMLElement): void {
 
 		const hadCharacter = currentCard !== null;
 		currentCard = card;
-		overlay.classList.add('active');
 		positionCharacter(card, hadCharacter);
+		overlay.classList.add('active');
 	};
 
 	const syncAfterFilter = (): void => {
@@ -77,7 +86,13 @@ function initActivityCharacter(grid: HTMLElement): void {
 	};
 
 	const defaultCard = cards.find((c) => !c.classList.contains('card-hidden')) ?? cards[0];
-	moveCharacter(defaultCard);
+	if (defaultCard) {
+		requestAnimationFrame(() => {
+			currentCard = defaultCard;
+			positionCharacter(defaultCard, false, true);
+			overlay.classList.add('active');
+		});
+	}
 
 	if (isMobile()) {
 		cards.forEach((card) => {
@@ -100,6 +115,20 @@ function initActivityCharacter(grid: HTMLElement): void {
 	window.addEventListener('resize', () => {
 		if (currentCard && !currentCard.classList.contains('card-hidden')) {
 			positionCharacter(currentCard, false);
+		}
+	});
+
+	document.addEventListener('activity-page-shown', () => {
+		const target =
+			currentCard && !currentCard.classList.contains('card-hidden')
+				? currentCard
+				: cards.find((c) => !c.classList.contains('card-hidden')) ?? cards[0];
+		if (target) {
+			currentCard = target;
+			requestAnimationFrame(() => {
+				positionCharacter(target, false, true);
+				overlay.classList.add('active');
+			});
 		}
 	});
 

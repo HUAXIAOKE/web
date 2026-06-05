@@ -181,6 +181,11 @@ class SPANavigation {
 					}
 				}, 100);
 				break;
+			case 'activity':
+				setTimeout(() => {
+					document.dispatchEvent(new CustomEvent('activity-page-shown'));
+				}, 50);
+				break;
 		}
 	}
 
