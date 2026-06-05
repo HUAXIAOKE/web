@@ -185,7 +185,6 @@ html.dark .info-card p i {
 
 	.info-card {
 		padding: 12px;
-		justify-content: flex-start;
 	}
 	.info-card h3 {
 		font-size: 1.05em;
@@ -198,7 +197,7 @@ html.dark .info-card p i {
 		margin-bottom: 6px;
 	}
 	.card:hover .info-card {
-		align-items: stretch;
+		align-items: flex-start;
 	}
 }
 
