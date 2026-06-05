@@ -8,19 +8,30 @@ interface GalleryItem {
 function setCardSize(img: HTMLImageElement, card: HTMLElement): void {
 	const aspectRatio = img.naturalWidth / img.naturalHeight;
 
-	if (aspectRatio > 1.5) {
-		card.style.gridColumn = 'span 2';
-		card.style.gridRow = 'span 1';
-	} else if (aspectRatio < 0.7) {
-		card.style.gridColumn = 'span 1';
-		card.style.gridRow = 'span 2';
-	} else {
-		card.style.gridColumn = 'span 1';
-		card.style.gridRow = 'span 1';
-	}
+	card.classList.remove('landscape', 'portrait');
+	card.style.gridColumn = '';
+	card.style.gridRow = '';
 
-	img.style.objectFit = 'cover';
-	img.style.objectPosition = 'center';
+	if (window.innerWidth <= 768) {
+		if (aspectRatio > 1.5) {
+			card.style.gridColumn = 'span 2';
+			card.style.gridRow = 'span 1';
+		} else if (aspectRatio < 0.7) {
+			card.style.gridColumn = 'span 1';
+			card.style.gridRow = 'span 2';
+		} else {
+			card.style.gridColumn = 'span 1';
+			card.style.gridRow = 'span 1';
+		}
+		img.style.objectFit = 'cover';
+		img.style.objectPosition = 'center';
+		img.style.height = '100%';
+	} else {
+		card.classList.add(img.naturalWidth > img.naturalHeight ? 'landscape' : 'portrait');
+		img.style.objectFit = '';
+		img.style.objectPosition = '';
+		img.style.height = '';
+	}
 }
 
 async function generateImageCards(): Promise<void> {
@@ -39,11 +50,14 @@ async function generateImageCards(): Promise<void> {
 			const card = document.createElement('div');
 			card.className = 'card';
 
+			const media = document.createElement('div');
+			media.className = 'card-media';
+
 			const img = document.createElement('img');
 			img.src = item.image;
 			img.alt = `插画 ${index + 1}`;
 			img.loading = 'lazy';
-			card.appendChild(img);
+			media.appendChild(img);
 
 			const infoCard = document.createElement('div');
 			infoCard.className = 'info-card';
@@ -52,7 +66,8 @@ async function generateImageCards(): Promise<void> {
 				<p><i class="fas fa-paint-brush"></i><strong>画师:</strong> ${item.illustrator}</p>
 				<p><i class="fas fa-info-circle"></i><strong>描述:</strong> <span>${item.description}</span></p>
 			`;
-			card.appendChild(infoCard);
+			media.appendChild(infoCard);
+			card.appendChild(media);
 
 			img.onload = () => {
 				setCardSize(img, card);
