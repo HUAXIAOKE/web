@@ -77,12 +77,20 @@ function initActivityCharacter(grid: HTMLElement): void {
 
 	const syncAfterFilter = (): void => {
 		const visible = Array.from(grid.querySelectorAll<HTMLElement>('.news-card:not(.card-hidden)'));
-		if (!visible.length) return;
-		if (!currentCard || currentCard.classList.contains('card-hidden')) {
-			moveCharacter(visible[0]);
-		} else {
-			positionCharacter(currentCard, false);
+		if (!visible.length) {
+			currentCard = null;
+			overlay.classList.remove('active');
+			return;
 		}
+
+		const target =
+			currentCard && !currentCard.classList.contains('card-hidden') ? currentCard : visible[0];
+
+		currentCard = target;
+		requestAnimationFrame(() => {
+			positionCharacter(target, false, true);
+			overlay.classList.add('active');
+		});
 	};
 
 	const defaultCard = cards.find((c) => !c.classList.contains('card-hidden')) ?? cards[0];
@@ -108,14 +116,10 @@ function initActivityCharacter(grid: HTMLElement): void {
 		});
 	}
 
-	grid.addEventListener('input', () => {
-		setTimeout(syncAfterFilter, 200);
-	});
+	document.addEventListener('activity-filter-changed', syncAfterFilter);
 
 	window.addEventListener('resize', () => {
-		if (currentCard && !currentCard.classList.contains('card-hidden')) {
-			positionCharacter(currentCard, false);
-		}
+		syncAfterFilter();
 	});
 
 	document.addEventListener('activity-page-shown', () => {
@@ -184,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			currentFilter = tag;
 			grid.classList.remove('grid-fading');
 			fadeTimer = null;
+			document.dispatchEvent(new CustomEvent('activity-filter-changed'));
 		}, 180);
 	};
 
