@@ -56,6 +56,10 @@ func RunMigrations() error {
 			if err := migrateV5ToV6(); err != nil {
 				return fmt.Errorf("v6: %w", err)
 			}
+		case 6:
+			if err := migrateV6ToV7(); err != nil {
+				return fmt.Errorf("v7: %w", err)
+			}
 		}
 	}
 
@@ -308,5 +312,63 @@ func migrateV5ToV6() error {
 	}
 
 	fmt.Printf("[migrate] v6: removed %d orphan gallery records\n", len(toDelete))
+	return nil
+}
+
+func migrateV6ToV7() error {
+	addCol := func(table, col, def string) error {
+		var count int
+		row := DB.QueryRow(fmt.Sprintf(`SELECT COUNT(*) FROM pragma_table_info('%s') WHERE name=?`, table), col)
+		if err := row.Scan(&count); err != nil || count > 0 {
+			return nil
+		}
+		_, err := DB.Exec(fmt.Sprintf(`ALTER TABLE %s ADD COLUMN %s %s`, table, col, def))
+		return err
+	}
+
+	if err := addCol("activity", "is_signup", "INTEGER NOT NULL DEFAULT 0"); err != nil {
+		return fmt.Errorf("add is_signup: %w", err)
+	}
+	if err := addCol("activity", "signup_start", "TEXT NOT NULL DEFAULT ''"); err != nil {
+		return fmt.Errorf("add signup_start: %w", err)
+	}
+	if err := addCol("activity", "signup_end", "TEXT NOT NULL DEFAULT ''"); err != nil {
+		return fmt.Errorf("add signup_end: %w", err)
+	}
+
+	activities := `CREATE TABLE IF NOT EXISTS activity_detail (
+		id          INTEGER PRIMARY KEY AUTOINCREMENT,
+		activity_id INTEGER NOT NULL,
+		content     TEXT NOT NULL DEFAULT '',
+		updated_at  TEXT DEFAULT (datetime('now'))
+	)`
+	if _, err := DB.Exec(activities); err != nil {
+		return fmt.Errorf("create activity_detail: %w", err)
+	}
+
+	signupForm := `CREATE TABLE IF NOT EXISTS signup_form (
+		id             INTEGER PRIMARY KEY AUTOINCREMENT,
+		activity_id    INTEGER NOT NULL,
+		fields         TEXT NOT NULL DEFAULT '[]',
+		instructions   TEXT NOT NULL DEFAULT '',
+		attachment     INTEGER NOT NULL DEFAULT 0,
+		attachment_dir TEXT NOT NULL DEFAULT ''
+	)`
+	if _, err := DB.Exec(signupForm); err != nil {
+		return fmt.Errorf("create signup_form: %w", err)
+	}
+
+	submissions := `CREATE TABLE IF NOT EXISTS signup_submission (
+		id           INTEGER PRIMARY KEY AUTOINCREMENT,
+		activity_id  INTEGER NOT NULL,
+		data         TEXT NOT NULL DEFAULT '{}',
+		attachments  TEXT NOT NULL DEFAULT '[]',
+		submitted_at TEXT DEFAULT (datetime('now'))
+	)`
+	if _, err := DB.Exec(submissions); err != nil {
+		return fmt.Errorf("create signup_submission: %w", err)
+	}
+
+	fmt.Println("[migrate] v7: added signup fields and tables")
 	return nil
 }

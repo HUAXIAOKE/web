@@ -36,9 +36,10 @@ html.dark {
 .detail-hero-media {
 	width: 100%;
 	aspect-ratio: 21 / 9;
-	background-size: cover;
-	background-position: center;
 	background: linear-gradient(120deg, rgba(70, 100, 180, 0.38), rgba(70, 100, 180, 0.15));
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
 .detail-hero-overlay {

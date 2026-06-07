@@ -1,0 +1,93 @@
+---
+import SubLayout from "../../layouts/SubLayout.astro";
+---
+
+<SubLayout title="活动详情 - Huaxiaoke" description="活动详情">
+  <div class="activity-detail-page">
+    <div class="detail-hero">
+      <div class="detail-hero-media" id="detail-hero-media"></div>
+      <div class="detail-hero-overlay"></div>
+      <div class="detail-hero-content">
+        <p class="detail-hero-kicker">ACTIVITY DETAIL</p>
+        <h1 class="detail-hero-title" id="detail-hero-title">加载中...</h1>
+        <div class="detail-hero-meta" id="detail-hero-meta"></div>
+      </div>
+    </div>
+
+    <div class="detail-content-card">
+      <div id="detail-content"></div>
+
+      <div class="detail-actions" id="detail-actions">
+        <a href="/activity" class="detail-back">
+          <i class="fas fa-arrow-left"></i>
+          返回活动列表
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    (async () => {
+      const API = window.API_BASE || '';
+      const params = new URLSearchParams(window.location.search);
+      const activityId = params.get('activityId');
+      const slug = params.get('slug');
+
+      try {
+        const res = await fetch(API + '/api/activities');
+        if (!res.ok) throw new Error('加载失败');
+        const activities = await res.json();
+
+        const makeSlug = (headline) =>
+          headline
+            .replace(/[「」]/g, '')
+            .replace(/[^\w\u4e00-\u9fa5]/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+
+        let activity = null;
+        if (activityId) {
+          activity = activities.find((a) => a.id === parseInt(activityId));
+        } else if (slug) {
+          activity = activities.find((a) => makeSlug(a.headline) === slug);
+        }
+
+        if (!activity) {
+          window.location.href = '/activity';
+          return;
+        }
+
+        document.getElementById('detail-hero-title').textContent = activity.headline;
+        document.getElementById('detail-hero-media').style.backgroundImage = `url('${activity.image}')`;
+
+        const meta = document.getElementById('detail-hero-meta');
+        meta.innerHTML = (activity.tags || '')
+          .split(',')
+          .filter(Boolean)
+          .map((t) => `<span class="detail-hero-tag">${t}</span>`)
+          .join('') + `<span class="detail-hero-date">${activity.date}</span>`;
+
+        const detailRes = await fetch(API + '/api/activity/' + activity.id + '/detail');
+        const detail = await detailRes.json();
+
+        const contentEl = document.getElementById('detail-content');
+        if (detail.content) {
+          contentEl.innerHTML = detail.content;
+        } else {
+          contentEl.innerHTML = `<p>暂无活动详情内容</p>`;
+        }
+
+        const actionsEl = document.getElementById('detail-actions');
+        if (activity.signupStatus === 'active') {
+          const signupLink = document.createElement('a');
+          signupLink.href = `/activity/signup?activityId=${activity.id}`;
+          signupLink.className = 'detail-signup-link';
+          signupLink.innerHTML = '<i class="fas fa-pen-to-square"></i> 立即报名';
+          actionsEl.insertBefore(signupLink, actionsEl.firstChild);
+        }
+      } catch (err) {
+        document.getElementById('detail-hero-title').textContent = '加载失败';
+      }
+    })();
+  </script>
+</SubLayout>

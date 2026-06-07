@@ -63,6 +63,8 @@ func main() {
 	mux.HandleFunc("POST /api/login", handler.Login)
 
 	mux.HandleFunc("GET /api/activities", handler.GetActivities)
+	mux.HandleFunc("GET /api/activity/{id}/detail", handler.GetActivityDetail)
+	mux.HandleFunc("GET /api/activity/{id}/signup-form", handler.GetSignupForm)
 	mux.HandleFunc("GET /api/timeline", handler.GetTimeline)
 	mux.HandleFunc("GET /api/gallery", handler.GetGallery)
 	mux.HandleFunc("GET /api/about", handler.GetAbout)
@@ -71,6 +73,7 @@ func main() {
 	mux.HandleFunc("GET /api/bilibili/cover", handler.GetBilibiliCover)
 	mux.HandleFunc("GET /api/bilibili/info", handler.GetBilibiliVideoInfo)
 	mux.HandleFunc("GET /api/bilibili/audio", handler.StreamBilibiliAudio)
+	mux.HandleFunc("POST /api/signup/upload", handler.UploadSignupFile)
 
 	writeMux := http.NewServeMux()
 	writeMux.HandleFunc("GET /api/auth/verify", handler.VerifyToken)
@@ -96,6 +99,12 @@ func main() {
 	writeMux.HandleFunc("DELETE /api/gallery/{id}", handler.DeleteGallery)
 	writeMux.HandleFunc("DELETE /api/about/{id}", handler.DeleteAbout)
 	writeMux.HandleFunc("DELETE /api/music/{id}", handler.DeleteMusic)
+	writeMux.HandleFunc("POST /api/activity/{id}/set-signup", handler.SetActivitySignup)
+	writeMux.HandleFunc("PUT /api/activity/{id}/detail", handler.UpdateActivityDetail)
+	writeMux.HandleFunc("PUT /api/activity/{id}/signup-form", handler.UpdateSignupForm)
+	writeMux.HandleFunc("POST /api/activity/{id}/submit", handler.SubmitSignup)
+	writeMux.HandleFunc("GET /api/activity/{id}/submissions", handler.GetSubmissions)
+	writeMux.HandleFunc("GET /api/activity/{id}/submissions/export", handler.ExportSubmissions)
 
 	protected := handler.RequireAuth(writeMux)
 	mux.Handle("GET /api/auth/", protected)
@@ -107,6 +116,7 @@ func main() {
 	staticDir := handler.StaticDir
 	mux.Handle("/img/", cacheStatic(http.FileServer(http.Dir(staticDir)), 30*24*time.Hour))
 	mux.Handle("/audio/", cacheStatic(http.FileServer(http.Dir(staticDir)), 7*24*time.Hour))
+	mux.Handle("/signups/", http.FileServer(http.Dir(staticDir)))
 
 	adminSub, _ := fs.Sub(adminFS, "admin")
 	mux.Handle("GET /admin/", http.StripPrefix("/admin/", http.FileServer(http.FS(adminSub))))

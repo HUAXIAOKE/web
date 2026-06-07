@@ -1,10 +1,15 @@
 interface ActivityItem {
+	id: number;
 	tags: string;
 	date: string;
 	headline: string;
 	excerpt: string;
 	href: string;
 	image: string;
+	isSignup: number;
+	signupStart: string;
+	signupEnd: string;
+	signupStatus: string;
 }
 
 interface AboutCard {
@@ -91,23 +96,26 @@ async function initActivity(): Promise<void> {
 		const activities = await loadAPI<ActivityItem[]>('/api/activities');
 		if (!activities || activities.length === 0) return;
 
+		const getBadgeClass = (status: string): string => {
+			if (status === 'active') return 'card-signup';
+			if (status === 'not_started') return 'card-not-started';
+			if (status === 'expired') return 'card-expired';
+			return '';
+		};
+
 		const getCardHref = (a: ActivityItem, index: number): string => {
-			if (index === 0) return '/activity/signup';
-			const slug = a.headline
-				.replace(/[「」]/g, '')
-				.replace(/[^\w\u4e00-\u9fa5]/g, '-')
-				.replace(/-+/g, '-')
-				.replace(/^-|-$/g, '')
-				|| `activity-${index}`;
-			return `/activity/${slug}`;
+			if (a.signupStatus === 'active') return `/activity/signup?activityId=${a.id}`;
+			if (a.href && !a.href.startsWith('/activity/')) return a.href;
+			return `/activity/detail?activityId=${a.id}`;
 		};
 
 		const grid = document.getElementById('activity-grid');
 		if (grid) {
 			grid.innerHTML = activities
 				.map(
-					(a, i) =>
-						`<a class="news-card${i === 0 ? ' card-signup' : ''}" data-tags="${a.tags}" href="${getCardHref(a, i)}">
+					(a, i) => {
+						const badgeClass = getBadgeClass(a.signupStatus);
+						return `<a class="news-card${badgeClass ? ' ' + badgeClass : ''}" data-tags="${a.tags}" href="${getCardHref(a, i)}">
   <div class="thumb" style="background-image:url(${a.image})"></div>
   <div class="meta">
     ${a.tags
@@ -118,7 +126,8 @@ async function initActivity(): Promise<void> {
   </div>
   <h3 class="headline">${a.headline}</h3>
   <p class="excerpt">${a.excerpt}</p>
-</a>`
+</a>`;
+					}
 				)
 				.join('\n');
 			document.dispatchEvent(new CustomEvent('activity-cards-loaded'));

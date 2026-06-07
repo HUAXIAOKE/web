@@ -269,6 +269,8 @@
 					main.innerHTML = `<div class="page-header"><h2>当期活动</h2><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div><div class="empty"><p>暂无活动数据</p></div>`;
 					return;
 				}
+				const statusLabels = { active: '报名中', not_started: '未开放', expired: '已结束', not_enabled: '' };
+				const statusClasses = { active: 'active', not_started: 'not-started', expired: 'expired', not_enabled: '' };
 				main.innerHTML = `<div class="page-header"><h2>当期活动</h2><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div>
 									<div class="card-grid">${list
 										.map(
@@ -278,11 +280,17 @@
 										<div class="meta">${a.tags
 											.split(',')
 											.map((t) => `<span class="tag">${t}</span>`)
-											.join('')}<span style="font-size:11px;color:var(--text-sub);margin-left:auto">${a.date}</span></div>
+											.join('')}<span class="card-date">${a.date}</span></div>
 										<h3>${a.headline}</h3><p>${a.excerpt}</p>
+										${a.signupStatus && statusLabels[a.signupStatus] ? `<span class="signup-badge ${statusClasses[a.signupStatus]}">${statusLabels[a.signupStatus]}</span>` : ''}
 									</div>
 									<div class="card-actions">
 										<button class="btn btn-ghost" onclick='editActivity(${JSON.stringify(a)})'>编辑</button>
+										${a.isSignup ?
+											`<button class="btn btn-danger" onclick="setSignup(${a.id},0)">关闭报名</button>` :
+											`<button class="btn btn-ghost" onclick="setSignup(${a.id},1)">开启报名</button>`
+										}
+										<button class="btn btn-ghost" onclick="openActivityConfig(${a.id})">配置</button>
 										<button class="btn btn-danger" onclick="delActivity(${a.id})">删除</button>
 									</div></div>`
 										)
@@ -291,7 +299,7 @@
 
 			function editActivity(a) {
 				const isNew = !a;
-				a = a || { tags: '', date: '', image: '', headline: '', excerpt: '', href: '#' };
+				a = a || { tags: '', date: '', image: '', headline: '', excerpt: '', href: '#', isSignup: 0, signupStart: '', signupEnd: '' };
 				const ct = a.tags ? a.tags.split(',') : [];
 				openModal(
 					isNew ? '新增活动' : '编辑活动',
@@ -304,7 +312,9 @@
 					<div class="form-group"><label>日期</label><input type="date" id="f_date" value="${a.date}"></div>
 					<div class="form-group"><label>标题</label><input id="f_headline" value="${a.headline}"></div>
 					<div class="form-group"><label>摘要</label><textarea id="f_excerpt">${a.excerpt}</textarea></div>
-					<div class="form-group"><label>链接</label><input id="f_href" value="${a.href}"></div>
+					<div class="form-group"><label>链接 (填外部链接则跳过详情页)</label><input id="f_href" value="${a.href}"></div>
+					<div class="form-group"><label>报名开始时间 (可选)</label><input type="datetime-local" id="f_signupStart" value="${a.signupStart || ''}"></div>
+					<div class="form-group"><label>报名结束时间 (可选)</label><input type="datetime-local" id="f_signupEnd" value="${a.signupEnd || ''}"></div>
 					${imgUploadHTML('f_image', a.image, 'img/activity')}`,
 					async () => {
 						const tags = Array.from(document.querySelectorAll('.f_tags:checked'))
@@ -317,6 +327,9 @@
 							headline: val('f_headline'),
 							excerpt: val('f_excerpt'),
 							href: val('f_href'),
+							isSignup: a.isSignup || 0,
+							signupStart: val('f_signupStart'),
+							signupEnd: val('f_signupEnd'),
 						};
 						const res = await authFetch(isNew ? '/api/activities' : '/api/activities/' + a.id, {
 							method: isNew ? 'POST' : 'PUT',
@@ -344,6 +357,127 @@
 				}
 				toast('已删除');
 				loadActivity();
+			}
+
+			async function setSignup(id, isSignup) {
+				const action = isSignup ? '开启报名' : '关闭报名';
+				const res = await authFetch('/api/activity/' + id + '/set-signup', {
+					method: 'POST',
+					headers: authHeaders(),
+					body: JSON.stringify({ isSignup }),
+				});
+				if (!res.ok) {
+					toast(action + '失败', 'error');
+					return;
+				}
+				toast(action + '成功');
+				loadActivity();
+			}
+
+			async function openActivityConfig(id) {
+				const [detailRes, formRes] = await Promise.all([
+					authFetch('/api/activity/' + id + '/detail'),
+					authFetch('/api/activity/' + id + '/signup-form'),
+				]);
+				const detail = await detailRes.json();
+				const form = await formRes.json();
+				const main = document.getElementById('main-content');
+				main.innerHTML = `
+					<div class="page-header"><h2>活动配置</h2><button class="btn btn-ghost" onclick="loadActivity()">返回活动列表</button></div>
+					<div class="config-grid">
+						<div class="config-panel">
+							<h3>详情内容</h3>
+							<textarea id="config_detail_content" class="config-textarea tall">${detail.content || ''}</textarea>
+							<p class="config-hint">支持 HTML 标签</p>
+							<button class="btn btn-primary" onclick="saveDetail(${id})">保存详情</button>
+						</div>
+						<div class="config-panel">
+							<h3>递交须知</h3>
+							<textarea id="config_instructions" class="config-textarea short">${form.instructions || ''}</textarea>
+							<p class="config-hint">支持 HTML 标签</p>
+							<div class="checkbox-group" style="margin-top:12px">
+								<label><input type="checkbox" id="config_attachment" ${form.attachment ? 'checked' : ''}> 需要附件</label>
+							</div>
+							<div class="form-group"><label>表单字段配置 (JSON)</label>
+							<textarea id="config_fields" class="config-textarea mid">${form.fields || '[]'}</textarea></div>
+							<button class="btn btn-primary" onclick="saveFormConfig(${id})">保存表单配置</button>
+						</div>
+					</div>
+					<div class="config-section">
+						<h3>报名数据</h3>
+						<div class="config-toolbar">
+							<button class="btn btn-ghost" onclick="loadSubmissions(${id})">刷新</button>
+							<a class="btn btn-ghost" href="/api/activity/${id}/submissions/export" target="_blank">打包下载附件</a>
+						</div>
+						<div id="submissions_list"><p class="config-empty">点击刷新加载数据</p></div>
+					</div>`;
+			}
+
+			async function saveDetail(id) {
+				const content = document.getElementById('config_detail_content').value;
+				const res = await authFetch('/api/activity/' + id + '/detail', {
+					method: 'PUT',
+					headers: authHeaders(),
+					body: JSON.stringify({ content }),
+				});
+				if (!res.ok) {
+					toast('保存失败', 'error');
+					return;
+				}
+				toast('详情已保存');
+			}
+
+			async function saveFormConfig(id) {
+				const fields = document.getElementById('config_fields').value;
+				try {
+					JSON.parse(fields);
+				} catch (e) {
+					toast('JSON 格式错误: ' + e.message, 'error');
+					return;
+				}
+				const body = {
+					fields,
+					instructions: document.getElementById('config_instructions').value,
+					attachment: document.getElementById('config_attachment').checked ? 1 : 0,
+				};
+				const res = await authFetch('/api/activity/' + id + '/signup-form', {
+					method: 'PUT',
+					headers: authHeaders(),
+					body: JSON.stringify(body),
+				});
+				if (!res.ok) {
+					toast('保存失败', 'error');
+					return;
+				}
+				toast('表单配置已保存');
+			}
+
+			async function loadSubmissions(id) {
+				const res = await authFetch('/api/activity/' + id + '/submissions');
+				const list = await res.json();
+				const container = document.getElementById('submissions_list');
+				if (!list || list.length === 0) {
+					container.innerHTML = '<p class="config-empty">暂无报名数据</p>';
+					return;
+				}
+				container.innerHTML = `<table><thead><tr><th>ID</th><th>提交时间</th><th>数据</th><th>附件</th></tr></thead>
+					<tbody>${list.map((s) => {
+						let dataStr = '';
+						try {
+							const d = JSON.parse(s.data);
+							dataStr = Object.entries(d).map(([k, v]) => `${k}: ${v}`).join(' | ');
+						} catch (e) {
+							dataStr = s.data;
+						}
+						let files = [];
+						try { files = JSON.parse(s.attachments); } catch (e) {}
+						return `<tr>
+							<td>${s.id}</td>
+							<td class="sub-time">${s.submittedAt}</td>
+							<td class="sub-data">${dataStr}</td>
+							<td>${files.length ? files.map((f, i) => `<a href="${f}" target="_blank" class="sub-file">附件${files.length > 1 ? i + 1 : ''}</a>`).join('') : '—'}</td>
+						</tr>`;
+					}).join('')}</tbody></table>`;
 			}
 
 			async function loadTimeline() {

@@ -1,24 +1,16 @@
 ---
 import SubLayout from "../../layouts/SubLayout.astro";
-
-const activityTitle = "「2026 新生歌会」线上直播";
-const activityDate = "2026-09-15";
-const activityTags = ["线上"];
-const activityImage = "/img/activity/Xinshenggehui.webp";
 ---
 
 <SubLayout title="活动报名 - Huaxiaoke" description="华小科活动报名">
-  <div class="signup-page">
+  <div class="signup-page" id="signup-page">
     <div class="signup-hero">
-      <div class="signup-hero-media" style={`background-image: url('${activityImage}')`}></div>
+      <div class="signup-hero-media" id="signup-hero-media"></div>
       <div class="signup-hero-overlay"></div>
       <div class="signup-hero-content">
         <p class="signup-hero-kicker">ACTIVITY SIGN UP</p>
-        <h1 class="signup-hero-title">{activityTitle}</h1>
-        <div class="signup-hero-meta">
-          {activityTags.map((tag: string) => <span class="signup-hero-tag">{tag}</span>)}
-          <span class="signup-hero-date">{activityDate}</span>
-        </div>
+        <h1 class="signup-hero-title" id="signup-hero-title">加载中...</h1>
+        <div class="signup-hero-meta" id="signup-hero-meta"></div>
       </div>
     </div>
 
@@ -27,28 +19,8 @@ const activityImage = "/img/activity/Xinshenggehui.webp";
       <p class="form-subtitle">提交前请先阅读注意事项哦～</p>
 
       <form class="signup-form" id="signup-form">
-        <div class="signup-form-row">
-          <div class="signup-field">
-            <label for="name">昵称<span class="required">*</span></label>
-            <input type="text" id="name" name="name" placeholder="该如何称呼呢～" required />
-          </div>
-          <div class="signup-field">
-            <label for="qq">QQ 号<span class="required">*</span></label>
-            <input type="text" id="qq" name="qq" placeholder="留个QQ让我们联系你！" required />
-          </div>
-        </div>
-
-        <div class="signup-field">
-          <label for="department">院系<span class="required">*</span></label>
-          <input type="text" id="department" name="department" placeholder="Where are you from?" required />
-        </div>
-
-        <div class="signup-field">
-          <label for="remark">备注</label>
-          <textarea id="remark" name="remark" placeholder="还有什么想告诉我们的？"></textarea>
-        </div>
-
-        <div class="signup-field">
+        <div id="signup-form-fields"></div>
+        <div id="signup-attachment-field" class="signup-field" style="display:none">
           <label for="attachment">附件<span class="required">*</span></label>
           <div class="signup-file-wrap">
             <input type="file" id="attachment" name="attachment" multiple />
@@ -69,16 +41,154 @@ const activityImage = "/img/activity/Xinshenggehui.webp";
       </form>
     </div>
 
-    <div class="signup-detail-card">
+    <div class="signup-detail-card" id="signup-instructions">
       <h3>递交须知</h3>
-      <ul>
-        <li>请确保填写信息真实有效</li>
-        <li>请递交至少包含完整视频文件的压缩包</li>
-        <li>压缩包命名需要包含歌名</li>
-        <li>报名成功后我们可以重复提交来覆盖</li>
-        <li>会根据报名情况与作品质量甄选，会尽可能让每一份稿件都被看到</li>
-        <li>如有疑问请通过 B 站私信或在 QQ 相关群聊内联系我们</li>
-      </ul>
+      <div id="signup-instructions-content"></div>
     </div>
   </div>
+
+  <script is:inline>
+    (async () => {
+      const API = window.API_BASE || '';
+      const params = new URLSearchParams(window.location.search);
+      const activityId = params.get('activityId');
+      if (!activityId) {
+        window.location.href = '/activity';
+        return;
+      }
+
+      try {
+        const [actRes, formRes] = await Promise.all([
+          fetch(API + '/api/activities'),
+          fetch(API + '/api/activity/' + activityId + '/signup-form'),
+        ]);
+
+        if (!actRes.ok || !formRes.ok) throw new Error('加载失败');
+
+        const activities = await actRes.json();
+        const activity = activities.find((a) => a.id === parseInt(activityId));
+        if (!activity) {
+          window.location.href = '/activity';
+          return;
+        }
+
+        if (activity.signupStatus !== 'active') {
+          window.location.href = '/activity';
+          return;
+        }
+
+        const form = await formRes.json();
+
+        document.getElementById('signup-hero-title').textContent = activity.headline;
+        document.getElementById('signup-hero-media').style.backgroundImage = `url('${activity.image}')`;
+
+        const meta = document.getElementById('signup-hero-meta');
+        meta.innerHTML = (activity.tags || '')
+          .split(',')
+          .filter(Boolean)
+          .map((t) => `<span class="signup-hero-tag">${t}</span>`)
+          .join('') + `<span class="signup-hero-date">${activity.date}</span>`;
+
+        const fields = JSON.parse(form.fields || '[]');
+        const fieldsContainer = document.getElementById('signup-form-fields');
+        fieldsContainer.innerHTML = fields
+          .map((f) => {
+            if (f.type === 'textarea') {
+              return `<div class="signup-field">
+                <label for="${f.name}">${f.label}${f.required ? '<span class="required">*</span>' : ''}</label>
+                <textarea id="${f.name}" name="${f.name}" placeholder="${f.placeholder || ''}" ${f.required ? 'required' : ''}></textarea>
+              </div>`;
+            }
+            return `<div class="signup-field">
+              <label for="${f.name}">${f.label}${f.required ? '<span class="required">*</span>' : ''}</label>
+              <input type="text" id="${f.name}" name="${f.name}" placeholder="${f.placeholder || ''}" ${f.required ? 'required' : ''} />
+            </div>`;
+          })
+          .join('');
+
+        if (fields.length > 2) {
+          const firstTwo = fieldsContainer.children;
+          if (firstTwo.length >= 2) {
+            const row = document.createElement('div');
+            row.className = 'signup-form-row';
+            row.appendChild(firstTwo[0]);
+            row.appendChild(firstTwo[1]);
+            fieldsContainer.insertBefore(row, fieldsContainer.firstChild);
+          }
+        }
+
+        if (form.attachment) {
+          document.getElementById('signup-attachment-field').style.display = '';
+        }
+
+        const instructionsContent = document.getElementById('signup-instructions-content');
+        if (form.instructions) {
+          instructionsContent.innerHTML = form.instructions;
+        } else {
+          document.getElementById('signup-instructions').style.display = 'none';
+        }
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = e.target.querySelector('.signup-submit');
+          btn.disabled = true;
+          btn.textContent = '提交中...';
+
+          const formData = new FormData(e.target);
+          const data = {};
+          fields.forEach((f) => {
+            data[f.name] = formData.get(f.name) || '';
+          });
+
+          const attachments = [];
+          const attachmentInput = document.getElementById('attachment');
+          if (attachmentInput && attachmentInput.files.length > 0) {
+            btn.textContent = '上传附件中...';
+            for (const file of attachmentInput.files) {
+              const fd = new FormData();
+              fd.append('file', file);
+              const uploadRes = await fetch(API + '/api/signup/upload', {
+                method: 'POST',
+                body: fd,
+              });
+              if (uploadRes.ok) {
+                const result = await uploadRes.json();
+                attachments.push(result.url);
+              }
+            }
+          }
+
+          btn.textContent = '提交报名中...';
+          const submitRes = await fetch(API + '/api/activity/' + activityId + '/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              data: JSON.stringify(data),
+              attachments: JSON.stringify(attachments),
+            }),
+          });
+
+          if (submitRes.ok) {
+            btn.textContent = '提交成功！';
+            btn.style.background = '#34c759';
+            setTimeout(() => {
+              btn.textContent = '提交报名';
+              btn.disabled = false;
+              btn.style.background = '';
+              e.target.reset();
+            }, 2000);
+          } else {
+            const err = await submitRes.text();
+            btn.textContent = err || '提交失败';
+            btn.disabled = false;
+            setTimeout(() => {
+              btn.textContent = '提交报名';
+            }, 3000);
+          }
+        });
+      } catch (err) {
+        document.getElementById('signup-hero-title').textContent = '加载失败';
+      }
+    })();
+  </script>
 </SubLayout>
