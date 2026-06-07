@@ -3,7 +3,8 @@
 		"src/*",
 		"backend/*",
 		".gitignore",
-		"*.json"
+		"*.json",
+		"*.lock"
 	],
 	"words": [
 		"Alimama",
