@@ -299,6 +299,10 @@ html.dark .info-card p i {
 	}
 
 	.gallery-lightbox-img-wrap {
+		--lb-glare-angle: -45deg;
+		--lb-glare-rgba: rgba(255, 255, 255, 0.5);
+		--lb-glare-size: 250%;
+		--lb-glare-duration: 650ms;
 		position: relative;
 		width: 100%;
 		height: 100%;
@@ -312,36 +316,43 @@ html.dark .info-card p i {
 		transition: transform 0.15s ease-out;
 	}
 
-	.gallery-lightbox-img-wrap::after {
+	.gallery-lightbox-img-wrap::before {
 		content: '';
 		position: absolute;
-		top: 0;
-		left: -100%;
-		width: 50%;
-		height: 100%;
-		background: linear-gradient(
-			to right,
-			rgba(255, 255, 255, 0) 0%,
-			rgba(255, 255, 255, 0.12) 40%,
-			rgba(255, 255, 255, 0.3) 50%,
-			rgba(255, 255, 255, 0.12) 60%,
-			rgba(255, 255, 255, 0) 100%
-		);
-		transform: skewX(-20deg);
+		inset: 0;
+		background:
+			linear-gradient(
+				var(--lb-glare-angle),
+				hsla(0, 0%, 0%, 0) 60%,
+				var(--lb-glare-rgba) 70%,
+				hsla(0, 0%, 0%, 0),
+				hsla(0, 0%, 0%, 0)
+			);
+		background-size:
+			var(--lb-glare-size) var(--lb-glare-size),
+			100% 100%;
+		background-repeat: no-repeat;
+		background-position:
+			-100% -100%,
+			0 0;
 		pointer-events: none;
 		z-index: 2;
 	}
 
-	.gallery-lightbox.active .gallery-lightbox-img-wrap::after {
-		animation: gallery-sheen-sweep 0.75s 0.5s ease-out forwards;
+	.gallery-lightbox.active .gallery-lightbox-img-wrap::before {
+		animation: lightbox-glare-sweep var(--lb-glare-duration) 0.35s ease-in-out forwards;
 	}
 
-	@keyframes gallery-sheen-sweep {
+	@keyframes lightbox-glare-sweep {
 		0% {
-			left: -100%;
+			background-position:
+				-100% -100%,
+				0 0;
 		}
 		100% {
-			left: 150%;
+			background-position:
+				100% 100%,
+				0 0;
 		}
 	}
 
