@@ -21,13 +21,14 @@ import SubLayout from "../../layouts/SubLayout.astro";
       <form class="signup-form" id="signup-form">
         <div id="signup-form-fields"></div>
         <div id="signup-attachment-field" class="signup-field" style="display:none">
-          <label for="attachment">附件<span class="required">*</span></label>
-          <div class="signup-file-wrap">
-            <input type="file" id="attachment" name="attachment" multiple />
+          <label>附件<span class="required">*</span></label>
+          <div class="signup-file-wrap" id="signup-file-wrap">
+            <input type="file" id="attachment" name="attachment" accept=".zip,.rar,.7z,.tar,.bz2,.tar.xz,.tar.gz,.tgz,application/zip,application/x-rar-compressed,application/x-7z-compressed" />
             <label for="attachment" class="signup-file-trigger">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <span>点击或拖拽上传文件</span>
+              <i class="fas fa-cloud-upload-alt signup-file-icon"></i>
+              <span class="signup-file-text">点击或拖拽上传压缩包</span>
             </label>
+            <div class="signup-file-list" id="signup-file-list"></div>
           </div>
         </div>
 
@@ -128,6 +129,171 @@ import SubLayout from "../../layouts/SubLayout.astro";
           document.getElementById('signup-instructions').style.display = 'none';
         }
 
+        const attachmentInput = document.getElementById('attachment');
+        const fileWrap = document.getElementById('signup-file-wrap');
+        const fileList = document.getElementById('signup-file-list');
+        let uploadedAttachmentUrl = '';
+        let currentFile = null;
+        let uploadState = 'idle';
+        let uploadPct = 0;
+
+        const archiveExt = /\.(zip|rar|7z|tgz|gz|bz2|xz)$/i;
+        function isArchiveFile(file) {
+          const name = file.name.toLowerCase();
+          return archiveExt.test(name) || name.endsWith('.tar.gz') || name.endsWith('.tar.bz2') || name.endsWith('.tar.xz');
+        }
+
+        function renderFileList() {
+          fileList.innerHTML = '';
+          fileWrap.classList.remove('has-value', 'is-uploading', 'is-ready', 'is-error');
+          if (!currentFile) return;
+
+          fileWrap.classList.add('has-value');
+          if (uploadState === 'uploading') fileWrap.classList.add('is-uploading');
+          if (uploadState === 'ready') fileWrap.classList.add('is-ready');
+          if (uploadState === 'error') fileWrap.classList.add('is-error');
+
+          const item = document.createElement('div');
+          item.className = 'signup-file-item';
+
+          const preview = document.createElement('div');
+          preview.className = 'signup-file-preview';
+          preview.innerHTML = '<i class="fas fa-file-archive"></i>';
+          item.appendChild(preview);
+
+          const info = document.createElement('div');
+          info.className = 'signup-file-info';
+          const name = document.createElement('span');
+          name.className = 'signup-file-name';
+          name.textContent = currentFile.name;
+          info.appendChild(name);
+
+          if (uploadState === 'uploading') {
+            const status = document.createElement('span');
+            status.className = 'signup-file-status';
+            status.textContent = '上传中 ' + uploadPct + '%';
+            info.appendChild(status);
+          } else if (uploadState === 'ready') {
+            const status = document.createElement('span');
+            status.className = 'signup-file-status is-done';
+            status.textContent = '已上传';
+            info.appendChild(status);
+          } else if (uploadState === 'error') {
+            const status = document.createElement('span');
+            status.className = 'signup-file-status is-error';
+            status.textContent = '上传失败';
+            info.appendChild(status);
+          }
+          item.appendChild(info);
+
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'signup-file-remove';
+          remove.setAttribute('aria-label', '删除');
+          remove.innerHTML = '<i class="fas fa-times"></i>';
+          remove.addEventListener('click', resetAttachment);
+          item.appendChild(remove);
+
+          fileList.appendChild(item);
+        }
+
+        function resetAttachment() {
+          uploadedAttachmentUrl = '';
+          currentFile = null;
+          uploadState = 'idle';
+          uploadPct = 0;
+          attachmentInput.value = '';
+          renderFileList();
+        }
+
+        function parseUploadError(text) {
+          if (!text) return '上传失败';
+          try {
+            const json = JSON.parse(text);
+            return json.message || json.error || text;
+          } catch {
+            return text.replace(/^[^:]+:\s*/, '').trim() || text;
+          }
+        }
+
+        function uploadEndpoint() {
+          if (window.location.port === '4321') return 'http://localhost:1037/api/signup/upload';
+          return (API || '') + '/api/signup/upload';
+        }
+
+        function uploadFile(file) {
+          return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            const fd = new FormData();
+            fd.append('file', file);
+            xhr.upload.onprogress = (ev) => {
+              if (ev.lengthComputable) {
+                uploadPct = Math.round((ev.loaded / ev.total) * 100);
+                const status = fileList.querySelector('.signup-file-status');
+                if (status) status.textContent = '上传中 ' + uploadPct + '%';
+              }
+            };
+            xhr.onload = () => {
+              if (xhr.status === 200) {
+                resolve(JSON.parse(xhr.responseText));
+              } else {
+                reject(new Error(parseUploadError(xhr.responseText)));
+              }
+            };
+            xhr.onerror = () => reject(new Error('网络错误，请确认后端已启动'));
+            xhr.open('POST', uploadEndpoint());
+            xhr.send(fd);
+          });
+        }
+
+        async function handleFile(file) {
+          if (!file) return;
+          if (!isArchiveFile(file)) {
+            alert('仅支持 zip / rar / 7z / tar.gz 等压缩包格式');
+            return;
+          }
+          if (file.size > 500 * 1024 * 1024) {
+            alert('文件过大，最大允许 500 MB');
+            return;
+          }
+          currentFile = file;
+          uploadState = 'uploading';
+          uploadPct = 0;
+          uploadedAttachmentUrl = '';
+          renderFileList();
+          try {
+            const result = await uploadFile(file);
+            uploadedAttachmentUrl = result.url;
+            uploadState = 'ready';
+            renderFileList();
+          } catch {
+            uploadState = 'error';
+            renderFileList();
+          }
+        }
+
+        attachmentInput.addEventListener('change', () => {
+          if (attachmentInput.files[0]) handleFile(attachmentInput.files[0]);
+          attachmentInput.value = '';
+        });
+
+        fileWrap.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          fileWrap.classList.add('signup-file-dragover');
+        });
+        fileWrap.addEventListener('dragleave', (e) => {
+          e.preventDefault();
+          if (!fileWrap.contains(e.relatedTarget)) fileWrap.classList.remove('signup-file-dragover');
+        });
+        fileWrap.addEventListener('drop', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          fileWrap.classList.remove('signup-file-dragover');
+          const file = e.dataTransfer.files[0];
+          if (file) handleFile(file);
+        });
+
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
           e.preventDefault();
           const btn = e.target.querySelector('.signup-submit');
@@ -141,21 +307,14 @@ import SubLayout from "../../layouts/SubLayout.astro";
           });
 
           const attachments = [];
-          const attachmentInput = document.getElementById('attachment');
-          if (attachmentInput && attachmentInput.files.length > 0) {
-            btn.textContent = '上传附件中...';
-            for (const file of attachmentInput.files) {
-              const fd = new FormData();
-              fd.append('file', file);
-              const uploadRes = await fetch(API + '/api/signup/upload', {
-                method: 'POST',
-                body: fd,
-              });
-              if (uploadRes.ok) {
-                const result = await uploadRes.json();
-                attachments.push(result.url);
-              }
+          if (form.attachment) {
+            if (!uploadedAttachmentUrl) {
+              btn.textContent = '请先上传压缩包';
+              btn.disabled = false;
+              setTimeout(() => { btn.textContent = '提交报名'; }, 2500);
+              return;
             }
+            attachments.push(uploadedAttachmentUrl);
           }
 
           btn.textContent = '提交报名中...';
@@ -169,14 +328,10 @@ import SubLayout from "../../layouts/SubLayout.astro";
           });
 
           if (submitRes.ok) {
+            await submitRes.json();
             btn.textContent = '提交成功！';
-            btn.style.background = '#34c759';
-            setTimeout(() => {
-              btn.textContent = '提交报名';
-              btn.disabled = false;
-              btn.style.background = '';
-              e.target.reset();
-            }, 2000);
+            btn.disabled = false;
+            setTimeout(() => { btn.textContent = '提交报名'; }, 2500);
           } else {
             const err = await submitRes.text();
             btn.textContent = err || '提交失败';

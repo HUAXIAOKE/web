@@ -96,6 +96,52 @@ func UpdateSignupForm(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, map[string]string{"status": "ok"})
 }
 
+func parseQQFromDataJSON(data string) string {
+	var raw map[string]json.RawMessage
+	if json.Unmarshal([]byte(data), &raw) != nil {
+		return ""
+	}
+	qqRaw, ok := raw["qq"]
+	if !ok {
+		return ""
+	}
+	var s string
+	if json.Unmarshal(qqRaw, &s) == nil {
+		return strings.TrimSpace(s)
+	}
+	var n json.Number
+	if json.Unmarshal(qqRaw, &n) == nil {
+		return strings.TrimSpace(n.String())
+	}
+	return strings.TrimSpace(string(qqRaw))
+}
+
+func findSubmissionIDByQQ(activityID int, qq string) (int, error) {
+	qq = strings.TrimSpace(qq)
+	if qq == "" {
+		return 0, nil
+	}
+	rows, err := store.DB.Query(
+		`SELECT id, data FROM signup_submission WHERE activity_id=?`, activityID,
+	)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var id int
+		var data string
+		if err := rows.Scan(&id, &data); err != nil {
+			continue
+		}
+		if parseQQFromDataJSON(data) == qq {
+			return id, nil
+		}
+	}
+	return 0, rows.Err()
+}
+
 func SubmitSignup(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	var req struct {
@@ -115,8 +161,38 @@ func SubmitSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "报名未开放", http.StatusForbidden)
 		return
 	}
-	store.DB.Exec(`INSERT INTO signup_submission (activity_id, data, attachments) VALUES (?, ?, ?)`,
-		a.ID, req.Data, req.Attachments)
+
+	qq := parseQQFromDataJSON(req.Data)
+	if qq == "" {
+		http.Error(w, "缺少 QQ 号", http.StatusBadRequest)
+		return
+	}
+
+	matchedID, err := findSubmissionIDByQQ(a.ID, qq)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if matchedID > 0 {
+		if _, err := store.DB.Exec(
+			`UPDATE signup_submission SET data=?, attachments=?, submitted_at=datetime('now') WHERE id=?`,
+			req.Data, req.Attachments, matchedID,
+		); err != nil {
+			http.Error(w, "更新失败: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		writeJSON(w, map[string]string{"status": "ok", "updated": "true"})
+		return
+	}
+
+	if _, err := store.DB.Exec(
+		`INSERT INTO signup_submission (activity_id, data, attachments) VALUES (?, ?, ?)`,
+		a.ID, req.Data, req.Attachments,
+	); err != nil {
+		http.Error(w, "提交失败: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 	writeJSON(w, map[string]string{"status": "ok"})
 }
 
@@ -205,8 +281,27 @@ func ExportSubmissions(w http.ResponseWriter, r *http.Request) {
 	go os.Remove(zipPath)
 }
 
+func signupArchiveExt(filename string) string {
+	lower := strings.ToLower(filename)
+	for _, suf := range []string{".tar.gz", ".tar.bz2", ".tar.xz", ".tgz"} {
+		if strings.HasSuffix(lower, suf) {
+			return suf
+		}
+	}
+	return filepath.Ext(lower)
+}
+
+func isSignupArchive(filename string) bool {
+	switch signupArchiveExt(filename) {
+	case ".zip", ".rar", ".7z", ".gz", ".bz2", ".xz", ".tgz", ".tar.gz", ".tar.bz2", ".tar.xz":
+		return true
+	default:
+		return false
+	}
+}
+
 func UploadSignupFile(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(64 << 20)
+	r.Body = http.MaxBytesReader(w, r.Body, 500<<20+4096)
 
 	file, header, err := r.FormFile("file")
 	if err != nil {
@@ -215,19 +310,27 @@ func UploadSignupFile(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	if header.Size > 64<<20 {
-		http.Error(w, "文件过大，最大允许 64 MB", http.StatusBadRequest)
+	if header.Size > 500<<20 {
+		http.Error(w, "文件过大，最大允许 500 MB", http.StatusBadRequest)
 		return
 	}
 
-	ext := filepath.Ext(header.Filename)
+	if !isSignupArchive(header.Filename) {
+		http.Error(w, "仅支持 zip/rar/7z/tar.gz 等压缩包格式", http.StatusBadRequest)
+		return
+	}
+
+	ext := signupArchiveExt(header.Filename)
 	if ext == "" {
-		ext = ".bin"
+		ext = ".zip"
 	}
 
 	newName := fmt.Sprintf("%d%s", time.Now().UnixMilli(), ext)
 	destDir := filepath.Join(StaticDir, "signups")
-	os.MkdirAll(destDir, 0755)
+	if err := os.MkdirAll(destDir, 0755); err != nil {
+		http.Error(w, "创建目录失败: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 	destPath := filepath.Join(destDir, newName)
 
 	out, err := os.Create(destPath)
@@ -235,12 +338,13 @@ func UploadSignupFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "保存文件失败: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer out.Close()
 	if _, err := io.Copy(out, file); err != nil {
+		out.Close()
 		os.Remove(destPath)
 		http.Error(w, "写入文件失败: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+	out.Close()
 
 	urlPath := "/signups/" + newName
 	writeJSON(w, map[string]string{"url": urlPath})

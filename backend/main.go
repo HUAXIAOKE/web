@@ -74,6 +74,7 @@ func main() {
 	mux.HandleFunc("GET /api/bilibili/info", handler.GetBilibiliVideoInfo)
 	mux.HandleFunc("GET /api/bilibili/audio", handler.StreamBilibiliAudio)
 	mux.HandleFunc("POST /api/signup/upload", handler.UploadSignupFile)
+	mux.HandleFunc("POST /api/activity/{id}/submit", handler.SubmitSignup)
 
 	writeMux := http.NewServeMux()
 	writeMux.HandleFunc("GET /api/auth/verify", handler.VerifyToken)
@@ -102,7 +103,6 @@ func main() {
 	writeMux.HandleFunc("POST /api/activity/{id}/set-signup", handler.SetActivitySignup)
 	writeMux.HandleFunc("PUT /api/activity/{id}/detail", handler.UpdateActivityDetail)
 	writeMux.HandleFunc("PUT /api/activity/{id}/signup-form", handler.UpdateSignupForm)
-	writeMux.HandleFunc("POST /api/activity/{id}/submit", handler.SubmitSignup)
 	writeMux.HandleFunc("GET /api/activity/{id}/submissions", handler.GetSubmissions)
 	writeMux.HandleFunc("GET /api/activity/{id}/submissions/export", handler.ExportSubmissions)
 
