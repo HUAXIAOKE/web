@@ -261,7 +261,11 @@
 				return document.getElementById(id)?.value?.trim() || '';
 			}
 
+			let activityPollTimer = null;
+			let activityConfigId = null;
+
 			async function loadActivity() {
+				activityConfigId = null;
 				const res = await authFetch('/api/activities');
 				const list = await res.json();
 				const main = document.getElementById('main-content');
@@ -375,6 +379,7 @@
 			}
 
 			async function openActivityConfig(id) {
+				activityConfigId = id;
 				const [detailRes, formRes] = await Promise.all([
 					authFetch('/api/activity/' + id + '/detail'),
 					authFetch('/api/activity/' + id + '/signup-form'),
@@ -411,6 +416,7 @@
 						</div>
 						<div id="submissions_list"><p class="config-empty">点击刷新加载数据</p></div>
 					</div>`;
+				loadSubmissions(id);
 			}
 
 			async function saveDetail(id) {
@@ -425,6 +431,7 @@
 					return;
 				}
 				toast('详情已保存');
+				loadSubmissions(id);
 			}
 
 			async function saveFormConfig(id) {
@@ -450,6 +457,7 @@
 					return;
 				}
 				toast('表单配置已保存');
+				loadSubmissions(id);
 			}
 
 			async function loadSubmissions(id) {
@@ -460,21 +468,41 @@
 					container.innerHTML = '<p class="config-empty">暂无报名数据</p>';
 					return;
 				}
+				const fieldLabels = { name: '昵称', qq: 'QQ', department: '院系', remark: '备注' };
+				const formatSubmitTime = (raw) => {
+					if (!raw) return '—';
+					const m = String(raw).trim().match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
+					if (!m) return raw;
+					const ms = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0));
+					return new Intl.DateTimeFormat('zh-CN', {
+						timeZone: 'Asia/Shanghai',
+						year: 'numeric',
+						month: '2-digit',
+						day: '2-digit',
+						hour: '2-digit',
+						minute: '2-digit',
+						second: '2-digit',
+						hour12: false,
+					}).format(ms);
+				};
+				const formatData = (raw) => {
+					try {
+						const d = JSON.parse(raw);
+						return Object.entries(d)
+							.map(([k, v]) => `${fieldLabels[k] || k}：${v}`)
+							.join(' · ');
+					} catch (e) {
+						return raw;
+					}
+				};
 				container.innerHTML = `<table><thead><tr><th>ID</th><th>提交时间</th><th>数据</th><th>附件</th></tr></thead>
 					<tbody>${list.map((s) => {
-						let dataStr = '';
-						try {
-							const d = JSON.parse(s.data);
-							dataStr = Object.entries(d).map(([k, v]) => `${k}: ${v}`).join(' | ');
-						} catch (e) {
-							dataStr = s.data;
-						}
 						let files = [];
 						try { files = JSON.parse(s.attachments); } catch (e) {}
 						return `<tr>
 							<td>${s.id}</td>
-							<td class="sub-time">${s.submittedAt}</td>
-							<td class="sub-data">${dataStr}</td>
+							<td class="sub-time">${formatSubmitTime(s.submittedAt)}</td>
+							<td class="sub-data">${formatData(s.data)}</td>
 							<td>${files.length ? files.map((f, i) => `<a href="${f}" target="_blank" class="sub-file">附件${files.length > 1 ? i + 1 : ''}</a>`).join('') : '—'}</td>
 						</tr>`;
 					}).join('')}</tbody></table>`;
@@ -943,16 +971,37 @@
 			}
 
 			const loaders = { activity: loadActivity, timeline: loadTimeline, gallery: loadGallery, about: loadAbout, music: loadMusic, bilibili: loadBilibili };
+
+			function stopActivityPoll() {
+				if (activityPollTimer) {
+					clearInterval(activityPollTimer);
+					activityPollTimer = null;
+				}
+			}
+
+			function startActivityPoll() {
+				stopActivityPoll();
+				activityPollTimer = setInterval(() => {
+					const active = document.querySelector('.sidebar a.active');
+					if (active?.dataset.tab !== 'activity') return;
+					if (activityConfigId) loadSubmissions(activityConfigId);
+					else loadActivity();
+				}, 10000);
+			}
+
 			document.querySelectorAll('.sidebar a[data-tab]').forEach((a) => {
 				a.addEventListener('click', () => {
 					document.querySelectorAll('.sidebar a').forEach((x) => x.classList.remove('active'));
 					a.classList.add('active');
 					loaders[a.dataset.tab]();
 					toggleSidebar(false);
+					if (a.dataset.tab === 'activity') startActivityPoll();
+					else stopActivityPoll();
 				});
 			});
 
 			initApp();
+			startActivityPoll();
 		</script>
 	</body>
 </html>

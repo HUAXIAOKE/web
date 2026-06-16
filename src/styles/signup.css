@@ -188,32 +188,32 @@ html.dark {
 
 .signup-file-wrap {
 	position: relative;
+	min-width: 0;
+	max-width: 100%;
 }
 
 .signup-file-wrap input[type='file'] {
+	position: absolute;
 	opacity: 0;
-	clip: rect(0, 0, 0, 0);
 	width: 0.1px;
 	height: 0.1px;
-	position: absolute;
 	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
 }
 
 .signup-file-trigger {
 	display: flex;
 	align-items: center;
-	gap: 0.75rem;
-	padding: 1rem 1.25rem;
-	font-size: 0.92rem;
-	color: var(--signup-muted);
+	gap: 12px;
+	width: 100%;
 	border: 2px dashed var(--signup-border);
 	border-radius: 10px;
 	background: var(--signup-input-bg);
+	padding: 16px 20px;
+	font-size: 0.92rem;
+	color: var(--signup-muted);
 	cursor: pointer;
-	transition:
-		border-color 0.25s ease,
-		background 0.25s ease,
-		color 0.25s ease;
+	transition: all 0.3s ease;
 }
 
 .signup-file-trigger:hover {
@@ -222,8 +222,128 @@ html.dark {
 	color: var(--signup-accent);
 }
 
-.signup-file-trigger i {
-	font-size: 1.2rem;
+.signup-file-wrap.signup-file-dragover .signup-file-trigger {
+	border-color: var(--signup-accent);
+	background: var(--signup-accent-weak);
+	color: var(--signup-accent);
+	border-style: solid;
+}
+
+.signup-file-icon {
+	font-size: 1.35rem;
+	flex-shrink: 0;
+}
+
+.signup-file-text {
+	flex: 1;
+	min-width: 0;
+}
+
+.signup-file-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.signup-file-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	background: var(--signup-input-bg);
+	border: 1px solid var(--signup-border);
+	border-radius: 10px;
+	font-size: 0.88rem;
+	position: relative;
+	isolation: isolate;
+	max-width: 100%;
+}
+
+.signup-file-wrap.is-ready .signup-file-item {
+	border-color: rgba(52, 199, 89, 0.35);
+}
+
+.signup-file-wrap.is-error .signup-file-item {
+	border-color: rgba(224, 85, 85, 0.35);
+}
+
+.signup-file-preview {
+	width: 40px;
+	height: 40px;
+	border-radius: 6px;
+	overflow: hidden;
+	background: var(--signup-accent-weak);
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--signup-accent);
+	font-size: 1.1rem;
+}
+
+.signup-file-wrap.is-ready .signup-file-preview {
+	background: rgba(52, 199, 89, 0.12);
+	color: #34c759;
+}
+
+.signup-file-info {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.signup-file-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: var(--signup-text);
+}
+
+.signup-file-status {
+	font-size: 0.78rem;
+	color: var(--signup-muted);
+}
+
+.signup-file-status.is-done {
+	color: #34c759;
+}
+
+.signup-file-status.is-error {
+	color: var(--signup-error);
+}
+
+.signup-file-remove {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	min-width: 28px;
+	min-height: 28px;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: var(--signup-muted);
+	cursor: pointer;
+	border-radius: 6px;
+	transition: color 0.2s, background 0.2s;
+	position: relative;
+	z-index: 10;
+	flex-shrink: 0;
+}
+
+.signup-file-remove i {
+	pointer-events: none;
+	font-size: 1rem;
+}
+
+.signup-file-remove:hover,
+.signup-file-remove:focus-visible {
+	color: #f5222d;
+	background: rgba(245, 34, 45, 0.08);
 }
 
 .signup-form-row {
