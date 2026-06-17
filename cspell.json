@@ -1,4 +1,4 @@
 {
-	"ignorePaths": ["src/*", "backend/*", ".gitignore", "*.json", "*.lock"],
+	"ignorePaths": ["src/*", "backend/*", ".gitignore", "*.json", "*.lock", ".cursor/*"],
 	"words": ["Alimama", "ehthumbs", "fontawesome", "fonttools", "HMAC", "isinline", "joinus", "modernc", "pyftsubset", "unicodes", "webfonts"]
 }

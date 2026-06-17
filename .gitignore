@@ -122,3 +122,6 @@ public/
 backend/data.db
 backend/data/
 backend/huaxiaoke-server
+
+# Skill
+.cursor/
