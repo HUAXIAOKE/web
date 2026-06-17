@@ -9,11 +9,11 @@ const PAGE_PATHS: Record<PageName, string> = {
 };
 
 const PAGE_TITLES: Record<PageName, string> = {
-	index: 'Huaxiaoke - 主页',
-	live: 'Huaxiaoke - 足迹',
-	gallery: 'Huaxiaoke - 插画一览',
-	activity: 'Huaxiaoke - 当期活动',
-	about: 'Huaxiaoke - 关于我们',
+	index: 'Huaxiaoke - \u4E3B\u9875',
+	live: 'Huaxiaoke - \u8DB3\u8FF9',
+	gallery: 'Huaxiaoke - \u63D2\u753B\u4E00\u89C8',
+	activity: 'Huaxiaoke - \u5F53\u671F\u6D3B\u52A8',
+	about: 'Huaxiaoke - \u5173\u4E8E\u6211\u4EEC',
 };
 
 const PATH_TO_PAGE: Record<string, PageName> = {
@@ -27,30 +27,19 @@ const PATH_TO_PAGE: Record<string, PageName> = {
 class SPANavigation {
 	private currentPage: PageName;
 	private navLinks: NodeListOf<HTMLAnchorElement>;
-	private slide1: HTMLElement | null;
-	private slide2: HTMLElement | null;
-	private hamburger: HTMLElement | null;
-	private mobileMenu: HTMLElement | null;
 
 	constructor() {
 		this.currentPage = PATH_TO_PAGE[window.location.pathname] || 'index';
-		this.navLinks = document.querySelectorAll('#nav a, #nav-mobile a');
-		this.slide1 = document.querySelector('#nav .slide1');
-		this.slide2 = document.querySelector('#nav .slide2');
-		this.hamburger = document.getElementById('nav-hamburger');
-		this.mobileMenu = document.getElementById('nav-mobile');
+		this.navLinks = document.querySelectorAll(
+			'.nav-sidebar a[data-page], .sm-panel a[data-page]'
+		);
 		this.init();
 	}
 
 	private init(): void {
 		this.bindNavEvents();
-		this.bindMobileMenu();
-		this.initSlideAnimation();
 		this.showCurrentPage();
-	}
-
-	private resetScroll(): void {
-		window.scrollTo(0, 0);
+		this.setActiveNavItem();
 	}
 
 	private showCurrentPage(): void {
@@ -61,39 +50,43 @@ class SPANavigation {
 		if (target) {
 			target.style.display = 'block';
 		}
-		this.resetScroll();
-		this.initializePage(this.currentPage);
 		this.updatePageTitle(this.currentPage);
+		this.initializePage(this.currentPage);
 	}
 
-	private moveSlide(target: HTMLElement, slide: HTMLElement): void {
-		const parent = target.parentElement as HTMLElement;
-		slide.style.opacity = '1';
-		slide.style.left = parent.offsetLeft + 'px';
-		slide.style.width = parent.offsetWidth + 'px';
-	}
-
-	private bindMobileMenu(): void {
-		if (!this.hamburger || !this.mobileMenu) return;
-
-		this.hamburger.addEventListener('click', () => {
-			const expanded = this.hamburger!.getAttribute('aria-expanded') === 'true';
-			this.hamburger!.setAttribute('aria-expanded', String(!expanded));
-			this.mobileMenu!.classList.toggle('open');
+	private setActiveNavItem(): void {
+		this.navLinks.forEach((link) => {
+			const page = link.getAttribute('data-page');
+			const navItem = link.closest('.nav-item');
+			if (page === this.currentPage) {
+				link.classList.add('active');
+				if (navItem) navItem.classList.add('active');
+			} else {
+				link.classList.remove('active');
+				if (navItem) navItem.classList.remove('active');
+			}
 		});
+	}
 
-		this.mobileMenu.querySelectorAll('a').forEach((link) => {
-			link.addEventListener('click', () => {
-				this.hamburger!.setAttribute('aria-expanded', 'false');
-				this.mobileMenu!.classList.remove('open');
-			});
+	private updateNavState(link: HTMLAnchorElement, page: PageName): void {
+		this.navLinks.forEach((l) => {
+			l.classList.remove('active');
+			const item = l.closest('.nav-item');
+			if (item) item.classList.remove('active');
+		});
+		link.classList.add('active');
+		const navItem = link.closest('.nav-item');
+		if (navItem) navItem.classList.add('active');
+
+		const smPanelItems = document.querySelectorAll<HTMLAnchorElement>('.sm-panel a[data-page]');
+		smPanelItems.forEach((l) => {
+			if (l.getAttribute('data-page') === page) l.classList.add('active');
+			else l.classList.remove('active');
 		});
 	}
 
 	private bindNavEvents(): void {
 		this.navLinks.forEach((link) => {
-			const isDesktop = link.closest('#nav');
-
 			link.addEventListener('click', (e) => {
 				const isExternal = link.hasAttribute('target') && link.getAttribute('target') === '_blank';
 
@@ -115,31 +108,20 @@ class SPANavigation {
 
 				e.preventDefault();
 				this.switchPage(targetPage);
+				history.pushState({ page: targetPage }, '', PAGE_PATHS[targetPage]);
+			});
+		});
 
-				const newPath = PAGE_PATHS[targetPage];
-				history.pushState({ page: targetPage }, '', newPath);
-
-				if (isDesktop && this.slide1) {
-					this.moveSlide(link, this.slide1);
+		const biliLink = document.querySelector<HTMLAnchorElement>('.nav-bili-link');
+		if (biliLink) {
+			biliLink.addEventListener('click', (e) => {
+				e.preventDefault();
+				const targetUrl = biliLink.getAttribute('data-href') || biliLink.getAttribute('href');
+				if (targetUrl) {
+					window.open(targetUrl, '_blank', 'noopener,noreferrer');
 				}
 			});
-
-			if (isDesktop) {
-				link.addEventListener('mouseover', () => {
-					if (this.slide2) {
-						this.moveSlide(link, this.slide2);
-						this.slide2.classList.add('squeeze');
-					}
-				});
-
-				link.addEventListener('mouseout', () => {
-					if (this.slide2) {
-						this.slide2.style.opacity = '0';
-						this.slide2.classList.remove('squeeze');
-					}
-				});
-			}
-		});
+		}
 	}
 
 	switchPage(targetPage: PageName): void {
@@ -154,9 +136,15 @@ class SPANavigation {
 		}
 
 		this.currentPage = targetPage;
-		this.resetScroll();
-		this.initializePage(targetPage);
 		this.updatePageTitle(targetPage);
+		this.initializePage(targetPage);
+
+		const link = document.querySelector<HTMLAnchorElement>(
+			`.nav-sidebar a[data-page="${targetPage}"]`
+		) || document.querySelector<HTMLAnchorElement>(
+			`.sm-panel a[data-page="${targetPage}"]`
+		);
+		if (link) this.updateNavState(link, targetPage);
 	}
 
 	private initializePage(pageName: PageName): void {
@@ -192,35 +180,6 @@ class SPANavigation {
 	private updatePageTitle(pageName: PageName): void {
 		document.title = PAGE_TITLES[pageName] || 'Huaxiaoke';
 	}
-
-	private initSlideAnimation(): void {
-		if (this.slide1) this.slide1.style.opacity = '0';
-		if (this.slide2) this.slide2.style.opacity = '0';
-		this.setActiveByPath();
-	}
-
-	private setActiveByPath(): void {
-		const navIndex =
-			this.currentPage === 'index'
-				? 3
-				: this.currentPage === 'live'
-					? 4
-					: this.currentPage === 'gallery'
-						? 5
-						: this.currentPage === 'activity'
-							? 6
-							: 7;
-
-		const activeNavItem = document.querySelector<HTMLElement>(`#nav li:nth-of-type(${navIndex})`);
-		if (activeNavItem && this.slide1) {
-			this.slide1.style.opacity = '1';
-			this.slide1.style.left = activeNavItem.offsetLeft + 'px';
-			this.slide1.style.width = activeNavItem.offsetWidth + 'px';
-			document.querySelectorAll('#nav a').forEach((link) => link.classList.remove('active'));
-			const activeLink = activeNavItem.querySelector('a');
-			if (activeLink) activeLink.classList.add('active');
-		}
-	}
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -235,5 +194,4 @@ window.addEventListener('popstate', () => {
 	const target = document.getElementById(`page-${page}`);
 	if (target) target.style.display = 'block';
 	document.title = PAGE_TITLES[page] || 'Huaxiaoke';
-	window.scrollTo(0, 0);
 });
