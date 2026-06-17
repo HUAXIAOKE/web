@@ -1,68 +1,92 @@
-<div class="partOne">
-  <div class="shell">
-    <div class="box">
-      <div class="ball"></div>
-      <div class="shadow"></div>
-    </div>
-
-    <div class="box">
-      <div class="ball"></div>
-      <div class="shadow"></div>
-    </div>
-
-    <div class="box">
-      <div class="ball"></div>
-    </div>
+<nav class="nav-sidebar" aria-label="主导航">
+  <div class="nav-logo">
+    <img src="/img/mobile-icon.webp" alt="HXK" width="48" height="48" decoding="async" loading="lazy" />
   </div>
-
-  <ul id="nav">
-    <li class="slide1"></li>
-    <li class="slide2"></li>
-    <li><a href="/" data-page="index">主页</a></li>
-    <li><a href="/live" data-page="live">足迹</a></li>
-    <li><a href="/gallery" data-page="gallery">插画一览</a></li>
-    <li><a href="/activity" data-page="activity">当期活动</a></li>
-    <li><a href="/about" data-page="about">关于我们</a></li>
-    <li>
-      <a
-        href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
-        data-href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
-        target="_blank"
-        rel="noopener noreferrer">传送门</a
-      >
+  <ul class="nav-items">
+    <li class="nav-item" data-page="index">
+      <a href="/" data-page="index">
+        <span class="nav-item-zh">主页</span>
+        <span class="nav-item-en">HOME</span>
+      </a>
+    </li>
+    <li class="nav-item" data-page="live">
+      <a href="/live" data-page="live">
+        <span class="nav-item-zh">足迹</span>
+        <span class="nav-item-en">LIVE</span>
+      </a>
+    </li>
+    <li class="nav-item" data-page="gallery">
+      <a href="/gallery" data-page="gallery">
+        <span class="nav-item-zh">插画一览</span>
+        <span class="nav-item-en">GALLERY</span>
+      </a>
+    </li>
+    <li class="nav-item" data-page="activity">
+      <a href="/activity" data-page="activity">
+        <span class="nav-item-zh">当期活动</span>
+        <span class="nav-item-en">ACTIVITY</span>
+      </a>
+    </li>
+    <li class="nav-item" data-page="about">
+      <a href="/about" data-page="about">
+        <span class="nav-item-zh">关于我们</span>
+        <span class="nav-item-en">ABOUT</span>
+      </a>
     </li>
   </ul>
-
-  <button id="nav-hamburger" aria-expanded="false" aria-label="打开菜单">
-    <span class="bar"></span>
-    <span class="bar"></span>
-    <span class="bar"></span>
-  </button>
-
-  <div id="nav-mobile">
-    <img src="/img/mobile-icon.webp" class="nav-mobile-icon" alt="HXK" loading="lazy" />
-    <ul>
-      <li><a href="/" data-page="index">主页</a></li>
-      <li><a href="/live" data-page="live">足迹</a></li>
-      <li><a href="/gallery" data-page="gallery">插画一览</a></li>
-      <li><a href="/activity" data-page="activity">当期活动</a></li>
-      <li><a href="/about" data-page="about">关于我们</a></li>
-      <li>
-        <a
-          href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
-          data-href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0"
-          target="_blank"
-          rel="noopener noreferrer">传送门</a
-        >
-      </li>
-    </ul>
-    <div class="nav-mobile-footer">
-      <p>© 2026 HXK Huaxiaoke Official Team<br>All Rights Reserved</p>
+  <div class="nav-sidebar-footer">
+    <a href="https://space.bilibili.com/672455305" data-href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0" target="_blank" rel="noopener noreferrer" class="nav-bili-link">
+      <svg class="nav-bili-icon" width="96" height="86" viewBox="0 0 96 86" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M19.9068 9.24502C17.7722 7.18582 17.7722 3.76656 19.9068 1.70742C21.9355 -0.249681 25.1494 -0.249681 27.1782 1.70742L38.4919 12.6215C38.8133 12.9316 39.0863 13.2725 39.311 13.635H56.4208C56.6459 13.2725 56.9189 12.9316 57.24 12.6215L68.5536 1.70742C70.5824 -0.249681 73.7963 -0.249681 75.8251 1.70742C77.96 3.76656 77.96 7.18582 75.8251 9.24502L71.2747 13.635H74.6667C86.4485 13.635 96 23.1863 96 34.9684V64.3312C96 76.1131 86.4485 85.6645 74.6667 85.6645H21.3333C9.55125 85.6645 0 76.1131 0 64.3312V34.9683C0 23.1862 9.55125 13.635 21.3333 13.635H24.4575L19.9068 9.24502ZM21.3333 23.925C15.4423 23.925 10.6667 28.7006 10.6667 34.5916V64.7077C10.6667 70.5989 15.4423 75.3744 21.3333 75.3744H74.6667C80.5579 75.3744 85.3333 70.5989 85.3333 64.7077V34.5916C85.3333 28.7006 80.5579 23.925 74.6667 23.925H21.3333ZM26.6667 44.6932C26.6667 41.7477 29.0545 39.3598 32 39.3598C34.9455 39.3598 37.3333 41.7477 37.3333 44.6932V49.4613C37.3333 52.4069 34.9455 54.7947 32 54.7947C29.0545 54.7947 26.6667 52.4069 26.6667 49.4613V44.6932ZM64 39.3598C61.0544 39.3598 58.6667 41.7477 58.6667 44.6932V49.4613C58.6667 52.4069 61.0544 54.7947 64 54.7947C66.9456 54.7947 69.3333 52.4069 69.3333 49.4613V44.6932C69.3333 41.7477 66.9456 39.3598 64 39.3598Z" fill="currentColor"/>
+      </svg>
+    </a>
+    <div class="nav-footer-info">
+      <p>&copy; 2026 HXK</p>
       <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">辽ICP备2026003216号</a>
     </div>
   </div>
+</nav>
 
-  <div class="box2">
-    <img src="/icon/pull.webp" id="pull" width="32" height="32" alt="" decoding="async" loading="lazy" />
+<div class="sm-wrapper" data-position="right">
+  <div class="sm-prelayers">
+    <div class="sm-prelayer"></div>
+    <div class="sm-prelayer"></div>
   </div>
+  <header class="sm-header">
+    <div class="sm-logo">
+      <img src="/img/mobile-icon.webp" alt="HXK" class="sm-logo-img" decoding="async" loading="lazy" />
+    </div>
+    <button class="sm-toggle" aria-label="打开菜单" aria-expanded="false" type="button">
+      <span class="sm-toggle-textWrap">
+        <span class="sm-toggle-textInner">
+          <span class="sm-toggle-line">Menu</span>
+          <span class="sm-toggle-line">Close</span>
+        </span>
+      </span>
+      <span class="sm-icon">
+        <span class="sm-icon-line"></span>
+        <span class="sm-icon-line sm-icon-line-v"></span>
+      </span>
+    </button>
+  </header>
+  <aside class="sm-panel" id="sm-panel" aria-hidden="true">
+    <div class="sm-panel-inner">
+      <ul class="sm-panel-list" role="list" data-numbering>
+        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/" data-page="index" aria-label="主页"><span class="sm-panel-itemLabel">主页</span></a></li>
+        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/live" data-page="live" aria-label="足迹"><span class="sm-panel-itemLabel">足迹</span></a></li>
+        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/gallery" data-page="gallery" aria-label="插画一览"><span class="sm-panel-itemLabel">插画一览</span></a></li>
+        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/activity" data-page="activity" aria-label="当期活动"><span class="sm-panel-itemLabel">当期活动</span></a></li>
+        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/about" data-page="about" aria-label="关于我们"><span class="sm-panel-itemLabel">关于我们</span></a></li>
+      </ul>
+      <div class="sm-socials">
+        <ul class="sm-socials-list" role="list">
+          <li><a href="https://space.bilibili.com/672455305" data-href="https://space.bilibili.com/672455305?spm_id_from=333.337.0.0" target="_blank" rel="noopener noreferrer" class="sm-socials-link"><svg class="sm-bili-icon" width="96" height="86" viewBox="0 0 96 86" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.9068 9.24502C17.7722 7.18582 17.7722 3.76656 19.9068 1.70742C21.9355 -0.249681 25.1494 -0.249681 27.1782 1.70742L38.4919 12.6215C38.8133 12.9316 39.0863 13.2725 39.311 13.635H56.4208C56.6459 13.2725 56.9189 12.9316 57.24 12.6215L68.5536 1.70742C70.5824 -0.249681 73.7963 -0.249681 75.8251 1.70742C77.96 3.76656 77.96 7.18582 75.8251 9.24502L71.2747 13.635H74.6667C86.4485 13.635 96 23.1863 96 34.9684V64.3312C96 76.1131 86.4485 85.6645 74.6667 85.6645H21.3333C9.55125 85.6645 0 76.1131 0 64.3312V34.9683C0 23.1862 9.55125 13.635 21.3333 13.635H24.4575L19.9068 9.24502ZM21.3333 23.925C15.4423 23.925 10.6667 28.7006 10.6667 34.5916V64.7077C10.6667 70.5989 15.4423 75.3744 21.3333 75.3744H74.6667C80.5579 75.3744 85.3333 70.5989 85.3333 64.7077V34.5916C85.3333 28.7006 80.5579 23.925 74.6667 23.925H21.3333ZM26.6667 44.6932C26.6667 41.7477 29.0545 39.3598 32 39.3598C34.9455 39.3598 37.3333 41.7477 37.3333 44.6932V49.4613C37.3333 52.4069 34.9455 54.7947 32 54.7947C29.0545 54.7947 26.6667 52.4069 26.6667 49.4613V44.6932ZM64 39.3598C61.0544 39.3598 58.6667 41.7477 58.6667 44.6932V49.4613C58.6667 52.4069 61.0544 54.7947 64 54.7947C66.9456 54.7947 69.3333 52.4069 69.3333 49.4613V44.6932C69.3333 41.7477 66.9456 39.3598 64 39.3598Z" fill="currentColor"/></svg></a></li>
+        </ul>
+      </div>
+      <div class="sm-panel-footer">
+        <p>&copy; 2026 HXK Huaxiaoke Official Team<br />All Rights Reserved</p>
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">辽ICP备2026003216号</a>
+      </div>
+    </div>
+  </aside>
 </div>
