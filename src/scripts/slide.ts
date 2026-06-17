@@ -65,7 +65,7 @@ function initSwipe(): void {
 			startX = e.touches[0].clientX;
 			tracking = true;
 		},
-		{ passive: true },
+		{ passive: true }
 	);
 	slideSection.addEventListener(
 		'touchend',
@@ -80,7 +80,7 @@ function initSwipe(): void {
 			if (dy < 0 && chosenSlideNumber < 4) slideTo(chosenSlideNumber + 1);
 			else if (dy > 0 && chosenSlideNumber > 1) slideTo(chosenSlideNumber - 1);
 		},
-		{ passive: true },
+		{ passive: true }
 	);
 }
 

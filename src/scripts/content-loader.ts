@@ -65,8 +65,7 @@ async function initTimeline(): Promise<void> {
 		const subEl = shell.querySelector<HTMLElement>('.timeline-subtitle');
 		if (titleEl) titleEl.textContent = data.header.title;
 		if (subEl) subEl.textContent = data.header.subtitle;
-	} catch (e) {
-	}
+	} catch (e) {}
 }
 
 async function initAbout(): Promise<void> {
@@ -87,8 +86,7 @@ async function initAbout(): Promise<void> {
 	</div>`;
 			})
 			.join('\n');
-	} catch (e) {
-	}
+	} catch (e) {}
 }
 
 async function initActivity(): Promise<void> {
@@ -112,10 +110,9 @@ async function initActivity(): Promise<void> {
 		const grid = document.getElementById('activity-grid');
 		if (grid) {
 			grid.innerHTML = activities
-				.map(
-					(a, i) => {
-						const badgeClass = getBadgeClass(a.signupStatus);
-						return `<a class="news-card${badgeClass ? ' ' + badgeClass : ''}" data-tags="${a.tags}" href="${getCardHref(a, i)}">
+				.map((a, i) => {
+					const badgeClass = getBadgeClass(a.signupStatus);
+					return `<a class="news-card${badgeClass ? ' ' + badgeClass : ''}" data-tags="${a.tags}" href="${getCardHref(a, i)}">
   <div class="thumb" style="background-image:url(${a.image})"></div>
   <div class="meta">
     ${a.tags
@@ -127,8 +124,7 @@ async function initActivity(): Promise<void> {
   <h3 class="headline">${a.headline}</h3>
   <p class="excerpt">${a.excerpt}</p>
 </a>`;
-					}
-				)
+				})
 				.join('\n');
 			document.dispatchEvent(new CustomEvent('activity-cards-loaded'));
 		}
@@ -144,8 +140,7 @@ async function initActivity(): Promise<void> {
 			}
 			if (text) text.textContent = latest.headline;
 		}
-	} catch {
-	}
+	} catch {}
 }
 
 function init(): void {

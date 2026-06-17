@@ -290,9 +290,10 @@
 									</div>
 									<div class="card-actions">
 										<button class="btn btn-ghost" onclick='editActivity(${JSON.stringify(a)})'>编辑</button>
-										${a.isSignup ?
-											`<button class="btn btn-danger" onclick="setSignup(${a.id},0)">关闭报名</button>` :
-											`<button class="btn btn-ghost" onclick="setSignup(${a.id},1)">开启报名</button>`
+										${
+											a.isSignup
+												? `<button class="btn btn-danger" onclick="setSignup(${a.id},0)">关闭报名</button>`
+												: `<button class="btn btn-ghost" onclick="setSignup(${a.id},1)">开启报名</button>`
 										}
 										<button class="btn btn-ghost" onclick="openActivityConfig(${a.id})">配置</button>
 										<button class="btn btn-danger" onclick="delActivity(${a.id})">删除</button>
@@ -471,7 +472,9 @@
 				const fieldLabels = { name: '昵称', qq: 'QQ', department: '院系', remark: '备注' };
 				const formatSubmitTime = (raw) => {
 					if (!raw) return '—';
-					const m = String(raw).trim().match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
+					const m = String(raw)
+						.trim()
+						.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
 					if (!m) return raw;
 					const ms = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +(m[6] || 0));
 					return new Intl.DateTimeFormat('zh-CN', {
@@ -496,16 +499,20 @@
 					}
 				};
 				container.innerHTML = `<table><thead><tr><th>ID</th><th>提交时间</th><th>数据</th><th>附件</th></tr></thead>
-					<tbody>${list.map((s) => {
-						let files = [];
-						try { files = JSON.parse(s.attachments); } catch (e) {}
-						return `<tr>
+					<tbody>${list
+						.map((s) => {
+							let files = [];
+							try {
+								files = JSON.parse(s.attachments);
+							} catch (e) {}
+							return `<tr>
 							<td>${s.id}</td>
 							<td class="sub-time">${formatSubmitTime(s.submittedAt)}</td>
 							<td class="sub-data">${formatData(s.data)}</td>
 							<td>${files.length ? files.map((f, i) => `<a href="${f}" target="_blank" class="sub-file">附件${files.length > 1 ? i + 1 : ''}</a>`).join('') : '—'}</td>
 						</tr>`;
-					}).join('')}</tbody></table>`;
+						})
+						.join('')}</tbody></table>`;
 			}
 
 			async function loadTimeline() {
@@ -970,7 +977,14 @@
 				mask.classList.toggle('show', open);
 			}
 
-			const loaders = { activity: loadActivity, timeline: loadTimeline, gallery: loadGallery, about: loadAbout, music: loadMusic, bilibili: loadBilibili };
+			const loaders = {
+				activity: loadActivity,
+				timeline: loadTimeline,
+				gallery: loadGallery,
+				about: loadAbout,
+				music: loadMusic,
+				bilibili: loadBilibili,
+			};
 
 			function stopActivityPoll() {
 				if (activityPollTimer) {

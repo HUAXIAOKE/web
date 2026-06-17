@@ -83,8 +83,7 @@ function initActivityCharacter(grid: HTMLElement): void {
 			return;
 		}
 
-		const target =
-			currentCard && !currentCard.classList.contains('card-hidden') ? currentCard : visible[0];
+		const target = currentCard && !currentCard.classList.contains('card-hidden') ? currentCard : visible[0];
 
 		currentCard = target;
 		requestAnimationFrame(() => {
@@ -126,7 +125,7 @@ function initActivityCharacter(grid: HTMLElement): void {
 		const target =
 			currentCard && !currentCard.classList.contains('card-hidden')
 				? currentCard
-				: cards.find((c) => !c.classList.contains('card-hidden')) ?? cards[0];
+				: (cards.find((c) => !c.classList.contains('card-hidden')) ?? cards[0]);
 		if (target) {
 			currentCard = target;
 			requestAnimationFrame(() => {
