@@ -13,7 +13,7 @@ function initStaggeredMenu(): void {
 	const itemLabels = Array.from(document.querySelectorAll('.sm-panel-itemLabel'));
 	const itemWraps = Array.from(document.querySelectorAll('.sm-panel-itemWrap'));
 	const socialTitle = document.querySelector<HTMLElement>('.sm-socials-title');
-	const socialLinks = Array.from(document.querySelectorAll('.sm-socials-link'));
+	const socialLinks = Array.from(document.querySelectorAll('.sm-socials-link, .sm-theme-toggle'));
 	const icon = document.querySelector<HTMLElement>('.sm-icon');
 	const textInner = document.querySelector<HTMLElement>('.sm-toggle-textInner');
 

@@ -228,3 +228,17 @@ class ThemeButton extends HTMLElement {
 }
 
 customElements.define('theme-button', ThemeButton);
+
+document.addEventListener('DOMContentLoaded', () => {
+	const mobileToggle = document.querySelector<HTMLButtonElement>('.sm-theme-toggle');
+	if (!mobileToggle) return;
+	const html = document.documentElement;
+
+	mobileToggle.addEventListener('click', () => {
+		const isDark = html.classList.contains('dark');
+		const next = isDark ? 'light' : 'dark';
+		if (next === 'dark') html.classList.add('dark');
+		else html.classList.remove('dark');
+		localStorage.setItem('theme', next);
+	});
+});

@@ -48,7 +48,7 @@ class SPANavigation {
 		});
 		const target = document.getElementById(`page-${this.currentPage}`);
 		if (target) {
-			target.style.display = 'block';
+			target.style.display = target.id === 'page-index' ? 'flex' : 'block';
 		}
 		this.updatePageTitle(this.currentPage);
 		this.initializePage(this.currentPage);
@@ -132,7 +132,7 @@ class SPANavigation {
 
 		const targetEl = document.getElementById(`page-${targetPage}`);
 		if (targetEl) {
-			targetEl.style.display = 'block';
+			targetEl.style.display = targetEl.id === 'page-index' ? 'flex' : 'block';
 		}
 
 		this.currentPage = targetPage;
@@ -192,6 +192,6 @@ window.addEventListener('popstate', () => {
 		el.style.display = 'none';
 	});
 	const target = document.getElementById(`page-${page}`);
-	if (target) target.style.display = 'block';
+	if (target) target.style.display = target.id === 'page-index' ? 'flex' : 'block';
 	document.title = PAGE_TITLES[page] || 'Huaxiaoke';
 });

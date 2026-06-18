@@ -24,13 +24,19 @@ const { title, description = "Huaxiaoke" } = Astro.props;
     <link rel="stylesheet" href="/vendor/fontawesome/all.min.css" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <script is:inline>
+      (function() {
+        var t = localStorage.getItem('theme') || 'dark';
+        if (t === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+      })();
+    </script>
   </head>
 
   <body>
-    <div id="theme-toggle-container">
+    <div id="sub-theme-toggle">
       <theme-button id="theme-btn" size="1" value="dark"></theme-button>
     </div>
-
     <MusicPlayer />
     <script>
       document.querySelector('#music-player')?.classList.add('collapsed');
