@@ -12,14 +12,6 @@ interface ActivityItem {
 	signupStatus: string;
 }
 
-interface AboutCard {
-	id: number;
-	smallTitle: string;
-	title: string;
-	content: string;
-	image: string;
-}
-
 interface TimelineHeader {
 	title: string;
 	subtitle: string;
@@ -65,27 +57,6 @@ async function initTimeline(): Promise<void> {
 		const subEl = shell.querySelector<HTMLElement>('.timeline-subtitle');
 		if (titleEl) titleEl.textContent = data.header.title;
 		if (subEl) subEl.textContent = data.header.subtitle;
-	} catch (e) {}
-}
-
-async function initAbout(): Promise<void> {
-	const container = document.querySelector<HTMLElement>('#page-about #card-section');
-	if (!container) return;
-	try {
-		const data = await loadAPI<{ cards: AboutCard[] }>('/api/about');
-		const cards = data.cards || [];
-		container.innerHTML = cards
-			.map((c) => {
-				const isJoinUs = c.id === 4 || c.smallTitle === '加入我们';
-				const titleHtml = isJoinUs ? `<a href="/joinus">${c.title}</a>` : c.title;
-				return `<div id="card${c.id}" class="card">
-	  <div class="card-small-title">${c.smallTitle}</div>
-	  <div class="card-title">${titleHtml}</div>
-	  <div class="card-content">${c.content}</div>
-	  <div class="card-img"><img src="${c.image}" alt="" /></div>
-	</div>`;
-			})
-			.join('\n');
 	} catch (e) {}
 }
 
@@ -145,7 +116,6 @@ async function initActivity(): Promise<void> {
 
 function init(): void {
 	initTimeline();
-	initAbout();
 	initActivity();
 	initLatestVideo();
 }

@@ -163,11 +163,6 @@ class SPANavigation {
 				}, 100);
 				break;
 			case 'about':
-				setTimeout(() => {
-					if (typeof (window as any).slideTo === 'function') {
-						(window as any).slideTo(1);
-					}
-				}, 100);
 				break;
 			case 'activity':
 				setTimeout(() => {
