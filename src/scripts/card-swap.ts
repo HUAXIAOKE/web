@@ -148,23 +148,12 @@ const swap = (
 	});
 };
 
-async function initCardSwap(): Promise<void> {
-	const container = document.querySelector<HTMLElement>('#page-about .about-stage');
-	const titleEl = document.getElementById('about-text-title');
-	const contentEl = document.getElementById('about-text-content');
-	if (!container || !titleEl || !contentEl) return;
-
-	let cards: AboutCard[] = [];
-	try {
-		const apiBase = (window as any).API_BASE || '';
-		const res = await fetch(`${apiBase}/api/about`);
-		const data = await res.json();
-		cards = data.cards || [];
-	} catch (e) {
-		return;
-	}
-	if (cards.length === 0) return;
-
+async function initDesktop(
+	cards: AboutCard[],
+	container: HTMLElement,
+	titleEl: HTMLElement,
+	contentEl: HTMLElement
+): Promise<void> {
 	const inner = document.createElement('div');
 	inner.className = 'cs-container';
 	container.appendChild(inner);
@@ -174,7 +163,7 @@ async function initCardSwap(): Promise<void> {
 		card.className = 'cs-card';
 		card.innerHTML = `<div class="cs-card-inner">
 	<div class="cs-card-small-title">${c.smallTitle}</div>
-	<div class="cs-card-img"><img src="${c.image}" alt="${c.smallTitle}" loading="lazy" /></div>
+	<div class="cs-card-img"><img src="${c.image}" alt="${c.smallTitle}" loading="lazy" draggable="false" /></div>
 </div>`;
 		inner.appendChild(card);
 	});
@@ -204,6 +193,177 @@ async function initCardSwap(): Promise<void> {
 	};
 	inner.addEventListener('mouseenter', pause);
 	inner.addEventListener('mouseleave', resume);
+}
+
+function initMobile(
+	cards: AboutCard[],
+	container: HTMLElement,
+	titleEl: HTMLElement,
+	contentEl: HTMLElement
+): void {
+	const inner = document.createElement('div');
+	inner.className = 'cs-container';
+	container.appendChild(inner);
+
+	cards.forEach((c) => {
+		const card = document.createElement('div');
+		card.className = 'cs-card';
+		card.innerHTML = `<div class="cs-card-inner">
+	<div class="cs-card-small-title">${c.smallTitle}</div>
+	<div class="cs-card-img"><img src="${c.image}" alt="${c.smallTitle}" loading="lazy" draggable="false" /></div>
+</div>`;
+		inner.appendChild(card);
+	});
+
+	const dotsWrap = document.createElement('div');
+	dotsWrap.className = 'about-dots';
+	const dots: HTMLElement[] = [];
+	cards.forEach((_, i) => {
+		const dot = document.createElement('div');
+		dot.className = 'about-dot';
+		if (i === 0) dot.classList.add('active');
+		dotsWrap.appendChild(dot);
+		dots.push(dot);
+	});
+	container.parentElement!.appendChild(dotsWrap);
+
+	const refs = Array.from(inner.querySelectorAll<HTMLElement>('.cs-card'));
+	const total = cards.length;
+	let currentIdx = 0;
+	let isAnimating = false;
+
+	refs.forEach((r, i) => {
+		r.style.opacity = i === 0 ? '1' : '0';
+		r.style.pointerEvents = i === 0 ? 'auto' : 'none';
+	});
+
+	const updateText = (card: AboutCard): void => {
+		splitChars(titleEl, card.title);
+		contentEl.innerHTML = card.content;
+
+		gsap.set(titleEl.querySelectorAll('.char'), { y: '100%' });
+		gsap.set(contentEl, { y: 20, opacity: 0 });
+
+		gsap.to(titleEl.querySelectorAll('.char'), {
+			y: 0,
+			duration: 0.35,
+			stagger: 0.035,
+			ease: 'power3.out',
+		});
+		gsap.to(contentEl, {
+			y: 0,
+			opacity: 1,
+			duration: 0.3,
+			ease: 'power2.out',
+			delay: 0.08,
+		});
+	};
+
+	const slideTo = (idx: number, direction: 'next' | 'prev'): void => {
+		if (isAnimating) return;
+		const prevIdx = currentIdx;
+		currentIdx = idx;
+		isAnimating = true;
+
+		const cur = refs[prevIdx];
+		const next = refs[idx];
+
+		gsap.killTweensOf([cur, next]);
+		next.style.pointerEvents = 'auto';
+		next.style.opacity = '1';
+
+		const outX = direction === 'next' ? '-30%' : '30%';
+		const inX = direction === 'next' ? '30%' : '-30%';
+
+		gsap.set(next, { x: inX });
+		gsap.to(cur, {
+			x: outX,
+			opacity: 0,
+			duration: 0.35,
+			ease: 'power3.in',
+			onComplete: () => {
+				cur.style.opacity = '0';
+				cur.style.pointerEvents = 'none';
+				gsap.set(cur, { x: 0 });
+			},
+		});
+		gsap.to(next, {
+			x: 0,
+			duration: 0.35,
+			ease: 'power3.out',
+			onComplete: () => {
+				isAnimating = false;
+			},
+		});
+
+		dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+		updateText(cards[idx]);
+	};
+
+	const goNext = (): void => {
+		const next = currentIdx >= total - 1 ? 0 : currentIdx + 1;
+		slideTo(next, 'next');
+	};
+
+	let startX = 0;
+	let tracking = false;
+
+	container.addEventListener('touchstart', (e) => {
+		if (e.touches.length !== 1) return;
+		startX = e.touches[0].clientX;
+		tracking = true;
+		clearInterval(intervalRef);
+	});
+
+	container.addEventListener('touchmove', (e) => {
+		if (!tracking) return;
+		e.preventDefault();
+	}, { passive: false });
+
+	container.addEventListener('touchend', (e) => {
+		if (!tracking) return;
+		tracking = false;
+		const dx = e.changedTouches[0].clientX - startX;
+		if (Math.abs(dx) < 40) {
+			scheduleAdvance();
+			return;
+		}
+		if (dx < 0 || dx > 0) goNext();
+		scheduleAdvance();
+	});
+
+	const scheduleAdvance = (): void => {
+		clearInterval(intervalRef);
+		intervalRef = window.setInterval(goNext, DEFAULTS.delay);
+	};
+
+	titleEl.textContent = cards[0].title;
+	contentEl.innerHTML = cards[0].content;
+	scheduleAdvance();
+}
+
+async function initCardSwap(): Promise<void> {
+	const container = document.querySelector<HTMLElement>('#page-about .about-stage');
+	const titleEl = document.getElementById('about-text-title');
+	const contentEl = document.getElementById('about-text-content');
+	if (!container || !titleEl || !contentEl) return;
+
+	let cards: AboutCard[] = [];
+	try {
+		const apiBase = (window as any).API_BASE || '';
+		const res = await fetch(`${apiBase}/api/about`);
+		const data = await res.json();
+		cards = data.cards || [];
+	} catch (e) {
+		return;
+	}
+	if (cards.length === 0) return;
+
+	if (window.innerWidth <= 768) {
+		initMobile(cards, container, titleEl, contentEl);
+	} else {
+		initDesktop(cards, container, titleEl, contentEl);
+	}
 }
 
 document.addEventListener('DOMContentLoaded', initCardSwap);
