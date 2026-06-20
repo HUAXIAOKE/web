@@ -5,6 +5,13 @@
 		url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');
 }
 
+html {
+	scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+	display: none;
+}
+
 :root {
 	--bb-bg: rgba(255, 255, 255, 0.35);
 	--bb-border: rgba(70, 100, 180, 0.5);
@@ -179,8 +186,7 @@ body {
 	transition:
 		background 0.35s ease,
 		border-color 0.35s ease,
-		box-shadow 0.35s ease,
-		transform 0.25s ease;
+		box-shadow 0.35s ease;
 	margin: 0 auto;
 	width: 1320px;
 	height: 700px;
@@ -219,7 +225,6 @@ body {
 }
 
 #blackboard:hover {
-	transform: translateY(-2px);
 	box-shadow:
 		0 12px 24px rgba(0, 0, 0, 0.3),
 		0 4px 10px rgba(0, 0, 0, 0.22),
@@ -588,9 +593,15 @@ main {
 	padding: 2rem;
 	display: flex;
 	justify-content: center;
-	align-items: flex-start;
+	align-items: stretch;
 	height: 100vh;
-	overflow: hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
+	scrollbar-width: none;
+}
+#page-live::-webkit-scrollbar,
+#page-activity::-webkit-scrollbar {
+	display: none;
 }
 
 #page-gallery {
@@ -601,6 +612,10 @@ main {
 	height: 100vh;
 	overflow-y: auto;
 	overflow-x: hidden;
+	scrollbar-width: none;
+}
+#page-gallery::-webkit-scrollbar {
+	display: none;
 }
 
 #page-about {
@@ -1178,7 +1193,7 @@ canvas {
 		height: 60vh;
 	}
 	.box-main {
-		width: 18%;
+		width: 20%;
 	}
 	.box-main:hover {
 		width: 70%;

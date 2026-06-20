@@ -13,6 +13,7 @@ let isTimelineInitialized = false;
 let currentTimelineScrollHandler: ((e: Event) => void) | null = null;
 let currentIndicatorScrollHandler: (() => void) | null = null;
 let timelineKeydownBound = false;
+let currentTimelineIndex = 0;
 
 function scheduleCreateTimeline(delay = 100): void {
 	if (timelineCreateTimer) clearTimeout(timelineCreateTimer);
@@ -42,6 +43,7 @@ async function createTimeline(): Promise<void> {
 	try {
 		await loadTimelineData();
 
+		const savedScrollTop = container.scrollTop;
 		container.innerHTML = '';
 
 		timelineData.forEach((item, index) => {
@@ -64,6 +66,11 @@ async function createTimeline(): Promise<void> {
 
 		initTimelineAnimation();
 		isTimelineInitialized = true;
+
+		setTimeout(() => {
+			container.scrollTop = savedScrollTop;
+			container.dispatchEvent(new Event('scroll'));
+		}, 300);
 	} finally {
 		isTimelineCreating = false;
 	}
@@ -75,6 +82,8 @@ function initTimelineAnimation(): void {
 	const items = document.querySelectorAll<HTMLElement>('.timeline-item');
 
 	if (!shell || items.length === 0) return;
+
+	let currentIndex = currentTimelineIndex;
 
 	function updateTimelineHeight(): void {
 		if (items.length > 0) {
@@ -120,6 +129,13 @@ function initTimelineAnimation(): void {
 
 		const pointer = document.createElement('div');
 		pointer.className = 'timeline-pointer';
+
+		if (items[currentIndex]) {
+			const item = items[currentIndex];
+			const pointerTop = item.offsetTop + item.offsetHeight * 0.5 - 3;
+			pointer.style.top = `${pointerTop}px`;
+		}
+
 		timeline!.appendChild(pointer);
 
 		return pointer;
@@ -150,9 +166,7 @@ function initTimelineAnimation(): void {
 
 	createTimelinePointer();
 
-	let currentIndex = 0;
-
-	updateActiveItem(0);
+	updateActiveItem(currentIndex);
 
 	function handleTimelineScroll(): void {
 		const timelineEl = timeline!;
@@ -181,6 +195,7 @@ function initTimelineAnimation(): void {
 	}
 
 	function updateActiveItem(index: number): void {
+		currentTimelineIndex = index;
 		items.forEach((item) => item.classList.remove('timeline-item--active'));
 
 		if (items[index]) {
