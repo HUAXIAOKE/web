@@ -1,4 +1,4 @@
-type PageName = 'index' | 'live' | 'gallery' | 'activity' | 'about';
+type PageName = 'index' | 'live' | 'gallery' | 'activity' | 'about' | 'download';
 
 const PAGE_PATHS: Record<PageName, string> = {
 	index: '/',
@@ -6,6 +6,7 @@ const PAGE_PATHS: Record<PageName, string> = {
 	gallery: '/gallery',
 	activity: '/activity',
 	about: '/about',
+	download: '/download',
 };
 
 const PAGE_TITLES: Record<PageName, string> = {
@@ -14,6 +15,7 @@ const PAGE_TITLES: Record<PageName, string> = {
 	gallery: 'Huaxiaoke - \u63D2\u753B\u4E00\u89C8',
 	activity: 'Huaxiaoke - \u5F53\u671F\u6D3B\u52A8',
 	about: 'Huaxiaoke - \u5173\u4E8E\u6211\u4EEC',
+	download: 'Huaxiaoke - \u8D44\u6E90\u5206\u4EAB',
 };
 
 const PATH_TO_PAGE: Record<string, PageName> = {
@@ -22,6 +24,7 @@ const PATH_TO_PAGE: Record<string, PageName> = {
 	'/gallery': 'gallery',
 	'/activity': 'activity',
 	'/about': 'about',
+	'/download': 'download',
 };
 
 class SPANavigation {
@@ -168,6 +171,8 @@ class SPANavigation {
 				setTimeout(() => {
 					document.dispatchEvent(new CustomEvent('activity-page-shown'));
 				}, 50);
+				break;
+			case 'download':
 				break;
 		}
 	}

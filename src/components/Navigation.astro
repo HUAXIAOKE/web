@@ -1,6 +1,13 @@
+---
+import MusicPlayer from "./MusicPlayer.astro";
+---
+
 <nav class="nav-sidebar" aria-label="主导航">
   <div class="nav-logo">
     <img src="/img/mobile-icon.webp" alt="HXK" width="48" height="48" decoding="async" loading="lazy" />
+  </div>
+  <div class="music-player-wrapper">
+    <MusicPlayer />
   </div>
   <ul class="nav-items">
     <li class="nav-item" data-page="index">
@@ -31,6 +38,12 @@
       <a href="/about" data-page="about">
         <span class="nav-item-zh">关于我们</span>
         <span class="nav-item-en">ABOUT</span>
+      </a>
+    </li>
+    <li class="nav-item" data-page="download">
+      <a href="/download" data-page="download">
+        <span class="nav-item-zh">资源下载</span>
+        <span class="nav-item-en">SHARE</span>
       </a>
     </li>
   </ul>
@@ -77,6 +90,7 @@
         <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/gallery" data-page="gallery" aria-label="插画一览"><span class="sm-panel-itemLabel">插画一览</span></a></li>
         <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/activity" data-page="activity" aria-label="当期活动"><span class="sm-panel-itemLabel">当期活动</span></a></li>
         <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/about" data-page="about" aria-label="关于我们"><span class="sm-panel-itemLabel">关于我们</span></a></li>
+        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/download" data-page="download" aria-label="资源下载"><span class="sm-panel-itemLabel">资源下载</span></a></li>
       </ul>
       <div class="sm-socials">
         <ul class="sm-socials-list" role="list">
