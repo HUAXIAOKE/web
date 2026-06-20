@@ -54,15 +54,16 @@ let intervalRef: number = 0;
 let order: number[] = [];
 
 function splitChars(container: HTMLElement, text: string): void {
-	container.innerHTML = '';
 	const sanitized = text.replace(/\n/g, ' ');
+	const frag = document.createDocumentFragment();
 	for (let i = 0; i < sanitized.length; i++) {
-		const char = sanitized[i];
 		const span = document.createElement('span');
 		span.className = 'char';
-		span.textContent = char === ' ' ? '\u00A0' : char;
-		container.appendChild(span);
+		span.textContent = sanitized[i] === ' ' ? '\u00A0' : sanitized[i];
+		frag.appendChild(span);
 	}
+	container.innerHTML = '';
+	container.appendChild(frag);
 }
 
 function animateTextIn(
@@ -76,14 +77,10 @@ function animateTextIn(
 	splitChars(titleEl, textTitle);
 	contentEl.innerHTML = textContent;
 
-	gsap.set(titleEl.querySelectorAll('.char'), { y: '100%' });
+	const chars = Array.from(titleEl.querySelectorAll('.char'));
+	gsap.set(chars, { y: '100%' });
 
-	tl.fromTo(
-		titleEl.querySelectorAll('.char'),
-		{ y: '100%' },
-		{ y: 0, duration: 0.5, stagger: 0.05, ease: 'power3.out' },
-		label
-	);
+	tl.fromTo(chars, { y: '100%' }, { y: 0, duration: 0.5, stagger: 0.05, ease: 'power3.out' }, label);
 	tl.fromTo(contentEl, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out' }, `${label}+=0.15`);
 }
 
@@ -93,7 +90,8 @@ function animateTextOut(
 	tl: gsap.core.Timeline,
 	label: string
 ): void {
-	tl.to(titleEl.querySelectorAll('.char'), { y: '-100%', duration: 0.35, stagger: 0.04, ease: 'power3.in' }, label);
+	const chars = Array.from(titleEl.querySelectorAll('.char'));
+	tl.to(chars, { y: '-100%', duration: 0.35, stagger: 0.04, ease: 'power3.in' }, label);
 	tl.to(contentEl, { y: -15, opacity: 0, duration: 0.2, ease: 'power2.in' }, label);
 }
 
@@ -241,10 +239,11 @@ function initMobile(
 		splitChars(titleEl, card.title);
 		contentEl.innerHTML = card.content;
 
-		gsap.set(titleEl.querySelectorAll('.char'), { y: '100%' });
+		const chars = Array.from(titleEl.querySelectorAll('.char'));
+		gsap.set(chars, { y: '100%' });
 		gsap.set(contentEl, { y: 20, opacity: 0 });
 
-		gsap.to(titleEl.querySelectorAll('.char'), {
+		gsap.to(chars, {
 			y: 0,
 			duration: 0.35,
 			stagger: 0.035,

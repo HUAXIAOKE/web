@@ -12,7 +12,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	padding: 20px;
+	padding: 2rem;
 	box-sizing: border-box;
 	gap: 5%;
 }

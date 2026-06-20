@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	audio.addEventListener('error', handleAudioError);
 
 	musicPlayer.addEventListener('click', (e) => {
-		if ((e.target as HTMLElement).closest('.controls, .volume-container, .progress-bar')) {
+		if ((e.target as HTMLElement).closest('.player-body')) {
 			return;
 		}
 		musicPlayer.classList.toggle('collapsed');
