@@ -599,7 +599,8 @@ main {
 	justify-content: center;
 	align-items: flex-start;
 	height: 100vh;
-	overflow: hidden;
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 #page-about {
@@ -1232,7 +1233,7 @@ canvas {
 	}
 	#page-gallery {
 		height: 100dvh;
-		padding-top: 4rem;
+		padding-top: 6rem;
 	}
 	#page-live,
 	#page-activity {
@@ -1251,7 +1252,7 @@ canvas {
 @media (max-width: 768px) {
 	#page-gallery {
 		height: 100dvh;
-		padding-top: 4rem;
+		padding-top: 6rem;
 	}
 }
 
