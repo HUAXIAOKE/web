@@ -566,10 +566,14 @@ main {
 }
 
 .sub-page-main {
-	padding-top: 100px;
-	min-height: 100vh;
-	width: 100%;
-	overflow: hidden;
+	margin-left: var(--nav-width);
+	height: 100vh;
+	overflow-y: auto;
+	scrollbar-width: none;
+}
+
+.sub-page-main::-webkit-scrollbar {
+	display: none;
 }
 
 #page-index {
@@ -628,12 +632,123 @@ main {
 	overflow: hidden;
 }
 
+.download-construction {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+	padding: 3rem 4rem;
+	background: rgba(255, 255, 255, 0.65);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-radius: 16px;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+.download-construction i {
+	font-size: 3rem;
+	color: rgba(0, 0, 0, 0.35);
+}
+
+.download-construction h2 {
+	margin: 0;
+	font-size: clamp(1.25rem, 2vw, 1.75rem);
+	color: rgba(0, 0, 0, 0.6);
+}
+
+.download-construction p {
+	margin: 0;
+	font-size: 0.95rem;
+	color: rgba(0, 0, 0, 0.4);
+}
+
+html.dark .download-construction {
+	background: rgba(255, 255, 255, 0.08);
+	border-color: rgba(255, 255, 255, 0.1);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+html.dark .download-construction i {
+	color: rgba(255, 255, 255, 0.35);
+}
+
+html.dark .download-construction h2 {
+	color: rgba(255, 255, 255, 0.7);
+}
+
+html.dark .download-construction p {
+	color: rgba(255, 255, 255, 0.45);
+}
+
 html.dark .Tip button {
 	color: #cccccc;
 }
 
 html.dark .Tip button:hover {
 	color: #ffffff;
+}
+
+/* Activity Overlay */
+.activity-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 4000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.45);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+	animation: overlay-fade-in 0.25s ease;
+}
+
+@keyframes overlay-fade-in {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+.activity-overlay-card {
+	width: 90vw;
+	max-width: 820px;
+	max-height: 90vh;
+	overflow-y: auto;
+	scrollbar-width: none;
+	padding: 1.5rem;
+	border-radius: 18px;
+	background: rgba(255, 255, 255, 0.65);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow:
+		0 20px 60px rgba(0, 0, 0, 0.3),
+		0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+	animation: overlay-card-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes overlay-card-in {
+	from { opacity: 0; transform: scale(0.95) translateY(10px); }
+	to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.activity-overlay-card::-webkit-scrollbar {
+	display: none;
+}
+
+html.dark .activity-overlay-card {
+	background: rgba(20, 20, 30, 0.75);
+	border-color: rgba(255, 255, 255, 0.08);
+}
+
+.activity-overlay-card .detail-actions,
+.activity-overlay-card .signup-actions {
+	justify-content: center;
+	gap: 1rem;
+}
+
+.activity-overlay-card .overlay-close-btn,
+.activity-overlay-card .detail-back {
+	cursor: pointer;
 }
 
 /* Desktop Sidebar Navigation */
@@ -1216,6 +1331,9 @@ canvas {
 		display: block;
 	}
 	main {
+		margin-left: 0;
+	}
+	.sub-page-main {
 		margin-left: 0;
 	}
 	#music-player {

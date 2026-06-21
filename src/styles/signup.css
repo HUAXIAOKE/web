@@ -133,7 +133,8 @@ html.dark {
 	gap: 1.25rem;
 }
 
-#signup-form-fields {
+#signup-form-fields,
+#overlay-signup-form-fields {
 	display: flex;
 	flex-direction: column;
 	gap: 1.25rem;

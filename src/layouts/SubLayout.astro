@@ -9,7 +9,7 @@ import "../styles/signup.css";
 import "../styles/activity.css";
 import "../styles/activity-detail.css";
 
-import MusicPlayer from "../components/MusicPlayer.astro";
+import Navigation from "../components/Navigation.astro";
 
 const { title, description = "Huaxiaoke" } = Astro.props;
 ---
@@ -34,14 +34,8 @@ const { title, description = "Huaxiaoke" } = Astro.props;
   </head>
 
   <body>
-    <div id="sub-theme-toggle">
-      <theme-button id="theme-btn" size="1" value="dark"></theme-button>
-    </div>
-    <MusicPlayer />
-    <script>
-      document.querySelector('#music-player')?.classList.add('collapsed');
-    </script>
     <canvas></canvas>
+    <Navigation />
 
     <main class="sub-page-main">
       <slot />
@@ -53,6 +47,8 @@ const { title, description = "Huaxiaoke" } = Astro.props;
     </footer>
 
     <script src="/src/scripts/api-config.ts"></script>
+    <script src="/src/scripts/spa-navigation.ts"></script>
+    <script src="/src/scripts/staggered-menu.ts"></script>
     <script src="/src/scripts/dayornight.ts"></script>
     <script src="/src/scripts/isinline.ts"></script>
     <script src="/src/scripts/music-player.ts"></script>

@@ -73,9 +73,8 @@ async function initActivity(): Promise<void> {
 		};
 
 		const getCardHref = (a: ActivityItem, index: number): string => {
-			if (a.signupStatus === 'active') return `/activity/signup?activityId=${a.id}`;
 			if (a.href && !a.href.startsWith('/activity/')) return a.href;
-			return `/activity/detail?activityId=${a.id}`;
+			return 'javascript:void(0)';
 		};
 
 		const grid = document.getElementById('activity-grid');
@@ -83,7 +82,7 @@ async function initActivity(): Promise<void> {
 			grid.innerHTML = activities
 				.map((a, i) => {
 					const badgeClass = getBadgeClass(a.signupStatus);
-					return `<a class="news-card${badgeClass ? ' ' + badgeClass : ''}" data-tags="${a.tags}" href="${getCardHref(a, i)}">
+					return `<a class="news-card${badgeClass ? ' ' + badgeClass : ''}" data-tags="${a.tags}" data-activity-id="${a.id}" data-signup-status="${a.signupStatus}" href="${getCardHref(a, i)}">
   <div class="thumb" style="background-image:url(${a.image})"></div>
   <div class="meta">
     ${a.tags

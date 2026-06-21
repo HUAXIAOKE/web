@@ -1,5 +1,21 @@
 ---
 import MusicPlayer from "./MusicPlayer.astro";
+
+const pathname = Astro.request.url.replace(/https?:\/\/[^/]+/, '').split('?')[0];
+const activePage =
+	pathname === '/' || pathname === '/index.html'
+		? 'index'
+		: pathname.startsWith('/live')
+			? 'live'
+			: pathname.startsWith('/gallery')
+				? 'gallery'
+				: pathname.startsWith('/activity')
+					? 'activity'
+					: pathname.startsWith('/about')
+						? 'about'
+						: pathname.startsWith('/download')
+							? 'download'
+							: 'index';
 ---
 
 <nav class="nav-sidebar" aria-label="主导航">
@@ -10,38 +26,38 @@ import MusicPlayer from "./MusicPlayer.astro";
     <MusicPlayer />
   </div>
   <ul class="nav-items">
-    <li class="nav-item" data-page="index">
-      <a href="/" data-page="index">
+    <li class={`nav-item${activePage === 'index' ? ' active' : ''}`} data-page="index">
+      <a href="/" data-page="index" class={activePage === 'index' ? 'active' : ''}>
         <span class="nav-item-zh">主页</span>
         <span class="nav-item-en">HOME</span>
       </a>
     </li>
-    <li class="nav-item" data-page="live">
-      <a href="/live" data-page="live">
+    <li class={`nav-item${activePage === 'live' ? ' active' : ''}`} data-page="live">
+      <a href="/live" data-page="live" class={activePage === 'live' ? 'active' : ''}>
         <span class="nav-item-zh">足迹</span>
         <span class="nav-item-en">LIVE</span>
       </a>
     </li>
-    <li class="nav-item" data-page="gallery">
-      <a href="/gallery" data-page="gallery">
+    <li class={`nav-item${activePage === 'gallery' ? ' active' : ''}`} data-page="gallery">
+      <a href="/gallery" data-page="gallery" class={activePage === 'gallery' ? 'active' : ''}>
         <span class="nav-item-zh">插画一览</span>
         <span class="nav-item-en">GALLERY</span>
       </a>
     </li>
-    <li class="nav-item" data-page="activity">
-      <a href="/activity" data-page="activity">
+    <li class={`nav-item${activePage === 'activity' ? ' active' : ''}`} data-page="activity">
+      <a href="/activity" data-page="activity" class={activePage === 'activity' ? 'active' : ''}>
         <span class="nav-item-zh">当期活动</span>
         <span class="nav-item-en">ACTIVITY</span>
       </a>
     </li>
-    <li class="nav-item" data-page="about">
-      <a href="/about" data-page="about">
+    <li class={`nav-item${activePage === 'about' ? ' active' : ''}`} data-page="about">
+      <a href="/about" data-page="about" class={activePage === 'about' ? 'active' : ''}>
         <span class="nav-item-zh">关于我们</span>
         <span class="nav-item-en">ABOUT</span>
       </a>
     </li>
-    <li class="nav-item" data-page="download">
-      <a href="/download" data-page="download">
+    <li class={`nav-item${activePage === 'download' ? ' active' : ''}`} data-page="download">
+      <a href="/download" data-page="download" class={activePage === 'download' ? 'active' : ''}>
         <span class="nav-item-zh">资源下载</span>
         <span class="nav-item-en">SHARE</span>
       </a>
@@ -85,12 +101,12 @@ import MusicPlayer from "./MusicPlayer.astro";
   <aside class="sm-panel" id="sm-panel" aria-hidden="true">
     <div class="sm-panel-inner">
       <ul class="sm-panel-list" role="list" data-numbering>
-        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/" data-page="index" aria-label="主页"><span class="sm-panel-itemLabel">主页</span></a></li>
-        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/live" data-page="live" aria-label="足迹"><span class="sm-panel-itemLabel">足迹</span></a></li>
-        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/gallery" data-page="gallery" aria-label="插画一览"><span class="sm-panel-itemLabel">插画一览</span></a></li>
-        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/activity" data-page="activity" aria-label="当期活动"><span class="sm-panel-itemLabel">当期活动</span></a></li>
-        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/about" data-page="about" aria-label="关于我们"><span class="sm-panel-itemLabel">关于我们</span></a></li>
-        <li class="sm-panel-itemWrap"><a class="sm-panel-item" href="/download" data-page="download" aria-label="资源下载"><span class="sm-panel-itemLabel">资源下载</span></a></li>
+        <li class="sm-panel-itemWrap"><a class={`sm-panel-item${activePage === 'index' ? ' active' : ''}`} href="/" data-page="index" aria-label="主页"><span class="sm-panel-itemLabel">主页</span></a></li>
+        <li class="sm-panel-itemWrap"><a class={`sm-panel-item${activePage === 'live' ? ' active' : ''}`} href="/live" data-page="live" aria-label="足迹"><span class="sm-panel-itemLabel">足迹</span></a></li>
+        <li class="sm-panel-itemWrap"><a class={`sm-panel-item${activePage === 'gallery' ? ' active' : ''}`} href="/gallery" data-page="gallery" aria-label="插画一览"><span class="sm-panel-itemLabel">插画一览</span></a></li>
+        <li class="sm-panel-itemWrap"><a class={`sm-panel-item${activePage === 'activity' ? ' active' : ''}`} href="/activity" data-page="activity" aria-label="当期活动"><span class="sm-panel-itemLabel">当期活动</span></a></li>
+        <li class="sm-panel-itemWrap"><a class={`sm-panel-item${activePage === 'about' ? ' active' : ''}`} href="/about" data-page="about" aria-label="关于我们"><span class="sm-panel-itemLabel">关于我们</span></a></li>
+        <li class="sm-panel-itemWrap"><a class={`sm-panel-item${activePage === 'download' ? ' active' : ''}`} href="/download" data-page="download" aria-label="资源下载"><span class="sm-panel-itemLabel">资源下载</span></a></li>
       </ul>
       <div class="sm-socials">
         <ul class="sm-socials-list" role="list">

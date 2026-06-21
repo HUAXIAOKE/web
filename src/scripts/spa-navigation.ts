@@ -32,11 +32,59 @@ class SPANavigation {
 	private navLinks: NodeListOf<HTMLAnchorElement>;
 
 	constructor() {
-		this.currentPage = PATH_TO_PAGE[window.location.pathname] || 'index';
 		this.navLinks = document.querySelectorAll(
 			'.nav-sidebar a[data-page], .sm-panel a[data-page]'
 		);
+		const path = window.location.pathname;
+		// Detect sub-routes like /activity/detail
+		const parentPath = Object.keys(PATH_TO_PAGE).find((p) => path.startsWith(p + '/'));
+		if (parentPath) {
+			this.currentPage = PATH_TO_PAGE[parentPath];
+			// On sub-routes, activate parent nav but don't try to show SPA pages
+			this.initSubRoute();
+			return;
+		}
+		this.currentPage = PATH_TO_PAGE[path] || 'index';
 		this.init();
+	}
+
+	private initSubRoute(): void {
+		this.setActiveNavItem();
+		// Hide all SPA pages on sub-routes
+		document.querySelectorAll<HTMLElement>('[id^="page-"]').forEach((el) => {
+			el.style.display = 'none';
+		});
+		// Bind nav links for full navigation (sub-routes use page navigation, not SPA)
+		this.bindSubRouteNav();
+	}
+
+	private bindSubRouteNav(): void {
+		const links = document.querySelectorAll<HTMLAnchorElement>(
+			'.nav-sidebar a[data-page], .sm-panel a[data-page]'
+		);
+		links.forEach((link) => {
+			link.addEventListener('click', (e) => {
+				const isExternal = link.hasAttribute('target') && link.getAttribute('target') === '_blank';
+				if (isExternal) {
+					e.preventDefault();
+					const targetUrl = link.getAttribute('data-href') || link.getAttribute('href');
+					if (targetUrl) window.open(targetUrl, '_blank', 'noopener,noreferrer');
+					return;
+				}
+				e.preventDefault();
+				const href = link.getAttribute('href');
+				if (href) window.location.href = href;
+			});
+		});
+		// Also handle any detail-back links
+		const backLinks = document.querySelectorAll<HTMLAnchorElement>('.detail-back, .detail-signup-link');
+		backLinks.forEach((link) => {
+			link.addEventListener('click', (e) => {
+				e.preventDefault();
+				const href = link.getAttribute('href');
+				if (href) window.location.href = href;
+			});
+		});
 	}
 
 	private init(): void {
@@ -187,11 +235,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('popstate', () => {
-	const page = PATH_TO_PAGE[window.location.pathname] || 'index';
+	const path = window.location.pathname;
+	const parentPath = Object.keys(PATH_TO_PAGE).find((p) => path.startsWith(p + '/'));
+	const page = parentPath ? PATH_TO_PAGE[parentPath] : PATH_TO_PAGE[path] || 'index';
 	document.querySelectorAll<HTMLElement>('[id^="page-"]').forEach((el) => {
 		el.style.display = 'none';
 	});
-	const target = document.getElementById(`page-${page}`);
-	if (target) target.style.display = target.id === 'page-index' ? 'flex' : 'block';
+	if (!parentPath) {
+		const target = document.getElementById(`page-${page}`);
+		if (target) target.style.display = target.id === 'page-index' ? 'flex' : 'block';
+	}
 	document.title = PAGE_TITLES[page] || 'Huaxiaoke';
 });
