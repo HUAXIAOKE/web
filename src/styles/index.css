@@ -989,18 +989,30 @@ html:not(.dark) .sm-prelayer:nth-child(2) {
 	top: 0;
 	left: 0;
 	width: 100%;
+	height: var(--sm-header-height, 4.75rem);
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 1.5rem 1.25rem;
+	padding: 0.75rem 1.25rem;
+	box-sizing: border-box;
 	z-index: 20;
+}
+
+.sm-logo {
+	flex: 0 1 auto;
+	height: 100%;
+	max-width: min(58vw, 220px);
+	min-width: 0;
+	display: flex;
+	align-items: center;
 }
 
 .sm-logo-img {
 	display: block;
-	width: auto;
-	height: 64px;
+	width: 100%;
+	height: 100%;
 	object-fit: contain;
+	object-position: left center;
 }
 
 .sm-toggle {
@@ -1077,7 +1089,7 @@ html:not(.dark) .sm-toggle {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	padding: 5rem 1.5rem 1.5rem;
+	padding: calc(var(--sm-header-height, 4.75rem) + 0.75rem) 1.5rem 1.5rem;
 	overflow-y: auto;
 	z-index: 10;
 	background: #18181d;
@@ -1327,6 +1339,9 @@ canvas {
 }
 
 @media (max-width: 900px) {
+	:root {
+		--sm-header-height: 4.75rem;
+	}
 	.nav-sidebar {
 		display: none;
 	}
