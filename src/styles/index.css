@@ -801,9 +801,15 @@ html.dark .nav-sidebar {
 	align-items: center;
 }
 
+.nav-logo-inner {
+	display: inline-block;
+	transform: scaleX(-1);
+}
+
 .nav-logo img {
-	width: 5vh;
-	height: 5vh;
+    width: 10vh;
+    margin-right: 0.3vw;
+    height: 10vh;
 	border-radius: 50%;
 	object-fit: cover;
 }
@@ -992,10 +998,9 @@ html:not(.dark) .sm-prelayer:nth-child(2) {
 
 .sm-logo-img {
 	display: block;
-	width: 40px;
-	height: 40px;
-	border-radius: 50%;
-	object-fit: cover;
+	width: auto;
+	height: 64px;
+	object-fit: contain;
 }
 
 .sm-toggle {

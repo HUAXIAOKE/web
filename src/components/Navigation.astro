@@ -1,5 +1,7 @@
 ---
 import MusicPlayer from "./MusicPlayer.astro";
+import logo from "../assets/logo.webp";
+import mobileLogo from "../assets/huaxiaoke-logo.webp";
 
 const pathname = Astro.request.url.replace(/https?:\/\/[^/]+/, '').split('?')[0];
 const activePage =
@@ -20,7 +22,9 @@ const activePage =
 
 <nav class="nav-sidebar" aria-label="主导航">
   <div class="nav-logo">
-    <img src="/img/mobile-icon.webp" alt="HXK" width="48" height="48" decoding="async" loading="lazy" />
+    <span class="nav-logo-inner">
+      <img src={logo.src} alt="HXK" width="48" height="48" decoding="async" loading="lazy" />
+    </span>
   </div>
   <div class="music-player-wrapper">
     <MusicPlayer />
@@ -83,7 +87,7 @@ const activePage =
   </div>
   <header class="sm-header">
     <div class="sm-logo">
-      <img src="/img/mobile-icon.webp" alt="HXK" class="sm-logo-img" decoding="async" loading="lazy" />
+      <img src={mobileLogo.src} alt="HXK" class="sm-logo-img" decoding="async" loading="lazy" />
     </div>
     <button class="sm-toggle" aria-label="打开菜单" aria-expanded="false" type="button">
       <span class="sm-toggle-textWrap">
@@ -124,3 +128,30 @@ const activePage =
     </div>
   </aside>
 </div>
+
+<script>
+  import { gsap } from 'gsap';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const navLogo = document.querySelector('.nav-logo-inner img');
+    if (!navLogo) return;
+
+    navLogo.style.cursor = 'pointer';
+
+    navLogo.addEventListener('click', () => {
+      gsap.killTweensOf(navLogo);
+      gsap.to(navLogo, {
+        scale: 0.85,
+        duration: 0.08,
+        ease: 'power2.in',
+        onComplete: () => {
+          gsap.to(navLogo, {
+            scale: 1,
+            duration: 0.4,
+            ease: 'elastic.out(1, 0.3)',
+          });
+        },
+      });
+    });
+  });
+</script>

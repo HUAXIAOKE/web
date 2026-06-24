@@ -16,8 +16,9 @@ function initStaggeredMenu(): void {
 	const socialLinks = Array.from(document.querySelectorAll('.sm-socials-link, .sm-theme-toggle'));
 	const icon = document.querySelector<HTMLElement>('.sm-icon');
 	const textInner = document.querySelector<HTMLElement>('.sm-toggle-textInner');
+	const logo = document.querySelector<HTMLElement>('.sm-logo-img');
 
-	if (!wrapper || !panel || !toggle || !icon || !textInner) return;
+	if (!wrapper || !panel || !toggle || !icon || !textInner || !logo) return;
 
 	const state: StaggeredMenuState = { open: false, busy: false };
 	let openTimeline: gsap.core.Timeline | null = null;
@@ -27,6 +28,7 @@ function initStaggeredMenu(): void {
 	gsap.set([panel, ...prelayers], { xPercent: offscreen });
 	gsap.set(itemLabels, { yPercent: 140, rotate: 10 });
 	gsap.set(itemWraps, { '--sm-num-opacity': 0 } as any);
+	gsap.set(logo, { opacity: 0, y: -10 });
 	if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
 	if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
 
@@ -39,6 +41,7 @@ function initStaggeredMenu(): void {
 
 		gsap.set(itemLabels, { yPercent: 140, rotate: 10 });
 		gsap.set(itemWraps, { '--sm-num-opacity': 0 } as any);
+		gsap.set(logo, { opacity: 0, y: -10 });
 		if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
 		if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
 
@@ -59,6 +62,8 @@ function initStaggeredMenu(): void {
 		prelayers.forEach((layer, i) => {
 			tl.fromTo(layer, { xPercent: offscreen }, { xPercent: 0, duration: 0.5, ease: 'power4.out' }, i * 0.07);
 		});
+
+		tl.to(logo, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.1);
 
 		const lastLayerTime = (prelayers.length - 1) * 0.07;
 		const panelStart = lastLayerTime + 0.08;
@@ -115,6 +120,7 @@ function initStaggeredMenu(): void {
 			onComplete: () => {
 				gsap.set(itemLabels, { yPercent: 140, rotate: 10 });
 				gsap.set(itemWraps, { '--sm-num-opacity': 0 } as any);
+				gsap.set(logo, { opacity: 0, y: -10 });
 				if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
 				if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
 				panel.setAttribute('aria-hidden', 'true');
@@ -123,6 +129,7 @@ function initStaggeredMenu(): void {
 		});
 		gsap.to(textInner, { yPercent: 0, duration: 0.35, ease: 'power3.inOut' });
 		gsap.to(icon, { rotate: 0, duration: 0.35, ease: 'power3.inOut' });
+		gsap.to(logo, { opacity: 0, y: -10, duration: 0.25, ease: 'power3.in' });
 	}
 
 	toggle.addEventListener('click', () => {

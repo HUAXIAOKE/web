@@ -175,6 +175,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		musicPlayer.classList.toggle('collapsed');
 	});
 
+	document.addEventListener('click', (e) => {
+		if (!musicPlayer.contains(e.target as Node)) {
+			musicPlayer.classList.add('collapsed');
+		}
+	});
+
 	async function init(): Promise<void> {
 		try {
 			const response = await fetch((window.API_BASE || '') + '/api/music');
