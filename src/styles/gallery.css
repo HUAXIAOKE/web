@@ -160,8 +160,6 @@
 .cards {
 	column-count: 4;
 	column-gap: 1.5rem;
-	max-width: 1200px;
-	margin: 0 auto;
 	padding: 2rem 2rem 4rem 2rem;
 	visibility: hidden;
 	opacity: 0;
