@@ -5,8 +5,27 @@ interface GalleryItem {
 	description: string;
 }
 
+interface PreloadResult {
+	width: number;
+	height: number;
+	img: HTMLImageElement;
+}
+
+function preloadImage(src: string): Promise<PreloadResult | null> {
+	return new Promise((resolve) => {
+		const img = new Image();
+		img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight, img });
+		img.onerror = () => resolve(null);
+		img.src = src;
+	});
+}
+
 function setCardSize(img: HTMLImageElement, card: HTMLElement): void {
-	const aspectRatio = img.naturalWidth / img.naturalHeight;
+	applyCardSize(card, img.naturalWidth, img.naturalHeight, img);
+}
+
+function applyCardSize(card: HTMLElement, width: number, height: number, img?: HTMLImageElement): void {
+	const aspectRatio = width / height;
 
 	card.classList.remove('landscape', 'portrait');
 	card.style.gridColumn = '';
@@ -23,21 +42,25 @@ function setCardSize(img: HTMLImageElement, card: HTMLElement): void {
 			card.style.gridColumn = 'span 1';
 			card.style.gridRow = 'span 1';
 		}
-		img.style.objectFit = 'cover';
-		img.style.objectPosition = 'center';
-		img.style.height = '100%';
+		if (img) {
+			img.style.objectFit = 'cover';
+			img.style.objectPosition = 'center';
+			img.style.height = '100%';
+		}
 	} else {
-		card.classList.add(img.naturalWidth > img.naturalHeight ? 'landscape' : 'portrait');
-		img.style.objectFit = '';
-		img.style.objectPosition = '';
-		img.style.height = '';
+		card.classList.add(width > height ? 'landscape' : 'portrait');
+		if (img) {
+			img.style.objectFit = '';
+			img.style.objectPosition = '';
+			img.style.height = '';
+		}
 	}
 }
 
 async function generateImageCards(): Promise<void> {
 	const gallery = document.querySelector<HTMLElement>('#page-gallery .cards');
 
-	if (gallery && gallery.children.length > 0) {
+	if (!gallery || gallery.children.length > 0) {
 		return;
 	}
 
@@ -46,6 +69,16 @@ async function generateImageCards(): Promise<void> {
 		if (!response.ok) throw new Error(`API error! status: ${response.status}`);
 		const items: GalleryItem[] = await response.json();
 
+		const pres = await Promise.allSettled(items.map((item) => preloadImage(item.image)));
+		const preloaded = new Map<string, PreloadResult>();
+		pres.forEach((r, i) => {
+			if (r.status === 'fulfilled' && r.value) {
+				preloaded.set(items[i].image, r.value);
+			}
+		});
+
+		const fragment = document.createDocumentFragment();
+
 		items.forEach((item, index) => {
 			const card = document.createElement('div');
 			card.className = 'card';
@@ -53,10 +86,14 @@ async function generateImageCards(): Promise<void> {
 			const media = document.createElement('div');
 			media.className = 'card-media';
 
-			const img = document.createElement('img');
-			img.src = item.image;
+			const p = preloaded.get(item.image);
+			if (p) {
+				media.style.aspectRatio = `${p.width} / ${p.height}`;
+			}
+
+			const img = p?.img ?? document.createElement('img');
+			if (!p) img.src = item.image;
 			img.alt = `插画 ${index + 1}`;
-			img.loading = 'lazy';
 			media.appendChild(img);
 
 			const infoCard = document.createElement('div');
@@ -75,19 +112,42 @@ async function generateImageCards(): Promise<void> {
 				openLightbox(item.image, media);
 			});
 
-			img.onload = () => {
+			if (p) {
+				applyCardSize(card, p.width, p.height, img);
+			} else if (img.complete && img.naturalWidth) {
 				setCardSize(img, card);
-			};
+			} else {
+				img.onload = () => setCardSize(img, card);
+			}
 
 			img.onerror = () => {
 				card.style.display = 'none';
 			};
 
-			gallery!.appendChild(card);
+			fragment.appendChild(card);
+		});
+
+		gallery.appendChild(fragment);
+
+		const imgs = gallery.querySelectorAll<HTMLImageElement>('.card-media > img');
+		await Promise.all(
+			[...imgs].map((img) =>
+				img.complete
+					? img.decode?.().catch(() => {}) ?? Promise.resolve()
+					: new Promise<void>((resolve) => {
+							img.onload = () => resolve();
+							img.onerror = () => resolve();
+						})
+			)
+		);
+
+		requestAnimationFrame(() => {
+			gallery.classList.add('loaded');
 		});
 	} catch {
 		if (gallery) {
 			gallery.innerHTML = '<p style="text-align: center; color: #666;">加载图片时出错，请稍后重试</p>';
+			gallery.classList.add('loaded');
 		}
 	}
 }

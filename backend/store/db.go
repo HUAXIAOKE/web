@@ -84,17 +84,6 @@ func migrate() {
 			content     TEXT NOT NULL DEFAULT '',
 			image       TEXT NOT NULL DEFAULT ''
 		)`,
-		`CREATE TABLE IF NOT EXISTS music (
-			id         INTEGER PRIMARY KEY AUTOINCREMENT,
-			bvid       TEXT NOT NULL DEFAULT '',
-			title      TEXT NOT NULL,
-			artist     TEXT NOT NULL DEFAULT '',
-			src        TEXT NOT NULL DEFAULT '',
-			cover      TEXT NOT NULL DEFAULT '',
-			duration   INTEGER NOT NULL DEFAULT 0,
-			sort_order INTEGER NOT NULL DEFAULT 0,
-			created_at TEXT DEFAULT (datetime('now'))
-		)`,
 		`CREATE TABLE IF NOT EXISTS bilibili_state (
 			id            INTEGER PRIMARY KEY CHECK (id = 1),
 			refresh_token TEXT NOT NULL DEFAULT '',

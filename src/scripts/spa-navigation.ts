@@ -205,14 +205,13 @@ class SPANavigation {
 					setTimeout(() => window.reloadLive2DModel(), 100);
 				}
 				break;
-			case 'gallery':
-				setTimeout(() => {
-					const gallery = document.querySelector<HTMLElement>('#page-gallery .cards');
-					if (gallery && gallery.children.length === 0) {
-						window.generateImageCards();
-					}
-				}, 100);
+			case 'gallery': {
+				const galleryEl = document.querySelector<HTMLElement>('#page-gallery .cards');
+				if (galleryEl && galleryEl.children.length === 0) {
+					window.generateImageCards();
+				}
 				break;
+			}
 			case 'about':
 				break;
 			case 'activity':

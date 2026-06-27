@@ -4,12 +4,23 @@
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 2rem 2rem 4rem 2rem;
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.cards.loaded {
+	visibility: visible;
+	opacity: 1;
 }
 
 .cards .card {
 	width: 100%;
 	break-inside: avoid;
 	margin-bottom: 0.6rem;
+}
+
+.cards.loaded .card {
 	animation: slide-fade-in both;
 	animation-timeline: view();
 	animation-range: entry 0% cover 45%;
@@ -180,6 +191,9 @@ html.dark .info-card p i {
 			opacity 0.6s ease,
 			box-shadow 0.4s ease;
 		z-index: 1;
+	}
+
+	.cards.loaded .card {
 		animation-timeline: view(block);
 		animation-range: entry 12% cover 40%;
 	}
@@ -250,8 +264,7 @@ html.dark .info-card p i {
 		gap: 0.5rem;
 	}
 
-	.cards .card {
-		animation-timeline: view(block);
+	.cards.loaded .card {
 		animation-range: entry 8% cover 35%;
 	}
 

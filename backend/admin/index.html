@@ -31,7 +31,6 @@
 					<a data-tab="timeline">心路历程</a>
 					<a data-tab="gallery">插画展示</a>
 					<a data-tab="about">关于我们</a>
-					<a data-tab="music">增添音乐</a>
 					<a data-tab="bilibili">B站绑定</a>
 				</nav>
 				<div class="sidebar-footer">
@@ -734,133 +733,6 @@
 				loadAbout();
 			}
 
-			async function loadMusic() {
-				const res = await authFetch('/api/music');
-				const list = await res.json();
-				const main = document.getElementById('main-content');
-				main.innerHTML = `<div class="page-header"><h2>音乐</h2><div style="display:flex;gap:8px"><button class="btn btn-primary" onclick="editMusic()">+ 新增</button><button class="btn btn-ghost" onclick="batchImportMusic()">批量导入</button></div></div>
-				<table><thead><tr><th>封面</th><th>歌曲名</th><th>歌手</th><th>BV号</th><th>时长</th><th>排序</th><th>操作</th></tr></thead>
-				<tbody>${(list || [])
-					.map(
-						(t) => `<tr>
-				<td><img src="${t.cover}" onerror="this.style.display='none'"></td>
-				<td>${t.title}</td><td>${t.artist}</td><td style="font-size:12px;color:var(--text-sub)">${t.bvid || '—'}</td>
-				<td>${t.duration ? Math.floor(t.duration / 60) + ':' + String(t.duration % 60).padStart(2, '0') : '—'}</td>
-				<td>${t.sortOrder || 0}</td>
-				<td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editMusic(${JSON.stringify(t).replace(/'/g, '&#39;')})'>编辑</button>
-					<button class="btn btn-danger" style="margin-left:4px" onclick="delMusic(${t.id})">删除</button></td>
-				</tr>`
-					)
-					.join('')}</tbody></table>`;
-			}
-
-			function editMusic(t) {
-				const isNew = !t;
-				t = t || { bvid: '', title: '', artist: '', src: '', cover: '', duration: 0, sortOrder: 0 };
-				openModal(
-					isNew ? '新增歌曲' : '编辑歌曲',
-					`
-					<div class="form-group"><label>BV号</label><div style="display:flex;gap:8px"><input id="f_mbvid" value="${t.bvid || ''}" placeholder="BVxxxxxxxxxx"><button type="button" class="btn btn-ghost" onclick="fetchBVIDInfo()">自动填充</button></div></div>
-					<div class="form-group"><label>歌曲名</label><input id="f_mtitle" value="${t.title}"></div>
-					<div class="form-group"><label>歌手/UP主</label><input id="f_martist" value="${t.artist}"></div>
-					<div class="form-group"><label>封面URL</label><input id="f_mcover" value="${t.cover}"></div>
-					<div class="form-group"><label>时长(秒)</label><input id="f_mduration" type="number" value="${t.duration || 0}"></div>
-					<div class="form-group"><label>排序</label><input id="f_msort" type="number" value="${t.sortOrder || 0}"></div>`,
-					async () => {
-						const body = {
-							bvid: val('f_mbvid'),
-							title: val('f_mtitle'),
-							artist: val('f_martist'),
-							src: '',
-							cover: val('f_mcover'),
-							duration: parseInt(val('f_mduration')) || 0,
-							sortOrder: parseInt(val('f_msort')) || 0,
-						};
-						const res = await authFetch(isNew ? '/api/music' : '/api/music/' + t.id, {
-							method: isNew ? 'POST' : 'PUT',
-							headers: authHeaders(),
-							body: JSON.stringify(body),
-						});
-						if (!res.ok) {
-							toast('操作失败', 'error');
-							return;
-						}
-						closeModal();
-						toast(isNew ? '创建成功' : '保存成功');
-						loadMusic();
-					}
-				);
-			}
-
-			async function fetchBVIDInfo() {
-				const bvid = val('f_mbvid');
-				if (!bvid) {
-					toast('请先输入BV号', 'error');
-					return;
-				}
-				try {
-					const res = await authFetch('/api/bilibili/info?bvid=' + encodeURIComponent(bvid));
-					if (!res.ok) {
-						toast('获取失败', 'error');
-						return;
-					}
-					const info = await res.json();
-					if (info.error) {
-						toast(info.error, 'error');
-						return;
-					}
-					document.getElementById('f_mtitle').value = info.Title || '';
-					document.getElementById('f_martist').value = info.Owner || '';
-					document.getElementById('f_mcover').value = info.Cover || '';
-					document.getElementById('f_mduration').value = info.Duration || 0;
-					toast('已自动填充');
-				} catch (e) {
-					toast('获取失败', 'error');
-				}
-			}
-
-			function batchImportMusic() {
-				openModal(
-					'批量导入 BV 号',
-					`<div class="form-group"><label>BV号列表（每行一个）</label><textarea id="f_bvids" style="min-height:200px" placeholder="BVxxxxxxxxxx&#10;BVyyyyyyyyyy"></textarea></div>`,
-					async () => {
-						const text = val('f_bvids');
-						const bvids = text
-							.split(/[\n\r]+/)
-							.map((s) => s.trim())
-							.filter((s) => s.length > 0);
-						if (!bvids.length) {
-							toast('请至少输入一个BV号', 'error');
-							return;
-						}
-						const res = await authFetch('/api/music/sync', {
-							method: 'POST',
-							headers: authHeaders(),
-							body: JSON.stringify({ bvids }),
-						});
-						if (!res.ok) {
-							toast('批量导入失败', 'error');
-							return;
-						}
-						const data = await res.json();
-						closeModal();
-						toast('成功导入 ' + (data.added || 0) + ' 首歌曲');
-						loadMusic();
-					}
-				);
-			}
-
-			async function delMusic(id) {
-				if (!confirm('确定删除？')) return;
-				const res = await authFetch('/api/music/' + id, { method: 'DELETE', headers: authHeaders() });
-				if (!res.ok) {
-					toast('删除失败', 'error');
-					return;
-				}
-				toast('已删除');
-				loadMusic();
-			}
-
 			let bilibiliPollTimer = null;
 
 			async function loadBilibili() {
@@ -982,7 +854,6 @@
 				timeline: loadTimeline,
 				gallery: loadGallery,
 				about: loadAbout,
-				music: loadMusic,
 				bilibili: loadBilibili,
 			};
 

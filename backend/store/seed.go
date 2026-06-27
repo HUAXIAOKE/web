@@ -7,7 +7,6 @@ func Seed() {
 	seedTimeline()
 	seedGallery()
 	seedAbout()
-	seedMusic()
 	log.Println("Seed Init Success!")
 }
 
@@ -80,19 +79,5 @@ func seedAbout() {
 	for _, c := range cards {
 		DB.Exec(`INSERT INTO about_card (small_title,title,content,image) VALUES (?,?,?,?)`,
 			c.SmallTitle, c.Title, c.Content, c.Image)
-	}
-}
-
-func seedMusic() {
-	tracks := []struct {
-		BVID, Title, Artist, Cover string
-		Duration                   int
-	}{
-		{"", "ハレハレヤ", "羽生迷子", "/img/covers/cover1.webp", 0},
-		{"", "ヒッチコック", "ヨルシカ", "/img/covers/cover2.webp", 0},
-	}
-	for _, t := range tracks {
-		DB.Exec(`INSERT INTO music (bvid,title,artist,cover,duration,sort_order) VALUES (?,?,?,?,?,0)`,
-			t.BVID, t.Title, t.Artist, t.Cover, t.Duration)
 	}
 }

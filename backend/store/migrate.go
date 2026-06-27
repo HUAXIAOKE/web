@@ -60,6 +60,10 @@ func RunMigrations() error {
 			if err := migrateV6ToV7(); err != nil {
 				return fmt.Errorf("v7: %w", err)
 			}
+		case 7:
+			if err := migrateV7ToV8(); err != nil {
+				return fmt.Errorf("v8: %w", err)
+			}
 		}
 	}
 
@@ -370,5 +374,13 @@ func migrateV6ToV7() error {
 	}
 
 	fmt.Println("[migrate] v7: added signup fields and tables")
+	return nil
+}
+
+func migrateV7ToV8() error {
+	if _, err := DB.Exec(`DROP TABLE IF EXISTS music`); err != nil {
+		return fmt.Errorf("drop music: %w", err)
+	}
+	fmt.Println("[migrate] v8: dropped music table")
 	return nil
 }
