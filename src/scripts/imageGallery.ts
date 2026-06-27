@@ -59,6 +59,13 @@ function applyCardSize(card: HTMLElement, width: number, height: number, img?: H
 
 async function generateImageCards(): Promise<void> {
 	const gallery = document.querySelector<HTMLElement>('#page-gallery .cards');
+	const loader = document.querySelector<HTMLElement>('#gallery-loader');
+
+	const hideLoader = (): void => {
+		if (!loader) return;
+		loader.classList.add('hidden');
+		loader.addEventListener('transitionend', () => loader.remove(), { once: true });
+	};
 
 	if (!gallery || gallery.children.length > 0) {
 		return;
@@ -143,12 +150,14 @@ async function generateImageCards(): Promise<void> {
 
 		requestAnimationFrame(() => {
 			gallery.classList.add('loaded');
+			hideLoader();
 		});
 	} catch {
 		if (gallery) {
 			gallery.innerHTML = '<p style="text-align: center; color: #666;">加载图片时出错，请稍后重试</p>';
 			gallery.classList.add('loaded');
 		}
+		hideLoader();
 	}
 }
 
