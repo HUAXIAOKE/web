@@ -1,0 +1,466 @@
+@font-face {
+	font-family: 'BebasNeue';
+	src: url('../assets/fonts/BebasNeue.woff2') format('woff2');
+	font-display: swap;
+}
+
+:root {
+	--dl-bg: rgba(255, 255, 255, 0.65);
+	--dl-ink: #1b1f29;
+	--dl-accent: #4664b4;
+	--dl-accent2: #e8180a;
+	--dl-online: #00c853;
+	--dl-muted: #5d6b88;
+	--dl-banner: #4664b4;
+}
+
+html.dark {
+	--dl-bg: rgba(25, 25, 25, 0.65);
+	--dl-ink: #eaeefb;
+	--dl-accent: #a9c1ff;
+	--dl-accent2: #ff5a4d;
+	--dl-online: #00c853;
+	--dl-muted: #a9b4d6;
+	--dl-banner: #a9c1ff;
+}
+
+#page-download {
+	display: flex;
+	align-items: stretch;
+	justify-content: center;
+}
+
+.dl-shell {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	padding: 1.5rem 2rem;
+	overflow: hidden;
+	max-width: 1320px;
+	width: 100%;
+	margin: 0 auto;
+}
+
+/* 工具栏 */
+.dl-toolbar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+	padding-bottom: 1rem;
+	flex-shrink: 0;
+}
+
+.dl-filter {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.dl-chip {
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	font-size: 0.85rem;
+	padding: 0.5rem 1rem;
+	background: var(--dl-bg);
+	color: var(--dl-ink);
+	border: 3px solid var(--dl-ink);
+	box-shadow: 4px 4px 0 var(--dl-ink);
+	cursor: pointer;
+	transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.dl-chip:hover {
+	transform: translate(-2px, -2px);
+	box-shadow: 6px 6px 0 var(--dl-ink);
+}
+
+.dl-chip:active {
+	transform: translate(2px, 2px);
+	box-shadow: 0 0 0 var(--dl-ink);
+}
+
+.dl-chip.active {
+	background: var(--dl-ink);
+	color: var(--dl-accent);
+}
+
+.dl-dropdown {
+	position: relative;
+}
+
+.dl-dropdown-trigger {
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	font-size: 0.85rem;
+	padding: 0.5rem 1rem;
+	background: var(--dl-bg);
+	color: var(--dl-ink);
+	border: 3px solid var(--dl-ink);
+	box-shadow: 4px 4px 0 var(--dl-ink);
+	cursor: pointer;
+	outline: none;
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	min-width: 7rem;
+	justify-content: space-between;
+	transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.dl-dropdown-trigger:hover {
+	transform: translate(-2px, -2px);
+	box-shadow: 6px 6px 0 var(--dl-ink);
+}
+
+.dl-dropdown-trigger:active {
+	transform: translate(2px, 2px);
+	box-shadow: 0 0 0 var(--dl-ink);
+}
+
+.dl-dropdown-arrow {
+	font-size: 0.7rem;
+	transition: transform 0.2s ease;
+}
+
+.dl-dropdown.open .dl-dropdown-trigger {
+	background: var(--dl-ink);
+	color: var(--dl-accent);
+}
+
+.dl-dropdown.open .dl-dropdown-arrow {
+	transform: rotate(180deg);
+}
+
+.dl-dropdown-menu {
+	position: absolute;
+	top: calc(100% + 8px);
+	right: 0;
+	left: 0;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	background: var(--dl-bg);
+	border: 3px solid var(--dl-ink);
+	box-shadow: 4px 4px 0 var(--dl-ink);
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-6px);
+	transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+	z-index: 20;
+}
+
+.dl-dropdown.open .dl-dropdown-menu {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
+
+.dl-dropdown-item {
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	font-size: 0.85rem;
+	padding: 0.55rem 1rem;
+	color: var(--dl-ink);
+	cursor: pointer;
+	border-bottom: 3px solid var(--dl-ink);
+	transition: background 0.12s ease, color 0.12s ease;
+}
+
+.dl-dropdown-item:last-child {
+	border-bottom: none;
+}
+
+.dl-dropdown-item:hover {
+	background: var(--dl-ink);
+	color: var(--dl-accent);
+}
+
+.dl-dropdown-item.active {
+	background: var(--dl-ink);
+	color: var(--dl-accent);
+}
+
+/* 卡片网格 */
+.dl-grid {
+	flex: 1;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 1.5rem;
+	overflow: hidden;
+	align-content: start;
+	padding: 0.5rem 0;
+	min-height: 0;
+}
+
+.dl-card {
+	background: var(--dl-bg);
+	border: 5px solid var(--dl-ink);
+	box-shadow: 8px 8px 0 var(--dl-ink);
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	height: 360px;
+	transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dl-card:hover {
+	transform: translate(-3px, -3px);
+	box-shadow: 11px 11px 0 var(--dl-ink);
+}
+
+.dl-card-banner {
+	height: 120px;
+	background: var(--dl-banner);
+	border-bottom: 5px solid var(--dl-ink);
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	align-items: flex-end;
+	flex-shrink: 0;
+}
+
+.dl-card-banner::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: repeating-linear-gradient(
+		45deg,
+		transparent 0px,
+		transparent 8px,
+		rgba(0, 0, 0, 0.12) 8px,
+		rgba(0, 0, 0, 0.12) 10px
+	);
+	pointer-events: none;
+}
+
+.dl-card-thumb {
+	width: 56px;
+	height: 56px;
+	background: var(--dl-ink);
+	border: 5px solid var(--dl-ink);
+	border-bottom: none;
+	border-left: none;
+	margin-left: 16px;
+	position: relative;
+	z-index: 1;
+	flex-shrink: 0;
+}
+
+.dl-card-tag {
+	font-family: 'BebasNeue', sans-serif;
+	font-size: 7rem;
+	line-height: 0.85;
+	color: rgba(0, 0, 0, 0.08);
+	position: absolute;
+	right: -8px;
+	bottom: -10px;
+	letter-spacing: -0.02em;
+	pointer-events: none;
+	z-index: 0;
+}
+
+html.dark .dl-card-tag {
+	color: rgba(255, 255, 255, 0.1);
+}
+
+.dl-card-status {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	z-index: 2;
+	background: var(--dl-online);
+	border: 3px solid var(--dl-ink);
+	box-shadow: 3px 3px 0 var(--dl-ink);
+	font-size: 0.55rem;
+	font-weight: 800;
+	letter-spacing: 0.18em;
+	padding: 3px 8px;
+	text-transform: uppercase;
+	color: var(--dl-ink);
+}
+
+.dl-card-body {
+	padding: 14px 16px 0;
+	flex-shrink: 0;
+}
+
+.dl-card-handle {
+	font-size: 0.55rem;
+	font-weight: 700;
+	letter-spacing: 0.2em;
+	color: var(--dl-muted);
+	text-transform: uppercase;
+	margin-bottom: 2px;
+}
+
+.dl-card-name {
+	font-family: 'BebasNeue', 'AlimamaShuHeiTi-Bold', sans-serif;
+	font-size: 1.8rem;
+	line-height: 0.95;
+	color: var(--dl-ink);
+	letter-spacing: 0.02em;
+	margin: 0 0 8px 0;
+	font-weight: normal;
+}
+
+.dl-card-bio {
+	font-size: 0.72rem;
+	font-weight: 500;
+	color: var(--dl-ink);
+	border-left: 5px solid var(--dl-accent2);
+	padding-left: 10px;
+	line-height: 1.55;
+	margin: 0;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.dl-card-stats {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	border-top: 3px solid var(--dl-ink);
+	margin-top: auto;
+	flex-shrink: 0;
+}
+
+.dl-stat {
+	padding: 10px 6px;
+	border-right: 3px solid var(--dl-ink);
+	text-align: center;
+}
+
+.dl-stat:last-child {
+	border-right: none;
+}
+
+.dl-stat-v {
+	font-family: 'BebasNeue', sans-serif;
+	font-size: 1.5rem;
+	line-height: 1;
+	color: var(--dl-ink);
+	display: block;
+}
+
+.dl-stat-l {
+	font-size: 0.48rem;
+	font-weight: 700;
+	letter-spacing: 0.15em;
+	color: var(--dl-muted);
+	text-transform: uppercase;
+	display: block;
+	margin-top: 2px;
+}
+
+.dl-card-btn {
+	display: block;
+	width: 100%;
+	padding: 11px;
+	background: var(--dl-ink);
+	color: var(--dl-accent);
+	border: none;
+	border-top: 5px solid var(--dl-ink);
+	font-family: 'BebasNeue', sans-serif;
+	font-size: 1rem;
+	letter-spacing: 0.2em;
+	cursor: pointer;
+	text-align: center;
+	transition: background 0.15s, color 0.15s;
+	flex-shrink: 0;
+}
+
+.dl-card-btn:hover {
+	background: var(--dl-accent);
+	color: var(--dl-ink);
+}
+
+/* 分页器 */
+.dl-pager {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+	padding-top: 1rem;
+	flex-shrink: 0;
+}
+
+.dl-page-btn {
+	font-family: 'BebasNeue', sans-serif;
+	font-size: 1.5rem;
+	width: 40px;
+	height: 40px;
+	background: var(--dl-bg);
+	color: var(--dl-ink);
+	border: 3px solid var(--dl-ink);
+	box-shadow: 4px 4px 0 var(--dl-ink);
+	cursor: pointer;
+	transition: transform 0.1s ease, box-shadow 0.1s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.dl-page-btn:hover {
+	transform: translate(-2px, -2px);
+	box-shadow: 6px 6px 0 var(--dl-ink);
+}
+
+.dl-page-btn:active {
+	transform: translate(2px, 2px);
+	box-shadow: 0 0 0 var(--dl-ink);
+}
+
+.dl-page-info {
+	font-family: 'BebasNeue', sans-serif;
+	font-size: 1.2rem;
+	color: var(--dl-ink);
+	letter-spacing: 0.1em;
+}
+
+.dl-page-info b {
+	color: var(--dl-accent2);
+}
+
+/* 移动端 */
+@media (max-width: 900px) {
+	.dl-shell {
+		padding: 1rem;
+	}
+
+	.dl-grid {
+		grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+		gap: 1rem;
+	}
+
+	.dl-card {
+		height: auto;
+		min-height: 340px;
+	}
+
+	.dl-toolbar {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.dl-filter {
+		justify-content: center;
+	}
+
+	.dl-sort {
+		display: flex;
+		justify-content: center;
+	}
+}
+
+@media (max-width: 480px) {
+	.dl-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.dl-chip,
+	.dl-dropdown-trigger,
+	.dl-dropdown-item {
+		font-size: 0.75rem;
+		padding: 0.4rem 0.8rem;
+	}
+}

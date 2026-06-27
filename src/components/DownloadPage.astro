@@ -1,6 +1,149 @@
+<!-- 资源下载页面 -->
 <div class="partTwo page-content" id="page-download" style="display: none;">
-  <div class="download-construction">
-    <h2>正在施工</h2>
-    <p>资源下载页面即将上线，敬请期待</p>
+  <div class="dl-shell">
+    <div class="dl-toolbar">
+      <div class="dl-filter">
+        <button class="dl-chip active" data-filter="all" type="button">全部</button>
+        <button class="dl-chip" data-filter="cursor" type="button">鼠标指针</button>
+        <button class="dl-chip" data-filter="wallpaper" type="button">壁纸</button>
+        <button class="dl-chip" data-filter="emoji" type="button">表情包</button>
+      </div>
+      <div class="dl-sort">
+        <div class="dl-dropdown" id="dl-sort-dropdown">
+          <button class="dl-dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span class="dl-dropdown-label">最新</span>
+            <span class="dl-dropdown-arrow">▾</span>
+          </button>
+          <ul class="dl-dropdown-menu" role="listbox">
+            <li class="dl-dropdown-item active" data-value="new" role="option">最新</li>
+            <li class="dl-dropdown-item" data-value="old" role="option">最早</li>
+            <li class="dl-dropdown-item" data-value="rating" role="option">评分</li>
+            <li class="dl-dropdown-item" data-value="downloads" role="option">下载量</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="dl-grid" id="dl-grid">
+      <article class="dl-card">
+        <div class="dl-card-banner">
+          <span class="dl-card-tag">NEW</span>
+          <div class="dl-card-thumb"></div>
+          <span class="dl-card-status">● HOT</span>
+        </div>
+        <div class="dl-card-body">
+          <div class="dl-card-handle">@huaxiaoke</div>
+          <h3 class="dl-card-name">鼠标指针 CURSOR</h3>
+          <p class="dl-card-bio">占位描述文字，后续替换为真实资源简介。</p>
+        </div>
+        <div class="dl-card-stats">
+          <div class="dl-stat"><span class="dl-stat-v">482</span><span class="dl-stat-l">下载</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">★4.9</span><span class="dl-stat-l">评分</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">2026</span><span class="dl-stat-l">日期</span></div>
+        </div>
+        <button class="dl-card-btn" type="button">下载 DOWNLOAD</button>
+      </article>
+
+      <article class="dl-card">
+        <div class="dl-card-banner">
+          <span class="dl-card-tag">NEW</span>
+          <div class="dl-card-thumb"></div>
+          <span class="dl-card-status">● HOT</span>
+        </div>
+        <div class="dl-card-body">
+          <div class="dl-card-handle">@huaxiaoke</div>
+          <h3 class="dl-card-name">壁纸 WALLPAPER</h3>
+          <p class="dl-card-bio">占位描述文字，后续替换为真实资源简介。</p>
+        </div>
+        <div class="dl-card-stats">
+          <div class="dl-stat"><span class="dl-stat-v">1.2k</span><span class="dl-stat-l">下载</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">★4.8</span><span class="dl-stat-l">评分</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">2026</span><span class="dl-stat-l">日期</span></div>
+        </div>
+        <button class="dl-card-btn" type="button">下载 DOWNLOAD</button>
+      </article>
+
+      <article class="dl-card">
+        <div class="dl-card-banner">
+          <span class="dl-card-tag">NEW</span>
+          <div class="dl-card-thumb"></div>
+          <span class="dl-card-status">● HOT</span>
+        </div>
+        <div class="dl-card-body">
+          <div class="dl-card-handle">@huaxiaoke</div>
+          <h3 class="dl-card-name">表情包 EMOJI</h3>
+          <p class="dl-card-bio">占位描述文字，后续替换为真实资源简介。</p>
+        </div>
+        <div class="dl-card-stats">
+          <div class="dl-stat"><span class="dl-stat-v">856</span><span class="dl-stat-l">下载</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">★4.7</span><span class="dl-stat-l">评分</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">2025</span><span class="dl-stat-l">日期</span></div>
+        </div>
+        <button class="dl-card-btn" type="button">下载 DOWNLOAD</button>
+      </article>
+
+      <article class="dl-card">
+        <div class="dl-card-banner">
+          <span class="dl-card-tag">NEW</span>
+          <div class="dl-card-thumb"></div>
+          <span class="dl-card-status">● HOT</span>
+        </div>
+        <div class="dl-card-body">
+          <div class="dl-card-handle">@huaxiaoke</div>
+          <h3 class="dl-card-name">头像 AVATAR</h3>
+          <p class="dl-card-bio">占位描述文字，后续替换为真实资源简介。</p>
+        </div>
+        <div class="dl-card-stats">
+          <div class="dl-stat"><span class="dl-stat-v">324</span><span class="dl-stat-l">下载</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">★4.6</span><span class="dl-stat-l">评分</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">2025</span><span class="dl-stat-l">日期</span></div>
+        </div>
+        <button class="dl-card-btn" type="button">下载 DOWNLOAD</button>
+      </article>
+
+      <article class="dl-card">
+        <div class="dl-card-banner">
+          <span class="dl-card-tag">NEW</span>
+          <div class="dl-card-thumb"></div>
+          <span class="dl-card-status">● HOT</span>
+        </div>
+        <div class="dl-card-body">
+          <div class="dl-card-handle">@huaxiaoke</div>
+          <h3 class="dl-card-name">立绘 STANDEE</h3>
+          <p class="dl-card-bio">占位描述文字，后续替换为真实资源简介。</p>
+        </div>
+        <div class="dl-card-stats">
+          <div class="dl-stat"><span class="dl-stat-v">672</span><span class="dl-stat-l">下载</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">★4.9</span><span class="dl-stat-l">评分</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">2024</span><span class="dl-stat-l">日期</span></div>
+        </div>
+        <button class="dl-card-btn" type="button">下载 DOWNLOAD</button>
+      </article>
+
+      <article class="dl-card">
+        <div class="dl-card-banner">
+          <span class="dl-card-tag">NEW</span>
+          <div class="dl-card-thumb"></div>
+          <span class="dl-card-status">● HOT</span>
+        </div>
+        <div class="dl-card-body">
+          <div class="dl-card-handle">@huaxiaoke</div>
+          <h3 class="dl-card-name">音效 SFX</h3>
+          <p class="dl-card-bio">占位描述文字，后续替换为真实资源简介。</p>
+        </div>
+        <div class="dl-card-stats">
+          <div class="dl-stat"><span class="dl-stat-v">1.5k</span><span class="dl-stat-l">下载</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">★5.0</span><span class="dl-stat-l">评分</span></div>
+          <div class="dl-stat"><span class="dl-stat-v">2024</span><span class="dl-stat-l">日期</span></div>
+        </div>
+        <button class="dl-card-btn" type="button">下载 DOWNLOAD</button>
+      </article>
+    </div>
+
+    <div class="dl-pager">
+      <button class="dl-page-btn" data-action="prev" type="button">‹</button>
+      <span class="dl-page-info"><b>1</b> / 3</span>
+      <button class="dl-page-btn" data-action="next" type="button">›</button>
+    </div>
   </div>
 </div>
