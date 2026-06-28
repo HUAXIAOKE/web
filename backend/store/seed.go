@@ -7,6 +7,7 @@ func Seed() {
 	seedTimeline()
 	seedGallery()
 	seedAbout()
+	seedDownloads()
 	log.Println("Seed Init Success!")
 }
 
@@ -79,5 +80,24 @@ func seedAbout() {
 	for _, c := range cards {
 		DB.Exec(`INSERT INTO about_card (small_title,title,content,image) VALUES (?,?,?,?)`,
 			c.SmallTitle, c.Title, c.Content, c.Image)
+	}
+}
+
+func seedDownloads() {
+	items := []struct {
+		Name, Desc, Category, FileURL, ThumbURL, Date string
+		Rating                                        float64
+		Downloads                                     int
+	}{
+		{"壁纸 WALLPAPER", "占位描述文字，后续替换为真实资源简介。", "wallpaper", "/downloads/wallpaper1.zip", "/img/downloads/wallpaper1.webp", "2026-06", 4.9, 482},
+		{"壁纸 WALLPAPER", "占位描述文字，后续替换为真实资源简介。", "wallpaper", "/downloads/wallpaper2.zip", "/img/downloads/wallpaper2.webp", "2026-05", 4.8, 1200},
+		{"表情包 EMOJI", "占位描述文字，后续替换为真实资源简介。", "emoji", "/downloads/emoji1.zip", "/img/downloads/emoji1.webp", "2025-12", 4.7, 856},
+		{"表情包 EMOJI", "占位描述文字，后续替换为真实资源简介。", "emoji", "/downloads/emoji2.zip", "/img/downloads/emoji2.webp", "2025-10", 4.6, 324},
+		{"头像 AVATAR", "占位描述文字，后续替换为真实资源简介。", "other", "/downloads/avatar1.zip", "/img/downloads/avatar1.webp", "2024-08", 4.9, 672},
+		{"音效 SFX", "占位描述文字，后续替换为真实资源简介。", "other", "/downloads/sfx1.zip", "/img/downloads/sfx1.webp", "2024-03", 5.0, 1500},
+	}
+	for i, d := range items {
+		DB.Exec(`INSERT INTO download_resource (name,description,category,file_url,thumb_url,rating,downloads,date,sort_order) VALUES (?,?,?,?,?,?,?,?,?)`,
+			d.Name, d.Desc, d.Category, d.FileURL, d.ThumbURL, d.Rating, d.Downloads, d.Date, i)
 	}
 }

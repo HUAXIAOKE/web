@@ -14,17 +14,23 @@ import (
 var StaticDir = "../public"
 
 var allowedMimeTypes = map[string]string{
-	"image/jpeg":      ".jpg",
-	"image/png":       ".png",
-	"image/gif":       ".gif",
-	"image/webp":      ".webp",
-	"image/svg+xml":   ".svg",
-	"audio/mpeg":      ".mp3",
-	"audio/wav":       ".wav",
-	"audio/ogg":       ".ogg",
-	"audio/flac":      ".flac",
-	"application/zip": ".zip",
-	"application/pdf": ".pdf",
+	"image/jpeg":                      ".jpg",
+	"image/png":                       ".png",
+	"image/gif":                       ".gif",
+	"image/webp":                      ".webp",
+	"image/svg+xml":                   ".svg",
+	"audio/mpeg":                      ".mp3",
+	"audio/wav":                       ".wav",
+	"audio/ogg":                       ".ogg",
+	"audio/flac":                      ".flac",
+	"application/zip":                 ".zip",
+	"application/pdf":                 ".pdf",
+	"application/octet-stream":        ".bin",
+	"application/x-rar-compressed":    ".rar",
+	"application/x-7z-compressed":     ".7z",
+	"application/x-tar":               ".tar",
+	"application/gzip":                ".gz",
+	"application/x-bzip2":             ".bz2",
 }
 
 var maxUploadSizes = map[string]int64{

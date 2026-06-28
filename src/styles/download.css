@@ -359,7 +359,6 @@ html.dark .dl-card-tag {
 	color: var(--dl-accent);
 	border: none;
 	border-top: 5px solid var(--dl-ink);
-	font-family: 'BebasNeue', sans-serif;
 	font-size: 1rem;
 	letter-spacing: 0.2em;
 	cursor: pointer;
@@ -368,7 +367,168 @@ html.dark .dl-card-tag {
 	flex-shrink: 0;
 }
 
+.dl-btn-zh {
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	letter-spacing: 0.05em;
+}
+
+.dl-btn-en {
+	font-family: 'BebasNeue', sans-serif;
+}
+
 .dl-card-btn:hover {
+	background: var(--dl-accent);
+	color: var(--dl-ink);
+}
+
+/* 进度条状态 */
+.dl-card-btn.downloading {
+	background: var(--dl-ink);
+	color: var(--dl-accent);
+	cursor: progress;
+	position: relative;
+}
+
+.dl-btn-progress {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.dl-btn-progress svg {
+	width: 100%;
+	height: 100%;
+}
+
+.dl-btn-progress circle {
+	fill: none;
+	stroke: var(--dl-accent);
+	stroke-width: 4;
+	transform: rotate(-90deg);
+	transform-origin: center;
+	transition: stroke-dashoffset 0.1s linear;
+}
+
+.dl-btn-percent {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: 'BebasNeue', sans-serif;
+	font-size: 0.9rem;
+	color: var(--dl-accent);
+	letter-spacing: 0.1em;
+}
+
+/* 评分星标状态 */
+.dl-card-btn.rating-mode {
+	background: var(--dl-bg);
+	padding: 9px;
+	cursor: default;
+}
+
+.dl-card-btn.rating-mode:hover {
+	background: var(--dl-bg);
+}
+
+.dl-rating {
+	display: flex;
+	flex-direction: row;
+	gap: 0.2rem;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	--stroke: var(--dl-ink);
+	--fill: #ffc73a;
+}
+
+.dl-rating .dl-star {
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.dl-rating svg {
+	width: 1.9rem;
+	height: 1.9rem;
+	overflow: visible;
+	fill: transparent;
+	stroke: var(--stroke);
+	stroke-linejoin: bevel;
+	stroke-dasharray: 12;
+	animation: dl-idle 4s linear infinite;
+	transition: stroke 0.2s, fill 0.5s;
+}
+
+@keyframes dl-idle {
+	from {
+		stroke-dashoffset: 24;
+	}
+}
+
+.dl-rating .dl-star:hover svg {
+	stroke: var(--fill);
+}
+
+.dl-rating .dl-star.hover-fill svg {
+	stroke: var(--fill);
+}
+
+.dl-rating .dl-star.selected svg {
+	transition: 0s;
+	animation: dl-idle 4s linear infinite, dl-yippee 0.75s backwards;
+	fill: var(--fill);
+	stroke: var(--fill);
+	stroke-opacity: 0;
+	stroke-dasharray: 0;
+	stroke-linejoin: miter;
+	stroke-width: 8px;
+}
+
+@keyframes dl-yippee {
+	0% {
+		transform: scale(1);
+		fill: var(--fill);
+		fill-opacity: 0;
+		stroke-opacity: 1;
+		stroke: var(--stroke);
+		stroke-dasharray: 10;
+		stroke-width: 1px;
+		stroke-linejoin: bevel;
+	}
+	30% {
+		transform: scale(0);
+		fill: var(--fill);
+		fill-opacity: 0;
+		stroke-opacity: 1;
+		stroke: var(--stroke);
+		stroke-dasharray: 10;
+		stroke-width: 1px;
+		stroke-linejoin: bevel;
+	}
+	30.1% {
+		stroke: var(--fill);
+		stroke-dasharray: 0;
+		stroke-linejoin: miter;
+		stroke-width: 8px;
+	}
+	60% {
+		transform: scale(1.2);
+		fill: var(--fill);
+	}
+}
+
+/* 已评分状态 */
+.dl-card-btn.rated {
+	background: var(--dl-accent);
+	color: var(--dl-ink);
+	cursor: default;
+}
+
+.dl-card-btn.rated:hover {
 	background: var(--dl-accent);
 	color: var(--dl-ink);
 }

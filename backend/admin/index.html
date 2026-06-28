@@ -27,11 +27,12 @@
 			<aside class="sidebar" id="sidebar">
 				<div class="sidebar-logo">华小科 Web</div>
 				<nav>
-					<a class="active" data-tab="activity">活动列表</a>
-					<a data-tab="timeline">心路历程</a>
-					<a data-tab="gallery">插画展示</a>
-					<a data-tab="about">关于我们</a>
-					<a data-tab="bilibili">B站绑定</a>
+				<a class="active" data-tab="activity">活动列表</a>
+				<a data-tab="timeline">心路历程</a>
+				<a data-tab="gallery">插画展示</a>
+				<a data-tab="about">关于我们</a>
+				<a data-tab="download">下载资源</a>
+				<a data-tab="bilibili">B站绑定</a>
 				</nav>
 				<div class="sidebar-footer">
 					<button class="btn-logout" onclick="doLogout()">退出登录</button>
@@ -722,16 +723,96 @@
 				);
 			}
 
-			async function delAbout(id) {
-				if (!confirm('确定删除？')) return;
-				const res = await authFetch('/api/about/' + id, { method: 'DELETE', headers: authHeaders() });
-				if (!res.ok) {
-					toast('删除失败', 'error');
-					return;
-				}
-				toast('已删除');
-				loadAbout();
+		async function delAbout(id) {
+			if (!confirm('确定删除？')) return;
+			const res = await authFetch('/api/about/' + id, { method: 'DELETE', headers: authHeaders() });
+			if (!res.ok) {
+				toast('删除失败', 'error');
+				return;
 			}
+			toast('已删除');
+			loadAbout();
+		}
+
+		const dlCategoryLabels = { wallpaper: '壁纸', emoji: '表情包', other: '其他' };
+
+		async function loadDownload() {
+			const res = await authFetch('/api/downloads');
+			const list = await res.json();
+			const main = document.getElementById('main-content');
+			main.innerHTML = `<div class="page-header"><h2>下载资源</h2><button class="btn btn-primary" onclick="editDownload()">+ 新增</button></div><div class="card-grid">${(list || [])
+				.map(
+					(d) => `<div class="card">
+			<img class="card-img" src="${d.thumbUrl}" onerror="this.style.display='none'">
+			<div class="card-body">
+				<p style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:2px">${dlCategoryLabels[d.category] || d.category}</p>
+				<h3>${d.name}</h3><p>${(d.description || '').substring(0, 60)}${(d.description || '').length > 60 ? '...' : ''}</p>
+				<p style="color:var(--text-sub);font-size:12px">★${d.rating} · ${d.downloads}次下载 · ${d.date}</p>
+			</div>
+			<div class="card-actions">
+			<button class="btn btn-ghost" onclick='editDownload(${JSON.stringify(d).replace(/'/g, '&#39;')})'>编辑</button>
+			<button class="btn btn-danger" onclick="delDownload(${d.id})">删除</button></div></div>`
+				)
+				.join('')}</div>`;
+		}
+
+		function editDownload(d) {
+			const isNew = !d;
+			d = d || { name: '', description: '', category: 'other', fileUrl: '', thumbUrl: '', rating: 0, date: '', sortOrder: 0 };
+			openModal(
+				isNew ? '新增下载资源' : '编辑下载资源',
+				`
+				<div class="form-group"><label>名称</label><input id="f_dname" value="${d.name}"></div>
+				<div class="form-group"><label>分类</label><select id="f_dcat">
+					<option value="wallpaper" ${d.category === 'wallpaper' ? 'selected' : ''}>壁纸</option>
+					<option value="emoji" ${d.category === 'emoji' ? 'selected' : ''}>表情包</option>
+					<option value="other" ${d.category === 'other' ? 'selected' : ''}>其他</option>
+				</select></div>
+				<div class="form-group"><label>简介</label><textarea id="f_ddesc">${d.description}</textarea></div>
+				<div class="form-group"><label>发布日期 (YYYY-MM)</label><input type="month" id="f_ddate" value="${d.date}"></div>
+				<div class="form-group"><label>评分</label><input type="number" id="f_drating" step="0.1" min="0" max="5" value="${d.rating}"></div>
+				<div class="form-group"><label>排序权重</label><input type="number" id="f_dsort" value="${d.sortOrder || 0}"></div>
+				${imgUploadHTML('f_dthumb', d.thumbUrl, 'img/downloads')}
+				<div class="form-group"><label>下载文件</label></div>
+				${fileUploadHTML('f_dfile', d.fileUrl, 'downloads', { accept: '*/*', label: '文件' })}`,
+				async () => {
+					const body = {
+						name: val('f_dname'),
+						description: val('f_ddesc'),
+						category: val('f_dcat'),
+						fileUrl: val('f_dfile'),
+						thumbUrl: val('f_dthumb'),
+						rating: parseFloat(val('f_drating')) || 0,
+						date: val('f_ddate'),
+						sortOrder: parseInt(val('f_dsort')) || 0,
+					};
+					const res = await authFetch(isNew ? '/api/downloads' : '/api/downloads/' + d.id, {
+						method: isNew ? 'POST' : 'PUT',
+						headers: authHeaders(),
+						body: JSON.stringify(body),
+					});
+					if (!res.ok) {
+						toast('操作失败', 'error');
+						return;
+					}
+					closeModal();
+					toast(isNew ? '创建成功' : '保存成功');
+					loadDownload();
+				},
+				[{ id: 'f_dthumb', dir: 'img/downloads' }, { id: 'f_dfile', dir: 'downloads' }]
+			);
+		}
+
+		async function delDownload(id) {
+			if (!confirm('确定删除？')) return;
+			const res = await authFetch('/api/downloads/' + id, { method: 'DELETE', headers: authHeaders() });
+			if (!res.ok) {
+				toast('删除失败', 'error');
+				return;
+			}
+			toast('已删除');
+			loadDownload();
+		}
 
 			let bilibiliPollTimer = null;
 
@@ -849,13 +930,14 @@
 				mask.classList.toggle('show', open);
 			}
 
-			const loaders = {
-				activity: loadActivity,
-				timeline: loadTimeline,
-				gallery: loadGallery,
-				about: loadAbout,
-				bilibili: loadBilibili,
-			};
+		const loaders = {
+			activity: loadActivity,
+			timeline: loadTimeline,
+			gallery: loadGallery,
+			about: loadAbout,
+			download: loadDownload,
+			bilibili: loadBilibili,
+		};
 
 			function stopActivityPoll() {
 				if (activityPollTimer) {

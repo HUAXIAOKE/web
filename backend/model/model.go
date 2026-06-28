@@ -96,3 +96,18 @@ type SignupSubmission struct {
 	Attachments string `json:"attachments"`
 	SubmittedAt string `json:"submittedAt"`
 }
+
+// DownloadResource 下载资源
+type DownloadResource struct {
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Category    string  `json:"category"`
+	FileURL     string  `json:"fileUrl"`
+	ThumbURL    string  `json:"thumbUrl"`
+	Rating      float64 `json:"rating"`
+	Downloads   int     `json:"downloads"`
+	Date        string  `json:"date"`
+	SortOrder   int     `json:"sortOrder"`
+	RatingCount int     `json:"ratingCount"`
+}

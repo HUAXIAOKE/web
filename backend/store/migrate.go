@@ -64,6 +64,14 @@ func RunMigrations() error {
 			if err := migrateV7ToV8(); err != nil {
 				return fmt.Errorf("v8: %w", err)
 			}
+		case 8:
+			if err := migrateV8ToV9(); err != nil {
+				return fmt.Errorf("v9: %w", err)
+			}
+		case 9:
+			if err := migrateV9ToV10(); err != nil {
+				return fmt.Errorf("v10: %w", err)
+			}
 		}
 	}
 
@@ -382,5 +390,51 @@ func migrateV7ToV8() error {
 		return fmt.Errorf("drop music: %w", err)
 	}
 	fmt.Println("[migrate] v8: dropped music table")
+	return nil
+}
+
+func migrateV8ToV9() error {
+	_, err := DB.Exec(`CREATE TABLE IF NOT EXISTS download_resource (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL,
+		description TEXT,
+		category TEXT NOT NULL DEFAULT 'other',
+		file_url TEXT,
+		thumb_url TEXT,
+		rating REAL DEFAULT 0,
+		downloads INTEGER DEFAULT 0,
+		date TEXT,
+		sort_order INTEGER DEFAULT 0
+	)`)
+	if err != nil {
+		return fmt.Errorf("create download_resource: %w", err)
+	}
+	fmt.Println("[migrate] v9: created download_resource table")
+	return nil
+}
+
+func migrateV9ToV10() error {
+	_, err := DB.Exec(`CREATE TABLE IF NOT EXISTS download_rating (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		resource_id INTEGER NOT NULL,
+		score INTEGER NOT NULL,
+		created_at TEXT DEFAULT (datetime('now'))
+	)`)
+	if err != nil {
+		return fmt.Errorf("create download_rating: %w", err)
+	}
+	addCol := func(table, col, def string) error {
+		var count int
+		row := DB.QueryRow(fmt.Sprintf(`SELECT COUNT(*) FROM pragma_table_info('%s') WHERE name=?`, table), col)
+		if err := row.Scan(&count); err != nil || count > 0 {
+			return nil
+		}
+		_, err := DB.Exec(fmt.Sprintf(`ALTER TABLE %s ADD COLUMN %s %s`, table, col, def))
+		return err
+	}
+	if err := addCol("download_resource", "rating_count", "INTEGER DEFAULT 0"); err != nil {
+		return fmt.Errorf("add rating_count: %w", err)
+	}
+	fmt.Println("[migrate] v10: created download_rating table and added rating_count column")
 	return nil
 }
