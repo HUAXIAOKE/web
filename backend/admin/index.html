@@ -5,11 +5,14 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>华小科Web · 后台管理</title>
 		<link rel="icon" type="image/x-icon" href="icon.ico" />
+		<link rel="preload" href="/font/AlimamaShuHeiTi-Bold.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/font/BebasNeue.woff2" as="font" type="font/woff2" crossorigin />
 		<link rel="stylesheet" href="styles.css" />
 	</head>
 	<body>
 		<div class="login-wrap" id="login-page">
 			<div class="login-box">
+				<div class="login-logo">华</div>
 				<h1>华小科 Web</h1>
 				<p>后台管理系统</p>
 				<input id="login-user" placeholder="账号" autocomplete="username" />
@@ -20,24 +23,21 @@
 		</div>
 
 		<div class="app" id="app-page" style="display: none">
-			<button class="sidebar-toggle" id="sidebar-toggle" aria-label="打开菜单" onclick="toggleSidebar()">
-				<span></span><span></span><span></span>
-			</button>
-			<div class="sidebar-mask" id="sidebar-mask" onclick="toggleSidebar(false)"></div>
-			<aside class="sidebar" id="sidebar">
-				<div class="sidebar-logo">华小科 Web</div>
-				<nav>
-				<a class="active" data-tab="activity">活动列表</a>
-				<a data-tab="timeline">心路历程</a>
-				<a data-tab="gallery">插画展示</a>
-				<a data-tab="about">关于我们</a>
-				<a data-tab="download">下载资源</a>
-				<a data-tab="bilibili">B站绑定</a>
-				</nav>
-				<div class="sidebar-footer">
-					<button class="btn-logout" onclick="doLogout()">退出登录</button>
+			<header class="topbar">
+				<div class="topbar-brand">
+					<img class="brand-mark" src="icon.ico" alt="华小科" />
+					<span class="brand-text">华小科 · ADMIN</span>
 				</div>
-			</aside>
+				<nav class="topbar-nav">
+					<a class="topbar-tab active" data-tab="activity">活动列表</a>
+					<a class="topbar-tab" data-tab="timeline">心路历程</a>
+					<a class="topbar-tab" data-tab="gallery">插画展示</a>
+					<a class="topbar-tab" data-tab="about">关于我们</a>
+					<a class="topbar-tab" data-tab="download">下载资源</a>
+					<a class="topbar-tab" data-tab="bilibili">B站绑定</a>
+				</nav>
+				<button class="topbar-logout" onclick="doLogout()">退出</button>
+			</header>
 
 			<main class="main" id="main-content"></main>
 		</div>
@@ -57,6 +57,16 @@
 		</div>
 
 		<div class="toast" id="toast"></div>
+
+		<div class="confirm-mask" id="confirm-mask">
+			<div class="confirm-box">
+				<div class="confirm-body" id="confirm-msg"></div>
+				<div class="confirm-actions">
+					<button class="btn btn-ghost" id="confirm-cancel">取消</button>
+					<button class="btn btn-danger" id="confirm-ok">确定</button>
+				</div>
+			</div>
+		</div>
 
 		<script>
 			const API = '';
@@ -145,6 +155,24 @@
 				setTimeout(() => el.classList.remove('show'), 2000);
 			}
 
+			function customConfirm(msg) {
+				return new Promise((resolve) => {
+					const mask = document.getElementById('confirm-mask');
+					document.getElementById('confirm-msg').textContent = msg;
+					mask.classList.add('show');
+					const ok = document.getElementById('confirm-ok');
+					const cancel = document.getElementById('confirm-cancel');
+					const cleanup = (val) => {
+						mask.classList.remove('show');
+						ok.onclick = null;
+						cancel.onclick = null;
+						resolve(val);
+					};
+					ok.onclick = () => cleanup(true);
+					cancel.onclick = () => cleanup(false);
+				});
+			}
+
 			function openModal(title, html, onSave, dropZones) {
 				document.getElementById('modal-title').textContent = title;
 				document.getElementById('modal-body').innerHTML = html;
@@ -190,19 +218,20 @@
 				return fileUploadHTML(fid, url, dir, { accept: 'audio/*', label: '音频' });
 			}
 
-			function onPathInput(fieldId, value) {
-				document.getElementById(fieldId).value = value;
-				const preview = document.getElementById(fieldId + '_preview');
-				if (preview) {
-					if (preview.tagName === 'IMG') {
-						preview.src = value;
-						preview.style.display = value ? 'block' : 'none';
-					} else if (preview.tagName === 'AUDIO') {
-						preview.src = value;
-						preview.style.display = value ? 'block' : 'none';
-					}
+		function onPathInput(fieldId, value) {
+			document.getElementById(fieldId).value = value;
+			const preview = document.getElementById(fieldId + '_preview');
+			if (preview) {
+				if (preview.tagName === 'IMG') {
+					preview.src = value;
+					preview.style.display = value ? 'block' : 'none';
+				} else if (preview.tagName === 'AUDIO') {
+					preview.src = value;
+					preview.style.display = value ? 'block' : 'none';
 				}
 			}
+			if (fieldId === 'f_dthumb' && value) initCropper('f_dthumb', value);
+		}
 
 			function initDropZone(fieldId, dir) {
 				const zone = document.getElementById(fieldId + '_drop');
@@ -235,15 +264,16 @@
 				try {
 					const res = await authFetch('/api/upload', { method: 'POST', body: fd });
 					if (!res.ok) throw new Error(await res.text());
-					const data = await res.json();
-					document.getElementById(fieldId).value = data.url;
-					document.getElementById(fieldId + '_path').value = data.url;
-					const preview = document.getElementById(fieldId + '_preview');
-					if (preview) {
-						preview.src = data.url;
-						preview.style.display = 'block';
-					}
-					if (zone) {
+				const data = await res.json();
+				document.getElementById(fieldId).value = data.url;
+				document.getElementById(fieldId + '_path').value = data.url;
+				const preview = document.getElementById(fieldId + '_preview');
+				if (preview) {
+					preview.src = data.url;
+					preview.style.display = 'block';
+				}
+				if (fieldId === 'f_dthumb') initCropper('f_dthumb', data.url);
+				if (zone) {
 						zone.textContent = '上传成功，点击或拖拽替换';
 						zone.classList.remove('uploading');
 					}
@@ -253,13 +283,185 @@
 						zone.textContent = '上传失败，点击或拖拽重试';
 						zone.classList.remove('uploading');
 					}
-					toast('上传失败: ' + e.message, 'error');
-				}
+			toast('上传失败: ' + e.message, 'error');
 			}
+		}
+
+		const cropState = {};
+
+		function initCropper(fieldId, src) {
+			const wrap = document.getElementById(fieldId + '_crop');
+			const img = document.getElementById(fieldId + '_crop_img');
+			const stage = document.getElementById(fieldId + '_crop_stage');
+			if (!wrap || !img || !stage) return;
+			wrap.style.display = 'flex';
+			cropState[fieldId] = null;
+
+			img.onload = () => {
+				const stageW = stage.clientWidth;
+				const stageH = stage.clientHeight;
+				const boxSize = Math.min(stageW, stageH) - 32;
+				const fitScale = Math.min(stageW / img.naturalWidth, stageH / img.naturalHeight);
+				const scale = fitScale;
+				const drawW = img.naturalWidth * scale;
+				const drawH = img.naturalHeight * scale;
+				cropState[fieldId] = {
+					nw: img.naturalWidth,
+					nh: img.naturalHeight,
+					scale,
+					minScale: fitScale * 0.5,
+					maxScale: fitScale * 6,
+					x: (stageW - drawW) / 2,
+					y: (stageH - drawH) / 2,
+					stageW,
+					stageH,
+					boxSize,
+					boxX: (stageW - boxSize) / 2,
+					boxY: (stageH - boxSize) / 2,
+					src,
+				};
+				document.getElementById(fieldId + '_crop_box').style.width = boxSize + 'px';
+				document.getElementById(fieldId + '_crop_box').style.height = boxSize + 'px';
+				renderCrop(fieldId);
+			};
+			img.src = src;
+
+			let dragging = false,
+				sx = 0,
+				sy = 0,
+				ox = 0,
+				oy = 0;
+			stage.onmousedown = (e) => {
+				if (!cropState[fieldId]) return;
+				dragging = true;
+				sx = e.clientX;
+				sy = e.clientY;
+				ox = cropState[fieldId].x;
+				oy = cropState[fieldId].y;
+				e.preventDefault();
+			};
+			stage.onmousemove = (e) => {
+				if (!dragging || !cropState[fieldId]) return;
+				cropState[fieldId].x = ox + (e.clientX - sx);
+				cropState[fieldId].y = oy + (e.clientY - sy);
+				renderCrop(fieldId);
+			};
+			stage.onmouseup = () => {
+				dragging = false;
+			};
+			stage.onmouseleave = () => {
+				dragging = false;
+			};
+			stage.onwheel = (e) => {
+				if (!cropState[fieldId]) return;
+				e.preventDefault();
+				const s = cropState[fieldId];
+				const delta = e.deltaY < 0 ? 1.12 : 0.89;
+				s.scale = Math.max(s.minScale, Math.min(s.maxScale, s.scale * delta));
+				renderCrop(fieldId);
+			};
+		}
+
+		function renderCrop(fieldId) {
+			const s = cropState[fieldId];
+			if (!s) return;
+			const img = document.getElementById(fieldId + '_crop_img');
+			const preview = document.getElementById(fieldId + '_crop_preview');
+			img.style.transform = `translate(${s.x}px, ${s.y}px) scale(${s.scale})`;
+			img.style.width = s.nw + 'px';
+			img.style.height = s.nh + 'px';
+
+			const previewSize = 120;
+			const ratio = previewSize / s.boxSize;
+			preview.src = s.src;
+			preview.style.width = s.nw * s.scale * ratio + 'px';
+			preview.style.height = s.nh * s.scale * ratio + 'px';
+			preview.style.transform = `translate(${-(s.x - s.boxX) * ratio}px, ${-(s.y - s.boxY) * ratio}px)`;
+		}
+
+		async function applyCrop(fieldId) {
+			const s = cropState[fieldId];
+			if (!s) {
+				toast('请先上传图片', 'error');
+				return;
+			}
+			const img = document.getElementById(fieldId + '_crop_img');
+			const ratio = s.nw / (s.nw * s.scale);
+			const sx = (s.boxX - s.x) * ratio;
+			const sy = (s.boxY - s.y) * ratio;
+			const sw = s.boxSize * ratio;
+			const sh = s.boxSize * ratio;
+
+			const canvas = document.createElement('canvas');
+			const outSize = 512;
+			canvas.width = outSize;
+			canvas.height = outSize;
+			const ctx = canvas.getContext('2d');
+			try {
+				ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outSize, outSize);
+			} catch (e) {
+				toast('裁剪失败: ' + e.message, 'error');
+				return;
+			}
+			canvas.toBlob(
+				async (blob) => {
+					if (!blob) {
+						toast('生成图片失败', 'error');
+						return;
+					}
+					const fd = new FormData();
+					fd.append('file', blob, 'thumb.webp');
+					fd.append('dir', 'img/downloads');
+					try {
+						const res = await authFetch('/api/upload', { method: 'POST', body: fd });
+						if (!res.ok) throw new Error(await res.text());
+						const data = await res.json();
+						document.getElementById(fieldId).value = data.url;
+						document.getElementById(fieldId + '_path').value = data.url;
+						const preview = document.getElementById(fieldId + '_preview');
+						preview.src = data.url;
+						preview.style.display = 'block';
+						toast('裁剪并上传成功');
+					} catch (e) {
+						toast('裁剪上传失败: ' + e.message, 'error');
+					}
+				},
+				'image/webp',
+				0.9
+			);
+		}
 
 			function val(id) {
 				return document.getElementById(id)?.value?.trim() || '';
 			}
+
+			function toggleCustomSelect(id) {
+				document.querySelectorAll('.custom-select-panel.show').forEach(p => { if (!p.closest('#'+id)) p.classList.remove('show'); });
+				document.querySelector('#'+id+' .custom-select-panel').classList.toggle('show');
+			}
+			function selectCustomOption(selectId, value, label) {
+				const sel = document.getElementById(selectId);
+				const trigger = sel.querySelector('.custom-select-trigger');
+				trigger.querySelector('.custom-select-label').textContent = label;
+				sel.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('active'));
+				sel.querySelector('.custom-select-option[data-value="'+value+'"]').classList.add('active');
+				sel.querySelector('input[type=hidden]').value = value;
+				sel.querySelector('.custom-select-panel').classList.remove('show');
+			}
+			function setCustomMonth(name, yr, mo) {
+				document.getElementById(name + '_yr').value = yr;
+				document.getElementById(name + '_mo').value = mo;
+				document.getElementById(name).value = yr + '-' + mo;
+			}
+			function syncCustomMonth(name) {
+				const yr = (document.getElementById(name+'_yr')?.value || '').padStart(2,'0');
+				const mo = (document.getElementById(name+'_mo')?.value || '').padStart(2,'0');
+				document.getElementById(name).value = (yr && mo) ? yr + '-' + mo : '';
+			}
+
+			document.addEventListener('click', () => {
+				document.querySelectorAll('.custom-select-panel.show').forEach(p => p.classList.remove('show'));
+			});
 
 			let activityPollTimer = null;
 			let activityConfigId = null;
@@ -270,17 +472,17 @@
 				const list = await res.json();
 				const main = document.getElementById('main-content');
 				if (!list || list.length === 0) {
-					main.innerHTML = `<div class="page-header"><h2>当期活动</h2><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div><div class="empty"><p>暂无活动数据</p></div>`;
+					main.innerHTML = `<div class="page-header"><h2>当期活动</h2><div class="page-actions"><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div></div><div class="empty"><p>暂无活动数据</p></div>`;
 					return;
 				}
 				const statusLabels = { active: '报名中', not_started: '未开放', expired: '已结束', not_enabled: '' };
 				const statusClasses = { active: 'active', not_started: 'not-started', expired: 'expired', not_enabled: '' };
-				main.innerHTML = `<div class="page-header"><h2>当期活动</h2><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div>
+				main.innerHTML = `<div class="page-header"><h2>当期活动</h2><div class="page-actions"><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div></div>
 									<div class="card-grid">${list
-										.map(
-											(a) => `<div class="card">
-									<img class="card-img" src="${a.image}" onerror="this.style.display='none'">
-									<div class="card-body">
+								.map(
+									(a) => `<div class="card">
+							<img class="card-img" src="${a.image}" onerror="cardImgFallback(this)">
+							<div class="card-body">
 										<div class="meta">${a.tags
 											.split(',')
 											.map((t) => `<span class="tag">${t}</span>`)
@@ -354,7 +556,7 @@
 			}
 
 			async function delActivity(id) {
-				if (!confirm('确定删除？')) return;
+				if (!(await customConfirm('确定删除？'))) return;
 				const res = await authFetch('/api/activities/' + id, { method: 'DELETE', headers: authHeaders() });
 				if (!res.ok) {
 					toast('删除失败', 'error');
@@ -389,7 +591,7 @@
 				const form = await formRes.json();
 				const main = document.getElementById('main-content');
 				main.innerHTML = `
-					<div class="page-header"><h2>活动配置</h2><button class="btn btn-ghost" onclick="loadActivity()">返回活动列表</button></div>
+					<div class="page-header"><h2>活动配置</h2><div class="page-actions"><button class="btn btn-ghost" onclick="loadActivity()">返回活动列表</button></div></div>
 					<div class="config-grid">
 						<div class="config-panel">
 							<h3>详情内容</h3>
@@ -522,18 +724,18 @@
 				const events = data.events || [];
 				const main = document.getElementById('main-content');
 				main.innerHTML = `
-					<div class="page-header"><h2>时间轴</h2><div style="display:flex;gap:8px">
-					<button class="btn btn-ghost" onclick='editTimelineHeader(${JSON.stringify(h)})'>编辑标题</button>
-					<button class="btn btn-primary" onclick="editTimelineEvent()">+ 新增事件</button></div></div>
+				<div class="page-header"><h2>时间轴</h2><div class="page-actions">
+				<button class="btn btn-ghost" onclick='editTimelineHeader(${JSON.stringify(h)})'>编辑标题</button>
+				<button class="btn btn-primary" onclick="editTimelineEvent()">+ 新增事件</button></div></div>
 					<div class="info-bar"><strong>${h.title || '—'}</strong><span>${h.subtitle || ''}</span></div>
 					<table><thead><tr><th>图片</th><th>日期</th><th>标题</th><th>描述</th><th>标签</th><th>操作</th></tr></thead>
 					<tbody>${events
 						.map(
 							(e) => `<tr>
 					<td><img src="${e.image}" onerror="this.style.display='none'"></td>
-					<td>${e.date}</td><td>${e.title}</td><td style="max-width:180px;color:var(--text-sub)">${e.description}</td><td style="color:var(--text-sub)">${e.label}</td>
-					<td style="white-space:nowrap"><button class="btn btn-ghost" onclick='editTimelineEvent(${JSON.stringify(e)})'>编辑</button>
-						<button class="btn btn-danger" style="margin-left:4px" onclick="delTimelineEvent(${e.id})">删除</button></td>
+					<td>${e.date}</td><td>${e.title}</td><td class="col-desc">${e.description}</td><td class="col-label">${e.label}</td>
+					<td class="col-actions"><button class="btn btn-ghost" onclick='editTimelineEvent(${JSON.stringify(e)})'>编辑</button>
+						<button class="btn btn-danger" onclick="delTimelineEvent(${e.id})">删除</button></td>
 					</tr>`
 						)
 						.join('')}</tbody></table>`;
@@ -593,7 +795,7 @@
 			}
 
 			async function delTimelineEvent(id) {
-				if (!confirm('确定删除？')) return;
+				if (!(await customConfirm('确定删除？'))) return;
 				const res = await authFetch('/api/timeline/events/' + id, { method: 'DELETE', headers: authHeaders() });
 				if (!res.ok) {
 					toast('删除失败', 'error');
@@ -603,24 +805,31 @@
 				loadTimeline();
 			}
 
-			function markImgMissing(imgEl) {
-				const src = imgEl.dataset.src || imgEl.getAttribute('src') || '';
-				const ph = document.createElement('div');
-				ph.className = 'img-missing card-img';
-				const label = document.createElement('span');
-				label.textContent = '图片缺失';
-				const code = document.createElement('code');
-				code.textContent = src;
-				ph.appendChild(label);
-				ph.appendChild(code);
-				imgEl.replaceWith(ph);
-			}
+		function markImgMissing(imgEl) {
+			const src = imgEl.dataset.src || imgEl.getAttribute('src') || '';
+			const ph = document.createElement('div');
+			ph.className = 'img-missing card-img';
+			const label = document.createElement('span');
+			label.textContent = '图片缺失';
+			const code = document.createElement('code');
+			code.textContent = src;
+			ph.appendChild(label);
+			ph.appendChild(code);
+			imgEl.replaceWith(ph);
+		}
+
+		function cardImgFallback(imgEl) {
+			const ph = document.createElement('div');
+			ph.className = 'card-img-empty';
+			ph.textContent = '无图片';
+			imgEl.replaceWith(ph);
+		}
 
 			async function loadGallery() {
 				const res = await authFetch('/api/gallery');
 				const list = await res.json();
 				const main = document.getElementById('main-content');
-				main.innerHTML = `<div class="page-header"><h2>画廊</h2><button class="btn btn-primary" onclick="editGallery()">+ 新增</button></div><div class="card-grid">${(
+				main.innerHTML = `<div class="page-header"><h2>画廊</h2><div class="page-actions"><button class="btn btn-primary" onclick="editGallery()">+ 新增</button></div></div><div class="card-grid">${(
 					list || []
 				)
 					.map(
@@ -664,7 +873,7 @@
 			}
 
 			async function delGallery(id) {
-				if (!confirm('确定删除？')) return;
+				if (!(await customConfirm('确定删除？'))) return;
 				const res = await authFetch('/api/gallery/' + id, { method: 'DELETE', headers: authHeaders() });
 				if (!res.ok) {
 					toast('删除失败', 'error');
@@ -679,17 +888,17 @@
 				const data = await res.json();
 				const cards = data.cards || [];
 				const main = document.getElementById('main-content');
-				main.innerHTML = `<div class="page-header"><h2>关于我们</h2><button class="btn btn-primary" onclick="editAbout()">+ 新增</button></div>
-    <div class="card-grid">${cards
-			.map(
-				(c) => `<div class="card">
-						<img class="card-img" src="${c.image}" onerror="this.style.display='none'">
-						<div class="card-body">
-							<p style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:2px">${c.smallTitle}</p>
-							<h3>${c.title}</h3><p>${c.content.substring(0, 80)}${c.content.length > 80 ? '...' : ''}</p></div>
-						<div class="card-actions">
-							<button class="btn btn-ghost" onclick='editAbout(${JSON.stringify(c).replace(/'/g, '&#39;')})'>编辑</button>
-							<button class="btn btn-danger" onclick="delAbout(${c.id})">删除</button></div></div>`
+			main.innerHTML = `<div class="page-header"><h2>关于我们</h2><div class="page-actions"><button class="btn btn-primary" onclick="editAbout()">+ 新增</button></div></div>
+<div class="card-grid">${cards
+		.map(
+			(c) => `<div class="card">
+					<img class="card-img" src="${c.image}" onerror="cardImgFallback(this)">
+					<div class="card-body">
+						<p class="card-subtitle">${c.smallTitle}</p>
+						<h3>${c.title}</h3><p>${c.content.substring(0, 80)}${c.content.length > 80 ? '...' : ''}</p></div>
+					<div class="card-actions">
+						<button class="btn btn-ghost" onclick='editAbout(${JSON.stringify(c).replace(/'/g, '&#39;')})'>编辑</button>
+						<button class="btn btn-danger" onclick="delAbout(${c.id})">删除</button></div></div>`
 			)
 			.join('')}</div>`;
 			}
@@ -724,7 +933,7 @@
 			}
 
 		async function delAbout(id) {
-			if (!confirm('确定删除？')) return;
+			if (!(await customConfirm('确定删除？'))) return;
 			const res = await authFetch('/api/about/' + id, { method: 'DELETE', headers: authHeaders() });
 			if (!res.ok) {
 				toast('删除失败', 'error');
@@ -740,20 +949,20 @@
 			const res = await authFetch('/api/downloads');
 			const list = await res.json();
 			const main = document.getElementById('main-content');
-			main.innerHTML = `<div class="page-header"><h2>下载资源</h2><button class="btn btn-primary" onclick="editDownload()">+ 新增</button></div><div class="card-grid">${(list || [])
-				.map(
-					(d) => `<div class="card">
-			<img class="card-img" src="${d.thumbUrl}" onerror="this.style.display='none'">
-			<div class="card-body">
-				<p style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:2px">${dlCategoryLabels[d.category] || d.category}</p>
-				<h3>${d.name}</h3><p>${(d.description || '').substring(0, 60)}${(d.description || '').length > 60 ? '...' : ''}</p>
-				<p style="color:var(--text-sub);font-size:12px">★${d.rating} · ${d.downloads}次下载 · ${d.date}</p>
-			</div>
-			<div class="card-actions">
-			<button class="btn btn-ghost" onclick='editDownload(${JSON.stringify(d).replace(/'/g, '&#39;')})'>编辑</button>
-			<button class="btn btn-danger" onclick="delDownload(${d.id})">删除</button></div></div>`
-				)
-				.join('')}</div>`;
+		main.innerHTML = `<div class="page-header"><h2>下载资源</h2><div class="page-actions"><button class="btn btn-primary" onclick="editDownload()">+ 新增</button></div></div><div class="card-grid">${(list || [])
+			.map(
+				(d) => `<div class="card">
+		<img class="card-img" src="${d.thumbUrl}" onerror="cardImgFallback(this)">
+		<div class="card-body">
+			<p class="card-subtitle">${dlCategoryLabels[d.category] || d.category}</p>
+			<h3>${d.name}</h3><p>${(d.description || '').substring(0, 60)}${(d.description || '').length > 60 ? '...' : ''}</p>
+			<p class="card-meta-line">★${d.rating} · ${d.downloads}次下载 · ${d.date}</p>
+		</div>
+		<div class="card-actions">
+		<button class="btn btn-ghost" onclick='editDownload(${JSON.stringify(d).replace(/'/g, '&#39;')})'>编辑</button>
+		<button class="btn btn-danger" onclick="delDownload(${d.id})">删除</button></div></div>`
+			)
+			.join('')}</div>`;
 		}
 
 		function editDownload(d) {
@@ -762,49 +971,85 @@
 			openModal(
 				isNew ? '新增下载资源' : '编辑下载资源',
 				`
-				<div class="form-group"><label>名称</label><input id="f_dname" value="${d.name}"></div>
-				<div class="form-group"><label>分类</label><select id="f_dcat">
-					<option value="wallpaper" ${d.category === 'wallpaper' ? 'selected' : ''}>壁纸</option>
-					<option value="emoji" ${d.category === 'emoji' ? 'selected' : ''}>表情包</option>
-					<option value="other" ${d.category === 'other' ? 'selected' : ''}>其他</option>
-				</select></div>
+				<div class="form-row">
+					<div class="form-group"><label>名称</label><input id="f_dname" value="${d.name}"></div>
+					<div class="form-group"><label>分类</label>
+					<div class="custom-select" id="f_dcat_select" data-name="f_dcat">
+						<input type="hidden" id="f_dcat" value="${d.category || 'other'}">
+						<div class="custom-select-trigger" onclick="event.stopPropagation();toggleCustomSelect('f_dcat_select')">
+							<span class="custom-select-label">${{wallpaper:'壁纸',emoji:'表情包',other:'其他'}[d.category||'other']}</span>
+						</div>
+						<div class="custom-select-panel">
+							<div class="custom-select-option ${{wallpaper:'壁纸',emoji:'表情包',other:'其他'}[d.category||'other']==='壁纸'?'active':''}" data-value="wallpaper" onclick="selectCustomOption('f_dcat_select','wallpaper','壁纸')">壁纸</div>
+							<div class="custom-select-option ${{wallpaper:'壁纸',emoji:'表情包',other:'其他'}[d.category||'other']==='表情包'?'active':''}" data-value="emoji" onclick="selectCustomOption('f_dcat_select','emoji','表情包')">表情包</div>
+							<div class="custom-select-option ${{wallpaper:'壁纸',emoji:'表情包',other:'其他'}[d.category||'other']==='其他'?'active':''}" data-value="other" onclick="selectCustomOption('f_dcat_select','other','其他')">其他</div>
+						</div>
+					</div></div>
+				</div>
+				<div class="form-row">
+					<div class="form-group"><label>发布日期 (YYYY-MM)</label>
+					<div class="custom-month" data-name="f_ddate">
+						<input type="hidden" id="f_ddate" value="${d.date || ''}">
+						<div class="custom-month-row">
+							<input type="number" class="custom-month-year" id="f_ddate_yr" value="${d.date ? d.date.split('-')[0] : ''}" placeholder="YYYY" min="2000" max="2099" oninput="syncCustomMonth('f_ddate')">
+							<span class="custom-month-sep">-</span>
+							<input type="number" class="custom-month-mo" id="f_ddate_mo" value="${d.date ? d.date.split('-')[1] : ''}" placeholder="MM" min="1" max="12" oninput="syncCustomMonth('f_ddate')">
+						</div>
+						<div class="custom-month-actions">
+							<button type="button" class="btn btn-ghost" style="font-size:12px" onclick="setCustomMonth('f_ddate',new Date().getFullYear(),String(new Date().getMonth()+1).padStart(2,'0'))">本月</button>
+						</div>
+					</div></div>
+					<div class="form-group"><label>评分</label><input type="number" id="f_drating" step="0.1" min="0" max="5" value="${d.rating}"></div>
+					<div class="form-group"><label>排序权重</label><input type="number" id="f_dsort" value="${d.sortOrder || 0}"></div>
+				</div>
 				<div class="form-group"><label>简介</label><textarea id="f_ddesc">${d.description}</textarea></div>
-				<div class="form-group"><label>发布日期 (YYYY-MM)</label><input type="month" id="f_ddate" value="${d.date}"></div>
-				<div class="form-group"><label>评分</label><input type="number" id="f_drating" step="0.1" min="0" max="5" value="${d.rating}"></div>
-				<div class="form-group"><label>排序权重</label><input type="number" id="f_dsort" value="${d.sortOrder || 0}"></div>
 				${imgUploadHTML('f_dthumb', d.thumbUrl, 'img/downloads')}
-				<div class="form-group"><label>下载文件</label></div>
-				${fileUploadHTML('f_dfile', d.fileUrl, 'downloads', { accept: '*/*', label: '文件' })}`,
-				async () => {
-					const body = {
-						name: val('f_dname'),
-						description: val('f_ddesc'),
-						category: val('f_dcat'),
-						fileUrl: val('f_dfile'),
-						thumbUrl: val('f_dthumb'),
-						rating: parseFloat(val('f_drating')) || 0,
-						date: val('f_ddate'),
-						sortOrder: parseInt(val('f_dsort')) || 0,
-					};
-					const res = await authFetch(isNew ? '/api/downloads' : '/api/downloads/' + d.id, {
-						method: isNew ? 'POST' : 'PUT',
-						headers: authHeaders(),
-						body: JSON.stringify(body),
-					});
-					if (!res.ok) {
-						toast('操作失败', 'error');
-						return;
-					}
-					closeModal();
-					toast(isNew ? '创建成功' : '保存成功');
-					loadDownload();
-				},
-				[{ id: 'f_dthumb', dir: 'img/downloads' }, { id: 'f_dfile', dir: 'downloads' }]
-			);
-		}
+				<div class="crop-wrap" id="f_dthumb_crop" style="display:none">
+					<div class="crop-stage" id="f_dthumb_crop_stage">
+						<img id="f_dthumb_crop_img" alt="" />
+						<div class="crop-box" id="f_dthumb_crop_box"></div>
+					</div>
+					<div class="crop-preview-wrap">
+						<div class="crop-preview-box">
+							<img id="f_dthumb_crop_preview" alt="" />
+						</div>
+						<span class="crop-tip">拖动调整位置 · 滚轮缩放</span>
+					</div>
+					<button class="btn btn-primary btn-crop" onclick="applyCrop('f_dthumb')">裁剪并上传</button>
+				</div>`,
+			async () => {
+				const body = {
+					name: val('f_dname'),
+					description: val('f_ddesc'),
+					category: val('f_dcat'),
+					fileUrl: d.fileUrl,
+					thumbUrl: val('f_dthumb'),
+					rating: parseFloat(val('f_drating')) || 0,
+					date: val('f_ddate'),
+					sortOrder: parseInt(val('f_dsort')) || 0,
+				};
+				const res = await authFetch(isNew ? '/api/downloads' : '/api/downloads/' + d.id, {
+					method: isNew ? 'POST' : 'PUT',
+					headers: authHeaders(),
+					body: JSON.stringify(body),
+				});
+				if (!res.ok) {
+					toast('操作失败', 'error');
+					return;
+				}
+				closeModal();
+				toast(isNew ? '创建成功' : '保存成功');
+				loadDownload();
+			},
+			[{ id: 'f_dthumb', dir: 'img/downloads' }]
+		);
+		setTimeout(() => {
+			if (d.thumbUrl) initCropper('f_dthumb', d.thumbUrl);
+		}, 0);
+	}
 
 		async function delDownload(id) {
-			if (!confirm('确定删除？')) return;
+			if (!(await customConfirm('确定删除？'))) return;
 			const res = await authFetch('/api/downloads/' + id, { method: 'DELETE', headers: authHeaders() });
 			if (!res.ok) {
 				toast('删除失败', 'error');
@@ -843,7 +1088,7 @@
 				const panel = document.getElementById('bili-panel');
 				panel.innerHTML = `
 					<div class="bili-status ok">已绑定 B 站账号 UID: <strong>${uid}</strong></div>
-					<p style="color:var(--text-sub);font-size:13px;margin:12px 0">如发现主页"风控校验失败"或 cookie 失效，可重新扫码绑定。</p>
+					<p class="bili-tip">如发现主页"风控校验失败"或 cookie 失效，可重新扫码绑定。</p>
 					<button class="btn btn-primary" onclick="startBilibiliBind()">重新绑定</button>`;
 			}
 
@@ -922,13 +1167,9 @@
 				return m ? m[1] : '';
 			}
 
-			function toggleSidebar(force) {
-				const sb = document.getElementById('sidebar');
-				const mask = document.getElementById('sidebar-mask');
-				const open = force === undefined ? !sb.classList.contains('open') : force;
-				sb.classList.toggle('open', open);
-				mask.classList.toggle('show', open);
-			}
+		function toggleSidebar(force) {
+			/* no-op: topbar nav scrolls horizontally on mobile */
+		}
 
 		const loaders = {
 			activity: loadActivity,
@@ -949,19 +1190,18 @@
 			function startActivityPoll() {
 				stopActivityPoll();
 				activityPollTimer = setInterval(() => {
-					const active = document.querySelector('.sidebar a.active');
+					const active = document.querySelector('.topbar-tab.active');
 					if (active?.dataset.tab !== 'activity') return;
 					if (activityConfigId) loadSubmissions(activityConfigId);
 					else loadActivity();
 				}, 10000);
 			}
 
-			document.querySelectorAll('.sidebar a[data-tab]').forEach((a) => {
+			document.querySelectorAll('.topbar-tab[data-tab]').forEach((a) => {
 				a.addEventListener('click', () => {
-					document.querySelectorAll('.sidebar a').forEach((x) => x.classList.remove('active'));
+					document.querySelectorAll('.topbar-tab').forEach((x) => x.classList.remove('active'));
 					a.classList.add('active');
 					loaders[a.dataset.tab]();
-					toggleSidebar(false);
 					if (a.dataset.tab === 'activity') startActivityPoll();
 					else stopActivityPoll();
 				});
