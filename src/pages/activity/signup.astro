@@ -34,7 +34,7 @@ import SubLayout from "../../layouts/SubLayout.astro";
 
         <div class="signup-actions">
           <button type="submit" class="signup-submit">提交报名</button>
-          <a href="/activity" class="signup-back">
+          <a href="/activity" class="signup-back" onclick="event.preventDefault();document.querySelector('.signup-page').classList.add('fade-out');setTimeout(()=>{location.href='/activity'},250)">
             <i class="fas fa-arrow-left"></i>
             返回活动列表
           </a>

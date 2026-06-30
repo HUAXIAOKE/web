@@ -161,9 +161,18 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function closeOverlay(): void {
-		overlay.style.display = 'none';
-		overlayCard.innerHTML = '';
-		document.body.style.overflow = '';
+		if (overlay.classList.contains('closing')) return;
+		overlay.classList.add('closing');
+		overlayCard.classList.add('closing');
+		const onAnimEnd = () => {
+			overlay.removeEventListener('animationend', onAnimEnd);
+			overlay.style.display = 'none';
+			overlay.classList.remove('closing');
+			overlayCard.classList.remove('closing');
+			overlayCard.innerHTML = '';
+			document.body.style.overflow = '';
+		};
+		overlay.addEventListener('animationend', onAnimEnd);
 	}
 
 	overlay.addEventListener('click', (e) => {
@@ -171,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	});
 
 	document.addEventListener('keydown', (e) => {
-		if (e.key === 'Escape' && overlay.style.display !== 'none') closeOverlay();
+		if (e.key === 'Escape' && !overlay.classList.contains('closing') && overlay.style.display !== 'none') closeOverlay();
 	});
 
 	async function fetchActivityDetail(activityId: string): Promise<void> {

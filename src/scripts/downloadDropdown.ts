@@ -135,7 +135,7 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 			star.addEventListener('mouseenter', () => {
 				const score = Number(star.dataset.score);
 				btn.querySelectorAll<HTMLLabelElement>('.dl-star').forEach((s) => {
-					if (Number(s.dataset.score) >= score) s.classList.add('hover-fill');
+					if (Number(s.dataset.score) <= score) s.classList.add('hover-fill');
 					else s.classList.remove('hover-fill');
 				});
 			});
@@ -144,7 +144,7 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 				e.stopPropagation();
 				const score = Number(star.dataset.score);
 				btn.querySelectorAll<HTMLLabelElement>('.dl-star').forEach((s) => {
-					if (Number(s.dataset.score) >= score) s.classList.add('selected');
+					if (Number(s.dataset.score) <= score) s.classList.add('selected');
 					else s.classList.remove('selected');
 				});
 				submitRating(id, score);
@@ -216,14 +216,18 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 	};
 
 	const mountRating = (btn: HTMLButtonElement, id: number): void => {
-		const newBtn = btn.cloneNode(false) as HTMLButtonElement;
-		newBtn.classList.remove('downloading');
-		newBtn.classList.add('rating-mode');
-		newBtn.disabled = false;
-		newBtn.dataset.id = String(id);
-		newBtn.innerHTML = ratingHTML(id, ratedScores.get(id));
-		btn.replaceWith(newBtn);
-		bindRating(newBtn, id);
+		btn.style.opacity = '0';
+		btn.style.transition = 'opacity 0.15s ease';
+		setTimeout(() => {
+			btn.classList.remove('downloading');
+			btn.classList.add('rating-mode');
+			btn.disabled = false;
+			btn.innerHTML = ratingHTML(id, ratedScores.get(id));
+			btn.style.transition = '';
+			btn.style.opacity = '1';
+			btn.style.transition = 'opacity 0.2s ease';
+			bindRating(btn, id);
+		}, 150);
 	};
 
 	const handleDownload = async (id: number, btn: HTMLButtonElement): Promise<void> => {

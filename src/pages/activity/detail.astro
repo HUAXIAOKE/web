@@ -18,7 +18,7 @@ import SubLayout from "../../layouts/SubLayout.astro";
       <div id="detail-content"></div>
 
       <div class="detail-actions" id="detail-actions">
-        <a href="/activity" class="detail-back">
+        <a href="/activity" class="detail-back" onclick="event.preventDefault();document.querySelector('.activity-detail-page').classList.add('fade-out');setTimeout(()=>{location.href='/activity'},250)">
           <i class="fas fa-arrow-left"></i>
           返回活动列表
         </a>
