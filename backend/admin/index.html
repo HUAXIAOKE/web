@@ -12,7 +12,7 @@
 	<body>
 		<div class="login-wrap" id="login-page">
 			<div class="login-box">
-				<div class="login-logo">华</div>
+				<img class="login-logo" src="icon.ico" alt="华小科" />
 				<h1>华小科 Web</h1>
 				<p>后台管理系统</p>
 				<input id="login-user" placeholder="账号" autocomplete="username" />
@@ -371,12 +371,12 @@
 			img.style.width = s.nw + 'px';
 			img.style.height = s.nh + 'px';
 
-			const previewSize = 120;
+			const previewSize = preview.parentElement?.clientWidth || 48;
 			const ratio = previewSize / s.boxSize;
 			preview.src = s.src;
 			preview.style.width = s.nw * s.scale * ratio + 'px';
 			preview.style.height = s.nh * s.scale * ratio + 'px';
-			preview.style.transform = `translate(${-(s.x - s.boxX) * ratio}px, ${-(s.y - s.boxY) * ratio}px)`;
+			preview.style.transform = `translate(${(s.x - s.boxX) * ratio}px, ${(s.y - s.boxY) * ratio}px)`;
 		}
 
 		async function applyCrop(fieldId) {
@@ -435,29 +435,57 @@
 				return document.getElementById(id)?.value?.trim() || '';
 			}
 
-			function toggleCustomSelect(id) {
-				document.querySelectorAll('.custom-select-panel.show').forEach(p => { if (!p.closest('#'+id)) p.classList.remove('show'); });
-				document.querySelector('#'+id+' .custom-select-panel').classList.toggle('show');
-			}
-			function selectCustomOption(selectId, value, label) {
-				const sel = document.getElementById(selectId);
-				const trigger = sel.querySelector('.custom-select-trigger');
-				trigger.querySelector('.custom-select-label').textContent = label;
-				sel.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('active'));
-				sel.querySelector('.custom-select-option[data-value="'+value+'"]').classList.add('active');
-				sel.querySelector('input[type=hidden]').value = value;
-				sel.querySelector('.custom-select-panel').classList.remove('show');
-			}
-			function setCustomMonth(name, yr, mo) {
-				document.getElementById(name + '_yr').value = yr;
-				document.getElementById(name + '_mo').value = mo;
-				document.getElementById(name).value = yr + '-' + mo;
-			}
-			function syncCustomMonth(name) {
-				const yr = (document.getElementById(name+'_yr')?.value || '').padStart(2,'0');
-				const mo = (document.getElementById(name+'_mo')?.value || '').padStart(2,'0');
-				document.getElementById(name).value = (yr && mo) ? yr + '-' + mo : '';
-			}
+function toggleCustomSelect(id) {
+			document.querySelectorAll('.custom-select-panel.show').forEach(p => { if (!p.closest('#'+id)) p.classList.remove('show'); });
+			document.querySelector('#'+id+' .custom-select-panel').classList.toggle('show');
+		}
+		function selectCustomOption(selectId, value, label) {
+			const sel = document.getElementById(selectId);
+			const trigger = sel.querySelector('.custom-select-trigger');
+			trigger.querySelector('.custom-select-label').textContent = label;
+			sel.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('active'));
+			sel.querySelector('.custom-select-option[data-value="'+value+'"]').classList.add('active');
+			sel.querySelector('input[type=hidden]').value = value;
+			sel.querySelector('.custom-select-panel').classList.remove('show');
+		}
+		function toggleMultiOption(selectId, value) {
+			const sel = document.getElementById(selectId);
+			const hidden = sel.querySelector('input[type=hidden]');
+			const selected = hidden.value ? hidden.value.split(',') : [];
+			const idx = selected.indexOf(value);
+			if (idx >= 0) selected.splice(idx, 1); else selected.push(value);
+			hidden.value = selected.join(',');
+			const trigger = sel.querySelector('.custom-select-trigger');
+			const label = trigger.querySelector('.custom-select-label');
+			label.textContent = selected.length ? selected.join(' / ') : '未选择';
+			sel.querySelectorAll('.custom-select-option').forEach(o => {
+				o.classList.toggle('active', selected.includes(o.dataset.value));
+			});
+		}
+function setCustomMonth(name, yr, mo) {
+			document.getElementById(name + '_yr').value = yr;
+			document.getElementById(name + '_mo').value = mo;
+			document.getElementById(name).value = yr + '-' + mo;
+		}
+		function syncCustomMonth(name) {
+			const yr = (document.getElementById(name+'_yr')?.value || '').padStart(2,'0');
+			const mo = (document.getElementById(name+'_mo')?.value || '').padStart(2,'0');
+			document.getElementById(name).value = (yr && mo) ? yr + '-' + mo : '';
+		}
+		function syncCustomDate(name) {
+			const yr = (document.getElementById(name+'_yr')?.value || '').padStart(2,'0');
+			const mo = (document.getElementById(name+'_mo')?.value || '').padStart(2,'0');
+			const dy = (document.getElementById(name+'_dy')?.value || '').padStart(2,'0');
+			document.getElementById(name).value = (yr && mo && dy) ? yr + '-' + mo + '-' + dy : '';
+		}
+		function syncCustomDatetime(name) {
+			const yr = (document.getElementById(name+'_yr')?.value || '').padStart(2,'0');
+			const mo = (document.getElementById(name+'_mo')?.value || '').padStart(2,'0');
+			const dy = (document.getElementById(name+'_dy')?.value || '').padStart(2,'0');
+			const hr = (document.getElementById(name+'_hr')?.value || '').padStart(2,'0');
+			const mi = (document.getElementById(name+'_mi')?.value || '').padStart(2,'0');
+			document.getElementById(name).value = (yr && mo && dy && hr && mi) ? yr + '-' + mo + '-' + dy + 'T' + hr + ':' + mi : '';
+		}
 
 			document.addEventListener('click', () => {
 				document.querySelectorAll('.custom-select-panel.show').forEach(p => p.classList.remove('show'));
@@ -511,22 +539,65 @@
 				openModal(
 					isNew ? '新增活动' : '编辑活动',
 					`
-					<div class="form-group"><label>标签</label><div class="checkbox-group">
-					<label><input type="checkbox" class="f_tags" value="线上" ${ct.includes('线上') ? 'checked' : ''}> 线上</label>
-					<label><input type="checkbox" class="f_tags" value="线下" ${ct.includes('线下') ? 'checked' : ''}> 线下</label>
-					<label><input type="checkbox" class="f_tags" value="联动" ${ct.includes('联动') ? 'checked' : ''}> 联动</label>
+					<div class="form-group"><label>标签</label>
+					<div class="custom-select" id="f_tags_select">
+						<input type="hidden" id="f_tags" value="${ct.join(',')}">
+						<div class="custom-select-trigger" onclick="event.stopPropagation();toggleCustomSelect('f_tags_select')">
+							<span class="custom-select-label">${ct.length ? ct.join(' / ') : '未选择'}</span>
+						</div>
+						<div class="custom-select-panel">
+							<div class="custom-select-option multi ${ct.includes('线上') ? 'active' : ''}" data-value="线上" onclick="event.stopPropagation();toggleMultiOption('f_tags_select','线上')">线上</div>
+							<div class="custom-select-option multi ${ct.includes('线下') ? 'active' : ''}" data-value="线下" onclick="event.stopPropagation();toggleMultiOption('f_tags_select','线下')">线下</div>
+							<div class="custom-select-option multi ${ct.includes('联动') ? 'active' : ''}" data-value="联动" onclick="event.stopPropagation();toggleMultiOption('f_tags_select','联动')">联动</div>
+						</div>
 					</div></div>
-					<div class="form-group"><label>日期</label><input type="date" id="f_date" value="${a.date}"></div>
+					<div class="form-group"><label>日期</label>
+					<div class="custom-month" data-name="f_date">
+						<input type="hidden" id="f_date" value="${a.date || ''}">
+						<div class="custom-month-row">
+							<input type="number" class="custom-month-year" id="f_date_yr" value="${a.date ? a.date.split('-')[0] : ''}" placeholder="YYYY" min="2000" max="2099" oninput="syncCustomDate('f_date')">
+							<span class="custom-month-sep">-</span>
+							<input type="number" class="custom-month-mo" id="f_date_mo" value="${a.date ? a.date.split('-')[1] : ''}" placeholder="MM" min="1" max="12" oninput="syncCustomDate('f_date')">
+							<span class="custom-month-sep">-</span>
+							<input type="number" class="custom-month-mo" id="f_date_dy" value="${a.date ? a.date.split('-')[2] : ''}" placeholder="DD" min="1" max="31" oninput="syncCustomDate('f_date')">
+						</div>
+					</div></div>
 					<div class="form-group"><label>标题</label><input id="f_headline" value="${a.headline}"></div>
 					<div class="form-group"><label>摘要</label><textarea id="f_excerpt">${a.excerpt}</textarea></div>
 					<div class="form-group"><label>链接 (填外部链接则跳过详情页)</label><input id="f_href" value="${a.href}"></div>
-					<div class="form-group"><label>报名开始时间 (可选)</label><input type="datetime-local" id="f_signupStart" value="${a.signupStart || ''}"></div>
-					<div class="form-group"><label>报名结束时间 (可选)</label><input type="datetime-local" id="f_signupEnd" value="${a.signupEnd || ''}"></div>
+					<div class="form-group"><label>报名开始时间 (可选)</label>
+					<div class="custom-month" data-name="f_signupStart">
+						<input type="hidden" id="f_signupStart" value="${a.signupStart || ''}">
+						<div class="custom-month-row">
+							<input type="number" class="custom-month-year" id="f_signupStart_yr" value="${a.signupStart ? a.signupStart.split('T')[0].split('-')[0] : ''}" placeholder="YYYY" min="2000" max="2099" oninput="syncCustomDatetime('f_signupStart')">
+							<span class="custom-month-sep">-</span>
+							<input type="number" class="custom-month-mo" id="f_signupStart_mo" value="${a.signupStart ? a.signupStart.split('T')[0].split('-')[1] : ''}" placeholder="MM" min="1" max="12" oninput="syncCustomDatetime('f_signupStart')">
+							<span class="custom-month-sep">-</span>
+							<input type="number" class="custom-month-mo" id="f_signupStart_dy" value="${a.signupStart ? a.signupStart.split('T')[0].split('-')[2] : ''}" placeholder="DD" min="1" max="31" oninput="syncCustomDatetime('f_signupStart')">
+							<span class="custom-month-sep" style="margin:0 4px"> </span>
+							<input type="number" class="custom-month-mo" id="f_signupStart_hr" value="${a.signupStart ? a.signupStart.split('T')[1].split(':')[0] : ''}" placeholder="HH" min="0" max="23" oninput="syncCustomDatetime('f_signupStart')">
+							<span class="custom-month-sep">:</span>
+							<input type="number" class="custom-month-mo" id="f_signupStart_mi" value="${a.signupStart ? a.signupStart.split('T')[1].split(':')[1] : ''}" placeholder="mm" min="0" max="59" oninput="syncCustomDatetime('f_signupStart')">
+						</div>
+					</div></div>
+					<div class="form-group"><label>报名结束时间 (可选)</label>
+					<div class="custom-month" data-name="f_signupEnd">
+						<input type="hidden" id="f_signupEnd" value="${a.signupEnd || ''}">
+						<div class="custom-month-row">
+							<input type="number" class="custom-month-year" id="f_signupEnd_yr" value="${a.signupEnd ? a.signupEnd.split('T')[0].split('-')[0] : ''}" placeholder="YYYY" min="2000" max="2099" oninput="syncCustomDatetime('f_signupEnd')">
+							<span class="custom-month-sep">-</span>
+							<input type="number" class="custom-month-mo" id="f_signupEnd_mo" value="${a.signupEnd ? a.signupEnd.split('T')[0].split('-')[1] : ''}" placeholder="MM" min="1" max="12" oninput="syncCustomDatetime('f_signupEnd')">
+							<span class="custom-month-sep">-</span>
+							<input type="number" class="custom-month-mo" id="f_signupEnd_dy" value="${a.signupEnd ? a.signupEnd.split('T')[0].split('-')[2] : ''}" placeholder="DD" min="1" max="31" oninput="syncCustomDatetime('f_signupEnd')">
+							<span class="custom-month-sep" style="margin:0 4px"> </span>
+							<input type="number" class="custom-month-mo" id="f_signupEnd_hr" value="${a.signupEnd ? a.signupEnd.split('T')[1].split(':')[0] : ''}" placeholder="HH" min="0" max="23" oninput="syncCustomDatetime('f_signupEnd')">
+							<span class="custom-month-sep">:</span>
+							<input type="number" class="custom-month-mo" id="f_signupEnd_mi" value="${a.signupEnd ? a.signupEnd.split('T')[1].split(':')[1] : ''}" placeholder="mm" min="0" max="59" oninput="syncCustomDatetime('f_signupEnd')">
+						</div>
+					</div></div>
 					${imgUploadHTML('f_image', a.image, 'img/activity')}`,
 					async () => {
-						const tags = Array.from(document.querySelectorAll('.f_tags:checked'))
-							.map((c) => c.value)
-							.join(',');
+						const tags = val('f_tags');
 						const body = {
 							tags,
 							date: val('f_date'),
@@ -1005,15 +1076,21 @@
 				<div class="form-group"><label>简介</label><textarea id="f_ddesc">${d.description}</textarea></div>
 				${imgUploadHTML('f_dthumb', d.thumbUrl, 'img/downloads')}
 				<div class="crop-wrap" id="f_dthumb_crop" style="display:none">
-					<div class="crop-stage" id="f_dthumb_crop_stage">
-						<img id="f_dthumb_crop_img" alt="" />
-						<div class="crop-box" id="f_dthumb_crop_box"></div>
-					</div>
-					<div class="crop-preview-wrap">
-						<div class="crop-preview-box">
-							<img id="f_dthumb_crop_preview" alt="" />
+					<div class="crop-main">
+						<div class="crop-stage" id="f_dthumb_crop_stage">
+							<img id="f_dthumb_crop_img" alt="" />
+							<div class="crop-box" id="f_dthumb_crop_box"></div>
 						</div>
-						<span class="crop-tip">拖动调整位置 · 滚轮缩放</span>
+						<div class="crop-preview-wrap">
+							<div class="crop-preview-card">
+								<div class="crop-preview-banner">
+									<div class="crop-preview-thumb">
+										<img id="f_dthumb_crop_preview" alt="" />
+									</div>
+								</div>
+							</div>
+							<span class="crop-tip">拖动调整位置<br/>滚轮缩放</span>
+						</div>
 					</div>
 					<button class="btn btn-primary btn-crop" onclick="applyCrop('f_dthumb')">裁剪并上传</button>
 				</div>`,

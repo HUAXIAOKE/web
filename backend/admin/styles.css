@@ -102,18 +102,11 @@ textarea {
 }
 
 .login-logo {
-	width: 56px;
-	height: 56px;
+	width: 64px;
+	height: 64px;
 	margin: 0 auto 18px;
-	background: var(--ink);
-	color: var(--accent);
-	font-family: var(--font-zh);
-	font-size: 28px;
-	font-weight: 700;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: var(--border-w) solid var(--ink);
+	object-fit: contain;
+	display: block;
 }
 
 .login-box h1 {
@@ -817,11 +810,16 @@ td img {
 	background: var(--bg-card);
 	border: var(--border-w) solid var(--ink);
 	box-shadow: var(--shadow);
-	display: none;
+	opacity: 0;
+	transform: translateY(-4px);
+	pointer-events: none;
+	transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .custom-select-panel.show {
-	display: block;
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
 }
 
 .custom-select-option {
@@ -847,6 +845,22 @@ td img {
 	border-top: 2px solid var(--ink);
 }
 
+.custom-select-option.multi::before {
+	content: '';
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	border: 3px solid var(--ink);
+	margin-right: 10px;
+	vertical-align: middle;
+	background: var(--bg);
+	transition: background var(--transition);
+}
+
+.custom-select-option.multi.active::before {
+	background: var(--ink);
+}
+
 /* ── CUSTOM MONTH ── */
 .custom-month-row {
 	display: flex;
@@ -854,7 +868,20 @@ td img {
 	gap: 4px;
 }
 
-.custom-month-year,
+.custom-month-year {
+	flex: 2;
+	padding: 10px 14px !important;
+	background: var(--bg) !important;
+	border: 3px solid var(--ink) !important;
+	color: var(--ink) !important;
+	font-family: var(--font-zh) !important;
+	font-size: 14px !important;
+	outline: none;
+	text-align: center;
+	-moz-appearance: textfield;
+	appearance: none;
+	min-width: 0;
+}
 .custom-month-mo {
 	flex: 1;
 	padding: 10px 14px !important;
@@ -867,6 +894,7 @@ td img {
 	text-align: center;
 	-moz-appearance: textfield;
 	appearance: none;
+	min-width: 0;
 }
 
 .custom-month-year::-webkit-inner-spin-button,
@@ -997,16 +1025,22 @@ td img {
 	gap: 10px;
 }
 
+.crop-main {
+	display: flex;
+	gap: 12px;
+	align-items: flex-start;
+}
+
 .crop-stage {
 	position: relative;
-	width: 100%;
-	max-width: 320px;
-	height: 240px;
+	width: 280px;
+	height: 280px;
 	overflow: hidden;
-	background: #000;
+	background: var(--bg);
 	cursor: move;
 	user-select: none;
 	border: 3px solid var(--ink);
+	flex-shrink: 0;
 }
 
 .crop-stage img {
@@ -1022,43 +1056,84 @@ td img {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	width: 176px;
-	height: 176px;
+	width: 180px;
+	height: 180px;
 	transform: translate(-50%, -50%);
-	box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
-	border: 3px solid #fff;
+	box-shadow: 0 0 0 9999px rgba(27, 31, 41, 0.4);
+	border: 3px solid var(--ink);
 	pointer-events: none;
 	box-sizing: border-box;
 }
 
 .crop-preview-wrap {
 	display: flex;
+	flex-direction: column;
 	align-items: center;
-	gap: 10px;
+	gap: 6px;
 }
 
-.crop-preview-box {
-	width: 120px;
-	height: 120px;
-	overflow: hidden;
-	position: relative;
+.crop-preview-card {
+	width: 140px;
+	height: auto;
 	border: 3px solid var(--ink);
-	background: #000;
+	box-shadow: 4px 4px 0 var(--ink);
+	background: var(--bg-card);
+	overflow: hidden;
 	flex-shrink: 0;
 }
 
-.crop-preview-box img {
+.crop-preview-banner {
+	height: 64px;
+	background: var(--accent);
+	border-bottom: 3px solid var(--ink);
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	align-items: flex-end;
+}
+
+.crop-preview-banner::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: repeating-linear-gradient(
+		45deg,
+		transparent 0px,
+		transparent 6px,
+		rgba(0, 0, 0, 0.12) 6px,
+		rgba(0, 0, 0, 0.12) 7px
+	);
+	pointer-events: none;
+}
+
+.crop-preview-thumb {
+	width: 48px;
+	height: 48px;
+	background: var(--ink);
+	border: 5px solid var(--ink);
+	border-bottom: none;
+	border-left: none;
+	margin-left: 10px;
+	position: relative;
+	z-index: 1;
+	overflow: hidden;
+	flex-shrink: 0;
+}
+
+.crop-preview-thumb img {
 	position: absolute;
 	top: 0;
 	left: 0;
 	max-width: none;
 	pointer-events: none;
+	transform-origin: 0 0;
 }
 
 .crop-tip {
 	font-family: var(--font-zh);
-	font-size: 12px;
+	font-size: 11px;
 	color: var(--muted);
+	text-align: center;
 }
 
 .btn-crop {
