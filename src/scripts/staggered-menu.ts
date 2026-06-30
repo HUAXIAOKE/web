@@ -48,6 +48,8 @@ function initStaggeredMenu(): void {
 		gsap.set(panel, { display: '' });
 		panel.setAttribute('aria-hidden', 'false');
 
+		gsap.set(wrapper.querySelector('.sm-prelayers') as HTMLElement, { pointerEvents: 'auto' });
+
 		gsap.to(icon, { rotate: 225, duration: 0.8, ease: 'power4.out' });
 		gsap.to(textInner, { yPercent: -50, duration: 0.4, ease: 'power2.out' });
 
@@ -124,6 +126,7 @@ function initStaggeredMenu(): void {
 				if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
 				if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
 				panel.setAttribute('aria-hidden', 'true');
+				gsap.set(wrapper.querySelector('.sm-prelayers') as HTMLElement, { pointerEvents: 'none' });
 				state.busy = false;
 			},
 		});

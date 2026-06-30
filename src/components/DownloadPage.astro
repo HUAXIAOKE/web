@@ -2,12 +2,6 @@
 <div class="partTwo page-content" id="page-download" style="display: none;">
   <div class="dl-shell">
     <div class="dl-toolbar">
-      <div class="dl-filter">
-        <button class="dl-chip active" data-filter="all" type="button">全部</button>
-        <button class="dl-chip" data-filter="wallpaper" type="button">壁纸</button>
-        <button class="dl-chip" data-filter="emoji" type="button">表情包</button>
-        <button class="dl-chip" data-filter="other" type="button">其他</button>
-      </div>
       <div class="dl-sort">
         <div class="dl-dropdown" id="dl-sort-dropdown">
           <button class="dl-dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
@@ -22,16 +16,16 @@
           </ul>
         </div>
       </div>
+      <div class="dl-filter">
+        <button class="dl-chip active" data-filter="all" type="button">全部</button>
+        <button class="dl-chip" data-filter="wallpaper" type="button">壁纸</button>
+        <button class="dl-chip" data-filter="emoji" type="button">表情包</button>
+        <button class="dl-chip" data-filter="other" type="button">其他</button>
+      </div>
     </div>
 
     <div class="dl-grid" id="dl-grid">
       <!-- cards rendered by downloadDropdown.ts -->
-    </div>
-
-    <div class="dl-pager">
-      <button class="dl-page-btn" data-action="prev" type="button">‹</button>
-      <span class="dl-page-info"><b>1</b> / 1</span>
-      <button class="dl-page-btn" data-action="next" type="button">›</button>
     </div>
   </div>
 </div>

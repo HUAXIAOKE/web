@@ -448,9 +448,9 @@
 
 @media only screen and (max-width: 900px) {
 	.timeline-shell {
-		width: 100%;
-		max-width: 100%;
-		margin: 0;
+		width: 90%;
+		max-width: 90%;
+		margin: 0 auto;
 		border-radius: 18px;
 		height: clamp(620px, 82dvh, 760px);
 		min-height: unset;
