@@ -743,6 +743,7 @@ td img {
 	color: var(--ink);
 	font-family: var(--font-zh);
 	font-size: 14px;
+	line-height: 1.4;
 	outline: none;
 	transition: box-shadow var(--transition);
 }
@@ -786,6 +787,7 @@ td img {
 	color: var(--ink);
 	font-family: var(--font-zh);
 	font-size: 14px;
+	line-height: 1.4;
 	cursor: pointer;
 	display: flex;
 	align-items: center;

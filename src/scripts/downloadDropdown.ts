@@ -23,13 +23,18 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 	const label = dropdown.querySelector<HTMLSpanElement>('.dl-dropdown-label');
 	const items = dropdown.querySelectorAll<HTMLLIElement>('.dl-dropdown-item');
 	const chips = document.querySelectorAll<HTMLButtonElement>('.dl-chip');
+	const prevBtn = document.querySelector<HTMLButtonElement>('.dl-page-btn[data-action="prev"]');
+	const nextBtn = document.querySelector<HTMLButtonElement>('.dl-page-btn[data-action="next"]');
+	const pageInfo = document.querySelector<HTMLSpanElement>('.dl-page-info');
 
 	const API = (window as unknown as { API_BASE?: string }).API_BASE || '';
+	const PER_PAGE = 6;
 	const RADIUS = 18;
 	const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 	let currentFilter = 'all';
 	let currentSort = 'new';
+	let currentPage = 1;
 	let cache: DownloadItem[] = [];
 	const ratedIds = new Set<number>();
 	const ratedScores = new Map<number, number>();
@@ -159,9 +164,24 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 		});
 	};
 
+	const isMobile = (): boolean => window.matchMedia('(max-width: 900px)').matches;
+
 	const render = (): void => {
 		const filtered = getFiltered();
-		grid.innerHTML = filtered.length ? filtered.map(cardHTML).join('') : '<p style="grid-column:1/-1;text-align:center;color:var(--dl-muted)">暂无资源</p>';
+		let pageItems = filtered;
+
+		if (!isMobile()) {
+			const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+			if (currentPage > totalPages) currentPage = totalPages;
+			if (currentPage < 1) currentPage = 1;
+			const start = (currentPage - 1) * PER_PAGE;
+			pageItems = filtered.slice(start, start + PER_PAGE);
+			if (pageInfo) pageInfo.innerHTML = `<b>${currentPage}</b> / ${totalPages}`;
+			if (prevBtn) prevBtn.style.visibility = currentPage <= 1 ? 'hidden' : 'visible';
+			if (nextBtn) nextBtn.style.visibility = currentPage >= totalPages ? 'hidden' : 'visible';
+		}
+
+		grid.innerHTML = pageItems.length ? pageItems.map(cardHTML).join('') : '<div class="dl-empty">暂无资源</div>';
 		bindCardButtons();
 	};
 
@@ -295,6 +315,7 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 			item.classList.add('active');
 			if (label) label.textContent = item.textContent;
 			currentSort = item.dataset.value || 'new';
+			currentPage = 1;
 			toggle(false);
 			fetchList();
 		});
@@ -305,8 +326,24 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 			chips.forEach((c) => c.classList.remove('active'));
 			chip.classList.add('active');
 			currentFilter = chip.dataset.filter || 'all';
+			currentPage = 1;
 			render();
 		});
+	});
+
+	prevBtn?.addEventListener('click', () => {
+		if (currentPage > 1) {
+			currentPage--;
+			render();
+		}
+	});
+
+	nextBtn?.addEventListener('click', () => {
+		const totalPages = Math.max(1, Math.ceil(getFiltered().length / PER_PAGE));
+		if (currentPage < totalPages) {
+			currentPage++;
+			render();
+		}
 	});
 
 	document.addEventListener('click', (e) => {

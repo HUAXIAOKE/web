@@ -1075,6 +1075,12 @@ function setCustomMonth(name, yr, mo) {
 				</div>
 				<div class="form-group"><label>简介</label><textarea id="f_ddesc">${d.description}</textarea></div>
 				${imgUploadHTML('f_dthumb', d.thumbUrl, 'img/downloads')}
+				<div class="form-group"><label>下载文件</label>
+					<input type="hidden" id="f_dfile" value="${d.fileUrl || ''}">
+					<div class="img-upload-area" id="f_dfile_drop" onclick="document.getElementById('f_dfile_file').click()">点击或拖拽文件到此区域上传</div>
+					<input type="file" id="f_dfile_file" style="display:none" onchange="doUpload(this.files[0],'f_dfile','img/downloads')">
+					<input type="text" id="f_dfile_path" value="${d.fileUrl || ''}" placeholder="/img/downloads/..." style="margin-top:8px" oninput="document.getElementById('f_dfile').value=this.value">
+				</div>
 				<div class="crop-wrap" id="f_dthumb_crop" style="display:none">
 					<div class="crop-main">
 						<div class="crop-stage" id="f_dthumb_crop_stage">
@@ -1099,7 +1105,7 @@ function setCustomMonth(name, yr, mo) {
 					name: val('f_dname'),
 					description: val('f_ddesc'),
 					category: val('f_dcat'),
-					fileUrl: d.fileUrl,
+					fileUrl: val('f_dfile'),
 					thumbUrl: val('f_dthumb'),
 					rating: parseFloat(val('f_drating')) || 0,
 					date: val('f_ddate'),
@@ -1118,7 +1124,7 @@ function setCustomMonth(name, yr, mo) {
 				toast(isNew ? '创建成功' : '保存成功');
 				loadDownload();
 			},
-			[{ id: 'f_dthumb', dir: 'img/downloads' }]
+			[{ id: 'f_dthumb', dir: 'img/downloads' }, { id: 'f_dfile', dir: 'img/downloads' }]
 		);
 		setTimeout(() => {
 			if (d.thumbUrl) initCropper('f_dthumb', d.thumbUrl);

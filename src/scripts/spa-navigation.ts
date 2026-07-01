@@ -27,6 +27,39 @@ const PATH_TO_PAGE: Record<string, PageName> = {
 	'/download': 'download',
 };
 
+const FLEX_PAGE_IDS = new Set(['page-index', 'page-live', 'page-download']);
+
+function normalizePath(path: string): string {
+	let p = path;
+	if (p.endsWith('/index.html')) p = p.slice(0, -11) || '/';
+	if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+	return p;
+}
+
+function findSubRouteParent(path: string): string | undefined {
+	return Object.keys(PATH_TO_PAGE)
+		.filter((p) => p !== '/')
+		.sort((a, b) => b.length - a.length)
+		.find((p) => path.startsWith(p + '/') && path.length > p.length + 1);
+}
+
+function pageDisplayValue(pageId: string): string {
+	return FLEX_PAGE_IDS.has(pageId) ? 'flex' : 'block';
+}
+
+function hideAllPages(): void {
+	document.querySelectorAll<HTMLElement>('[id^="page-"]').forEach((el) => {
+		el.style.display = 'none';
+	});
+}
+
+function showPageByName(page: PageName): void {
+	hideAllPages();
+	const target = document.getElementById(`page-${page}`);
+	if (target) target.style.display = pageDisplayValue(target.id);
+	document.title = PAGE_TITLES[page] || 'Huaxiaoke';
+}
+
 class SPANavigation {
 	private currentPage: PageName;
 	private navLinks: NodeListOf<HTMLAnchorElement>;
@@ -35,12 +68,10 @@ class SPANavigation {
 		this.navLinks = document.querySelectorAll(
 			'.nav-sidebar a[data-page], .sm-panel a[data-page]'
 		);
-		const path = window.location.pathname;
-		// Detect sub-routes like /activity/detail
-		const parentPath = Object.keys(PATH_TO_PAGE).find((p) => path.startsWith(p + '/'));
+		const path = normalizePath(window.location.pathname);
+		const parentPath = findSubRouteParent(path);
 		if (parentPath) {
 			this.currentPage = PATH_TO_PAGE[parentPath];
-			// On sub-routes, activate parent nav but don't try to show SPA pages
 			this.initSubRoute();
 			return;
 		}
@@ -94,14 +125,7 @@ class SPANavigation {
 	}
 
 	private showCurrentPage(): void {
-		document.querySelectorAll<HTMLElement>('[id^="page-"]').forEach((el) => {
-			el.style.display = 'none';
-		});
-		const target = document.getElementById(`page-${this.currentPage}`);
-		if (target) {
-			target.style.display = target.id === 'page-index' || target.id === 'page-live' || target.id === 'page-download' ? 'flex' : 'block';
-		}
-		this.updatePageTitle(this.currentPage);
+		showPageByName(this.currentPage);
 		this.initializePage(this.currentPage);
 	}
 
@@ -182,9 +206,7 @@ class SPANavigation {
 		if (currentEl) currentEl.style.display = 'none';
 
 		const targetEl = document.getElementById(`page-${targetPage}`);
-		if (targetEl) {
-			targetEl.style.display = targetEl.id === 'page-index' || targetEl.id === 'page-live' || targetEl.id === 'page-download' ? 'flex' : 'block';
-		}
+		if (targetEl) targetEl.style.display = pageDisplayValue(targetEl.id);
 
 		this.currentPage = targetPage;
 		this.updatePageTitle(targetPage);
@@ -234,15 +256,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener('popstate', () => {
-	const path = window.location.pathname;
-	const parentPath = Object.keys(PATH_TO_PAGE).find((p) => path.startsWith(p + '/'));
-	const page = parentPath ? PATH_TO_PAGE[parentPath] : PATH_TO_PAGE[path] || 'index';
-	document.querySelectorAll<HTMLElement>('[id^="page-"]').forEach((el) => {
-		el.style.display = 'none';
-	});
-	if (!parentPath) {
-		const target = document.getElementById(`page-${page}`);
-		if (target) target.style.display = target.id === 'page-index' || target.id === 'page-live' || target.id === 'page-download' ? 'flex' : 'block';
+	const path = normalizePath(window.location.pathname);
+	const parentPath = findSubRouteParent(path);
+	if (parentPath) {
+		hideAllPages();
+		document.title = PAGE_TITLES[PATH_TO_PAGE[parentPath]] || 'Huaxiaoke';
+		return;
 	}
-	document.title = PAGE_TITLES[page] || 'Huaxiaoke';
+	const page = PATH_TO_PAGE[path] || 'index';
+	showPageByName(page);
 });

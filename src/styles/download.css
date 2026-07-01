@@ -35,43 +35,38 @@ html.dark {
 	display: flex;
 	flex-direction: column;
 	padding: 1.5rem 2rem;
-	overflow: visible;
+	overflow: hidden;
 	max-width: 1320px;
 	width: 100%;
+	min-height: 100%;
 	margin: 0 auto;
 }
 
 .dl-toolbar {
 	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 0.75rem;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
 	padding-bottom: 1rem;
 	flex-shrink: 0;
-	position: relative;
-	z-index: 10;
 }
 
 .dl-filter {
 	display: flex;
-	flex-direction: row;
 	gap: 0.5rem;
-	width: 100%;
+	flex-wrap: wrap;
 }
 
 .dl-chip {
 	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
 	font-size: 0.85rem;
-	padding: 0.5rem 0.75rem;
+	padding: 0.5rem 1rem;
 	background: var(--dl-bg);
 	color: var(--dl-ink);
 	border: 3px solid var(--dl-ink);
 	box-shadow: 4px 4px 0 var(--dl-ink);
 	cursor: pointer;
 	transition: transform 0.1s ease, box-shadow 0.1s ease;
-	flex: 1;
-	min-width: 0;
-	text-align: center;
 }
 
 .dl-chip:hover {
@@ -91,11 +86,6 @@ html.dark {
 
 .dl-dropdown {
 	position: relative;
-	z-index: 1;
-}
-
-.dl-dropdown.open {
-	z-index: 30;
 }
 
 .dl-dropdown-trigger {
@@ -143,9 +133,8 @@ html.dark {
 .dl-dropdown-menu {
 	position: absolute;
 	top: calc(100% + 8px);
+	right: 0;
 	left: 0;
-	right: auto;
-	min-width: 100%;
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -156,15 +145,13 @@ html.dark {
 	visibility: hidden;
 	transform: translateY(-6px);
 	transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
-	z-index: 30;
-	pointer-events: none;
+	z-index: 20;
 }
 
 .dl-dropdown.open .dl-dropdown-menu {
 	opacity: 1;
 	visibility: visible;
 	transform: translateY(0);
-	pointer-events: auto;
 }
 
 .dl-dropdown-item {
@@ -193,11 +180,28 @@ html.dark {
 
 /* 卡片网格 */
 .dl-grid {
+	flex: 1;
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	grid-template-rows: 1fr 1fr;
 	gap: 1.5rem;
+	overflow: visible;
 	align-content: start;
-	padding: 0.5rem 0 2rem;
+	padding: 0.5rem 0;
+	min-height: 0;
+}
+
+.dl-empty {
+	grid-column: 1 / -1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: calc(100vh - 12rem);
+	padding: 2rem;
+	color: var(--dl-muted);
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	font-size: 0.95rem;
+	text-align: center;
 }
 
 .dl-card {
@@ -207,7 +211,7 @@ html.dark {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	min-height: 340px;
+	height: 100%;
 	transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -598,11 +602,69 @@ html.dark .dl-card-tag {
 @media (max-width: 900px) {
 	.dl-shell {
 		padding: 1rem;
+		overflow: visible;
+	}
+
+	.dl-toolbar {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.75rem;
+		position: relative;
+		z-index: 10;
+	}
+
+	.dl-sort {
+		order: -1;
+	}
+
+	.dl-filter {
+		width: 100%;
+		flex-wrap: nowrap;
+	}
+
+	.dl-chip {
+		flex: 1;
+		min-width: 0;
+		padding: 0.5rem 0.75rem;
+		text-align: center;
+	}
+
+	.dl-dropdown.open {
+		z-index: 30;
+	}
+
+	.dl-dropdown-menu {
+		left: 0;
+		right: auto;
+		min-width: 100%;
+		z-index: 30;
+		pointer-events: none;
+	}
+
+	.dl-dropdown.open .dl-dropdown-menu {
+		pointer-events: auto;
 	}
 
 	.dl-grid {
 		grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+		grid-template-rows: none;
+		flex: none;
 		gap: 1rem;
+		padding: 0.5rem 0 2rem;
+		min-height: calc(100dvh - 12rem);
+	}
+
+	.dl-empty {
+		min-height: calc(100dvh - 14rem);
+	}
+
+	.dl-card {
+		height: auto;
+		min-height: 340px;
+	}
+
+	.dl-pager {
+		display: none;
 	}
 }
 

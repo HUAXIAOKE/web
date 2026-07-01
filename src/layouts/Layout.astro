@@ -56,15 +56,18 @@ const { title, description = "Huaxiaoke" } = Astro.props;
       <DownloadPage />
     </main>
 
-    <script>
+    <script is:inline>
       (function() {
         var p = window.location.pathname;
-        if (p === '/' || p === '/index.html') return;
+        if (p.endsWith('/index.html')) p = p.slice(0, -11) || '/';
+        if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+        if (p === '/' || p === '') return;
         var mapping = { '/live': 'live', '/gallery': 'gallery', '/activity': 'activity', '/about': 'about', '/download': 'download' };
         var page = mapping[p] || 'index';
+        var flexPages = { index: 1, live: 1, download: 1 };
         ['index','live','gallery','activity','about','download'].forEach(function(id) {
           var el = document.getElementById('page-' + id);
-          if (el) el.style.display = id === page ? 'block' : 'none';
+          if (el) el.style.display = id === page ? (flexPages[id] ? 'flex' : 'block') : 'none';
         });
       })();
     </script>
