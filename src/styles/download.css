@@ -379,7 +379,7 @@ html.dark .dl-card-tag {
 	letter-spacing: 0.2em;
 	cursor: pointer;
 	text-align: center;
-	transition: background 0.25s ease, color 0.25s ease, opacity 0.2s ease;
+	transition: background 0.25s ease, color 0.25s ease, opacity 0.25s ease;
 	flex-shrink: 0;
 	box-sizing: border-box;
 }
@@ -404,25 +404,26 @@ html.dark .dl-card-tag {
 	color: var(--dl-accent);
 	cursor: progress;
 	position: relative;
+	overflow: visible;
 }
 
-.dl-btn-progress {
+.dl-progress-svg {
 	position: absolute;
-	inset: 0;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 	pointer-events: none;
 }
 
-.dl-btn-progress svg {
-	width: 100%;
-	height: 100%;
+.dl-progress-bg,
+.dl-progress-fg {
+	stroke-width: 3;
 }
 
-.dl-btn-progress circle {
-	fill: none;
-	stroke: var(--dl-accent);
-	stroke-width: 4;
-	transform: rotate(-90deg);
-	transform-origin: center;
+.dl-progress-fg {
+	stroke-dasharray: 100;
+	stroke-dashoffset: 100;
 	transition: stroke-dashoffset 0.1s linear;
 }
 
@@ -433,9 +434,10 @@ html.dark .dl-card-tag {
 	align-items: center;
 	justify-content: center;
 	font-family: 'BebasNeue', sans-serif;
-	font-size: 0.9rem;
+	font-size: 1.5rem;
+	line-height: 1;
 	color: var(--dl-accent);
-	letter-spacing: 0.1em;
+	letter-spacing: 0.05em;
 }
 
 /* 评分星标状态 */
@@ -497,13 +499,17 @@ html.dark .dl-card-tag {
 
 .dl-rating .dl-star.selected svg {
 	transition: 0s;
-	animation: dl-idle 4s linear infinite, dl-yippee 0.75s backwards;
+	animation: dl-idle 4s linear infinite;
 	fill: var(--fill);
 	stroke: var(--fill);
 	stroke-opacity: 0;
 	stroke-dasharray: 0;
 	stroke-linejoin: miter;
 	stroke-width: 8px;
+}
+
+.dl-rating .dl-star.animate svg {
+	animation: dl-idle 4s linear infinite, dl-yippee 0.75s backwards;
 }
 
 @keyframes dl-yippee {

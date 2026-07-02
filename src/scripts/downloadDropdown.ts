@@ -29,8 +29,6 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 
 	const API = (window as unknown as { API_BASE?: string }).API_BASE || '';
 	const PER_PAGE = 6;
-	const RADIUS = 18;
-	const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 	let currentFilter = 'all';
 	let currentSort = 'new';
@@ -50,10 +48,7 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 		return String(n);
 	};
 
-	const formatRating = (r: number): string => {
-		if (!r) return '0.0';
-		return r.toFixed(1).replace(/\.0$/, '') || '0';
-	};
+	const formatRating = (r: number): string => r.toFixed(1);
 
 	const isRated = (id: number): boolean => ratedIds.has(id);
 
@@ -108,7 +103,7 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 		return sorted;
 	};
 
-	const submitRating = async (id: number, score: number): Promise<void> => {
+	const submitRating = async (id: number, score: number, btn: HTMLButtonElement): Promise<void> => {
 		try {
 			await fetch(`${API}/api/downloads/${id}/rate`, {
 				method: 'POST',
@@ -127,6 +122,14 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 			item.ratingCount = newCount;
 		}
 		render();
+		const newBtn = grid.querySelector<HTMLButtonElement>(`.dl-card-btn[data-id="${id}"]`);
+		if (newBtn) {
+			const targetStar = newBtn.querySelector<HTMLLabelElement>(`.dl-star[data-score="${score}"]`);
+			if (targetStar) {
+				targetStar.classList.add('animate');
+				targetStar.addEventListener('animationend', () => targetStar.classList.remove('animate'), { once: true });
+			}
+		}
 	};
 
 	const bindRating = (btn: HTMLButtonElement, id: number): void => {
@@ -144,10 +147,15 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 				e.stopPropagation();
 				const score = Number(star.dataset.score);
 				btn.querySelectorAll<HTMLLabelElement>('.dl-star').forEach((s) => {
-					if (Number(s.dataset.score) <= score) s.classList.add('selected');
-					else s.classList.remove('selected');
+					if (Number(s.dataset.score) <= score) {
+						s.classList.add('selected');
+						s.classList.remove('animate');
+					} else {
+						s.classList.remove('selected', 'animate');
+					}
 				});
-				submitRating(id, score);
+				star.classList.add('animate');
+				submitRating(id, score, btn);
 			});
 		});
 		btn.querySelector('.dl-rating')?.addEventListener('mouseleave', () => {
@@ -186,23 +194,55 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 	};
 
 	const progressHTML = (): string => {
-		const offset = CIRCUMFERENCE;
-		return `<span class="dl-btn-progress">
-			<svg viewBox="0 0 40 40" preserveAspectRatio="xMidYMid meet">
-				<circle cx="20" cy="20" r="${RADIUS}" stroke="var(--dl-muted)" stroke-width="2" fill="none" opacity="0.3" />
-				<circle class="dl-btn-circle" cx="20" cy="20" r="${RADIUS}" stroke-dasharray="${CIRCUMFERENCE}" stroke-dashoffset="${offset}" />
-			</svg>
-		</span>
+		return `<svg class="dl-progress-svg" preserveAspectRatio="none">
+			<path class="dl-progress-bg" stroke="var(--dl-muted)" fill="none" opacity="0.3" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
+			<path class="dl-progress-fg" stroke="var(--dl-accent)" fill="none" pathLength="100" stroke-linecap="butt" stroke-linejoin="miter" vector-effect="non-scaling-stroke" />
+		</svg>
 		<span class="dl-btn-percent">0%</span>`;
 	};
 
+	const initProgressSvg = (btn: HTMLButtonElement): void => {
+		const w = btn.clientWidth;
+		const h = btn.clientHeight;
+		if (!w || !h) return;
+		const stroke = 3;
+		const pad = stroke / 2;
+		const cx = w / 2;
+		const d = `M ${cx} ${pad} L ${w - pad} ${pad} L ${w - pad} ${h - pad} L ${pad} ${h - pad} L ${pad} ${pad} L ${cx} ${pad}`;
+		const svg = btn.querySelector<SVGSVGElement>('.dl-progress-svg');
+		if (!svg) return;
+		svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+		svg.querySelectorAll<SVGPathElement>('path').forEach((p) => {
+			p.setAttribute('d', d);
+			p.setAttribute('stroke-width', String(stroke));
+		});
+		const fg = svg.querySelector<SVGPathElement>('.dl-progress-fg');
+		if (fg) {
+			fg.style.strokeDasharray = '100';
+			fg.style.strokeDashoffset = '100';
+		}
+	};
+
 	const updateProgress = (btn: HTMLButtonElement, ratio: number): void => {
-		const circle = btn.querySelector<SVGCircleElement>('.dl-btn-circle');
+		const fg = btn.querySelector<SVGPathElement>('.dl-progress-fg');
 		const percent = btn.querySelector<HTMLSpanElement>('.dl-btn-percent');
-		const clamped = Math.min(ratio, 1);
-		const offset = CIRCUMFERENCE * (1 - clamped);
-		if (circle) circle.style.strokeDashoffset = String(offset);
-		if (percent) percent.textContent = Math.round(clamped * 100) + '%';
+		const clamped = Math.min(Math.max(ratio, 0), 1);
+		const display = Math.round(clamped * 100);
+		if (fg) fg.style.strokeDashoffset = String(100 - clamped * 100);
+		if (percent) percent.textContent = display + '%';
+	};
+
+	const beginDownloadUI = (btn: HTMLButtonElement): void => {
+		btn.disabled = true;
+		btn.style.opacity = '0';
+		btn.style.transition = 'opacity 0.15s ease';
+		requestAnimationFrame(() => {
+			btn.classList.add('downloading');
+			btn.innerHTML = progressHTML();
+			initProgressSvg(btn);
+			updateProgress(btn, 0);
+			btn.style.opacity = '1';
+		});
 	};
 
 	const ratingHTML = (id: number, score?: number): string => {
@@ -219,27 +259,30 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 	};
 
 	const mountRating = (btn: HTMLButtonElement, id: number): void => {
+		ratedIds.add(id);
 		btn.style.opacity = '0';
-		btn.style.transition = 'opacity 0.15s ease';
+		btn.style.transition = 'opacity 0.25s ease, background 0.25s ease';
 		setTimeout(() => {
-			btn.classList.remove('downloading');
-			btn.classList.add('rating-mode');
-			btn.disabled = false;
-			btn.innerHTML = ratingHTML(id, ratedScores.get(id));
-			btn.style.transition = '';
-			btn.style.opacity = '1';
-			btn.style.transition = 'opacity 0.2s ease';
-			bindRating(btn, id);
-		}, 150);
+			const newBtn = btn.cloneNode(false) as HTMLButtonElement;
+			newBtn.classList.remove('downloading');
+			newBtn.classList.add('rating-mode');
+			newBtn.disabled = false;
+			newBtn.dataset.id = String(id);
+			newBtn.innerHTML = ratingHTML(id, ratedScores.get(id));
+			btn.replaceWith(newBtn);
+			requestAnimationFrame(() => {
+				newBtn.style.opacity = '1';
+				newBtn.style.transition = 'opacity 0.25s ease, background 0.25s ease';
+				bindRating(newBtn, id);
+			});
+		}, 200);
 	};
 
 	const handleDownload = async (id: number, btn: HTMLButtonElement): Promise<void> => {
 		const item = cache.find((d) => d.id === id);
 		if (!item || btn.classList.contains('downloading')) return;
 
-		btn.disabled = true;
-		btn.classList.add('downloading');
-		btn.innerHTML = progressHTML();
+		beginDownloadUI(btn);
 
 		try {
 			const countRes = await fetch(`${API}/api/downloads/${id}/download`, { method: 'POST' });
@@ -267,9 +310,7 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 					if (value) {
 						chunks.push(value);
 						received += value.length;
-						if (contentLength > 0) {
-							updateProgress(btn, received / contentLength);
-						}
+						if (contentLength > 0) updateProgress(btn, received / contentLength);
 					}
 				}
 			}
@@ -287,6 +328,7 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 			URL.revokeObjectURL(url);
 
 			item.downloads += 1;
+			await new Promise((r) => setTimeout(r, 250));
 			mountRating(btn, id);
 		} catch {
 			render();
