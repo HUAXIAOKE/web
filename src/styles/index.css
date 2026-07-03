@@ -144,11 +144,13 @@ body {
 
 .box-maintitle {
 	position: absolute;
-	top: 1rem;
+	top: 0;
 	font-size: 1.5rem;
 	z-index: 2;
 	text-align: center;
 	width: 100%;
+	padding: 1rem 0 1.5rem;
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), transparent);
 }
 
 .box-maintext {
@@ -1174,7 +1176,8 @@ canvas {
 	}
 	.box-maintitle {
 		font-size: 1rem;
-		top: 0.5rem;
+		top: 0;
+		padding-top: 0.5rem;
 	}
 	.box-maintext {
 		font-size: 0.9rem;
