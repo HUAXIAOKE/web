@@ -190,7 +190,10 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (!res.ok) throw new Error('加载失败');
 			const activities = await res.json();
 			const activity = activities.find((a: any) => a.id === parseInt(activityId));
-			if (!activity) { closeOverlay(); return; }
+			if (!activity) {
+				closeOverlay();
+				return;
+			}
 
 			const detailRes = await fetch(API + '/api/activity/' + activity.id + '/detail');
 			const detail = await detailRes.json();
@@ -216,9 +219,10 @@ document.addEventListener('DOMContentLoaded', () => {
 								<input type="text" id="overlay-${f.name}" name="${f.name}" placeholder="${f.placeholder || ''}" ${f.required ? 'required' : ''} />
 							</div>`;
 						});
-						formFields = fields.length > 2
-							? `<div class="signup-form-row">${fieldsArr.slice(0, 2).join('')}</div>${fieldsArr.slice(2).join('')}`
-							: fieldsArr.join('');
+						formFields =
+							fields.length > 2
+								? `<div class="signup-form-row">${fieldsArr.slice(0, 2).join('')}</div>${fieldsArr.slice(2).join('')}`
+								: fieldsArr.join('');
 
 						if (form.attachment) {
 							attachmentField = `<div class="signup-field" id="signup-attachment-field">
@@ -263,7 +267,11 @@ document.addEventListener('DOMContentLoaded', () => {
 						<p class="detail-hero-kicker">ACTIVITY DETAIL</p>
 						<h1 class="detail-hero-title">${activity.headline}</h1>
 						<div class="detail-hero-meta">
-							${(activity.tags || '').split(',').filter(Boolean).map((t: string) => `<span class="detail-hero-tag">${t}</span>`).join('')}
+							${(activity.tags || '')
+								.split(',')
+								.filter(Boolean)
+								.map((t: string) => `<span class="detail-hero-tag">${t}</span>`)
+								.join('')}
 							<span class="detail-hero-date">${activity.date}</span>
 						</div>
 					</div>
@@ -287,7 +295,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			const signupForm = document.getElementById('overlay-signup-form');
 			if (signupForm) bindSignupForm(signupForm, activity.id);
-		} catch { closeOverlay(); }
+		} catch {
+			closeOverlay();
+		}
 	}
 
 	async function bindSignupForm(form: HTMLFormElement, activityId: number): Promise<void> {
@@ -296,7 +306,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		try {
 			const formRes = await fetch(API + '/api/activity/' + activityId + '/signup-form');
 			formMeta = await formRes.json();
-		} catch { return; }
+		} catch {
+			return;
+		}
 
 		const fields = JSON.parse(formMeta.fields || '[]');
 		const attachmentInput = document.getElementById('overlay-attachment') as HTMLInputElement;
@@ -335,8 +347,12 @@ document.addEventListener('DOMContentLoaded', () => {
 				remove.className = 'signup-file-remove';
 				remove.innerHTML = '<i class="fas fa-times"></i>';
 				remove.addEventListener('click', () => {
-					uploadedAttachmentUrl = ''; currentFile = null; uploadState = 'idle'; uploadPct = 0;
-					attachmentInput!.value = ''; renderFileList();
+					uploadedAttachmentUrl = '';
+					currentFile = null;
+					uploadState = 'idle';
+					uploadPct = 0;
+					attachmentInput!.value = '';
+					renderFileList();
 				});
 				item.appendChild(remove);
 				fileListEl.appendChild(item);
@@ -344,20 +360,42 @@ document.addEventListener('DOMContentLoaded', () => {
 			attachmentInput.addEventListener('change', () => {
 				if (attachmentInput.files![0]) {
 					const file = attachmentInput.files![0];
-					if (!isArchiveFile(file)) { alert('仅支持压缩包格式'); return; }
-					if (file.size > 500 * 1024 * 1024) { alert('文件过大'); return; }
-					currentFile = file; uploadState = 'uploading'; uploadPct = 0; renderFileList();
+					if (!isArchiveFile(file)) {
+						alert('仅支持压缩包格式');
+						return;
+					}
+					if (file.size > 500 * 1024 * 1024) {
+						alert('文件过大');
+						return;
+					}
+					currentFile = file;
+					uploadState = 'uploading';
+					uploadPct = 0;
+					renderFileList();
 					const xhr = new XMLHttpRequest();
-					const fd = new FormData(); fd.append('file', file);
+					const fd = new FormData();
+					fd.append('file', file);
 					xhr.upload.onprogress = (ev) => {
-						if (ev.lengthComputable) { uploadPct = Math.round((ev.loaded / ev.total) * 100);
+						if (ev.lengthComputable) {
+							uploadPct = Math.round((ev.loaded / ev.total) * 100);
 							const st = fileListEl.querySelector('.signup-file-status');
-							if (st) st.textContent = '上传中 ' + uploadPct + '%'; }
+							if (st) st.textContent = '上传中 ' + uploadPct + '%';
+						}
 					};
-					xhr.onload = () => { if (xhr.status === 200) { uploadedAttachmentUrl = JSON.parse(xhr.responseText).url; uploadState = 'ready'; } else uploadState = 'error'; renderFileList(); };
-					xhr.onerror = () => { uploadState = 'error'; renderFileList(); };
-					const upEndpoint = window.location.port === '4321' ? 'http://localhost:1037/api/signup/upload' : (API + '/api/signup/upload');
-					xhr.open('POST', upEndpoint); xhr.send(fd);
+					xhr.onload = () => {
+						if (xhr.status === 200) {
+							uploadedAttachmentUrl = JSON.parse(xhr.responseText).url;
+							uploadState = 'ready';
+						} else uploadState = 'error';
+						renderFileList();
+					};
+					xhr.onerror = () => {
+						uploadState = 'error';
+						renderFileList();
+					};
+					const upEndpoint = window.location.port === '4321' ? 'http://localhost:1037/api/signup/upload' : API + '/api/signup/upload';
+					xhr.open('POST', upEndpoint);
+					xhr.send(fd);
 				}
 				attachmentInput.value = '';
 			});
@@ -366,21 +404,40 @@ document.addEventListener('DOMContentLoaded', () => {
 		form.addEventListener('submit', async (e) => {
 			e.preventDefault();
 			const btn = form.querySelector('.signup-submit') as HTMLButtonElement;
-			btn.disabled = true; btn.textContent = '提交中...';
+			btn.disabled = true;
+			btn.textContent = '提交中...';
 			const formData = new FormData(form);
 			const data: Record<string, string> = {};
-			fields.forEach((f: any) => { data[f.name] = formData.get(f.name) as string || ''; });
+			fields.forEach((f: any) => {
+				data[f.name] = (formData.get(f.name) as string) || '';
+			});
 			const attachments: string[] = [];
 			if (formMeta.attachment) {
-				if (!uploadedAttachmentUrl) { btn.textContent = '请先上传压缩包'; btn.disabled = false; setTimeout(() => { btn.textContent = '提交报名'; }, 2500); return; }
+				if (!uploadedAttachmentUrl) {
+					btn.textContent = '请先上传压缩包';
+					btn.disabled = false;
+					setTimeout(() => {
+						btn.textContent = '提交报名';
+					}, 2500);
+					return;
+				}
 				attachments.push(uploadedAttachmentUrl);
 			}
 			const submitRes = await fetch(API + '/api/activity/' + activityId + '/submit', {
-				method: 'POST', headers: { 'Content-Type': 'application/json' },
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ data: JSON.stringify(data), attachments: JSON.stringify(attachments) }),
 			});
-			if (submitRes.ok) { btn.textContent = '提交成功！'; setTimeout(() => closeOverlay(), 1500); }
-			else { btn.textContent = '提交失败'; btn.disabled = false; setTimeout(() => { btn.textContent = '提交报名'; }, 3000); }
+			if (submitRes.ok) {
+				btn.textContent = '提交成功！';
+				setTimeout(() => closeOverlay(), 1500);
+			} else {
+				btn.textContent = '提交失败';
+				btn.disabled = false;
+				setTimeout(() => {
+					btn.textContent = '提交报名';
+				}, 3000);
+			}
 		});
 	}
 

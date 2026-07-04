@@ -67,9 +67,7 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 	};
 
 	const cardHTML = (d: DownloadItem): string => {
-		const thumbStyle = d.thumbUrl
-			? `background-image:url('${d.thumbUrl}');background-size:cover;background-position:center;`
-			: '';
+		const thumbStyle = d.thumbUrl ? `background-image:url('${d.thumbUrl}');background-size:cover;background-position:center;` : '';
 		return `<article class="dl-card" data-id="${d.id}">
 			<div class="dl-card-banner">
 				<span class="dl-card-tag">NEW</span>

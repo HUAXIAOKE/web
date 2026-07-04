@@ -140,7 +140,7 @@ async function generateImageCards(): Promise<void> {
 		await Promise.all(
 			[...imgs].map((img) =>
 				img.complete
-					? img.decode?.().catch(() => {}) ?? Promise.resolve()
+					? (img.decode?.().catch(() => {}) ?? Promise.resolve())
 					: new Promise<void>((resolve) => {
 							img.onload = () => resolve();
 							img.onerror = () => resolve();

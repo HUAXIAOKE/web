@@ -70,20 +70,11 @@ function initStaggeredMenu(): void {
 		const lastLayerTime = (prelayers.length - 1) * 0.07;
 		const panelStart = lastLayerTime + 0.08;
 
-		tl.fromTo(
-			panel,
-			{ xPercent: offscreen },
-			{ xPercent: 0, duration: 0.65, ease: 'power4.out' },
-			panelStart
-		);
+		tl.fromTo(panel, { xPercent: offscreen }, { xPercent: 0, duration: 0.65, ease: 'power4.out' }, panelStart);
 
 		if (itemLabels.length) {
 			const itemsStart = panelStart + 0.15 * 0.65;
-			tl.to(
-				itemLabels,
-				{ yPercent: 0, rotate: 0, duration: 1, ease: 'power4.out', stagger: { each: 0.1, from: 'start' } },
-				itemsStart
-			);
+			tl.to(itemLabels, { yPercent: 0, rotate: 0, duration: 1, ease: 'power4.out', stagger: { each: 0.1, from: 'start' } }, itemsStart);
 			if (itemWraps.length) {
 				tl.to(
 					itemWraps,
@@ -99,11 +90,7 @@ function initStaggeredMenu(): void {
 				tl.to(socialTitle, { opacity: 1, duration: 0.5, ease: 'power2.out' }, socialsStart);
 			}
 			if (socialLinks.length) {
-				tl.to(
-					socialLinks,
-					{ y: 0, opacity: 1, duration: 0.55, ease: 'power3.out', stagger: { each: 0.08 } },
-					socialsStart + 0.04
-				);
+				tl.to(socialLinks, { y: 0, opacity: 1, duration: 0.55, ease: 'power3.out', stagger: { each: 0.08 } }, socialsStart + 0.04);
 			}
 		}
 	}

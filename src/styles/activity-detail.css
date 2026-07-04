@@ -21,7 +21,9 @@ html.dark {
 	max-width: 1320px;
 	margin: 0 auto;
 	padding: 2rem 2rem 4rem;
-	transition: opacity 0.25s ease, transform 0.25s ease;
+	transition:
+		opacity 0.25s ease,
+		transform 0.25s ease;
 }
 
 .activity-detail-page.fade-out {

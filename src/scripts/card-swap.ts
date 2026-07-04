@@ -87,12 +87,7 @@ function animateTextIn(
 	tl.fromTo(contentEl, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out' }, `${label}+=0.15`);
 }
 
-function animateTextOut(
-	titleEl: HTMLElement,
-	contentEl: HTMLElement,
-	tl: gsap.core.Timeline,
-	label: string
-): void {
+function animateTextOut(titleEl: HTMLElement, contentEl: HTMLElement, tl: gsap.core.Timeline, label: string): void {
 	const chars = Array.from(titleEl.querySelectorAll('.char'));
 	if (chars.length) {
 		tl.to(chars, { y: '-100%', duration: 0.35, stagger: 0.04, ease: 'power3.in' }, label);
@@ -126,11 +121,7 @@ const swap = (
 		if (!el) return;
 		const slot = makeSlot(i, distX, distY, cardsLen);
 		tl.set(el, { zIndex: slot.zIndex }, 'promote');
-		tl.to(
-			el,
-			{ x: slot.x, y: slot.y, z: slot.z, duration: cfg.durMove, ease: cfg.ease },
-			`promote+=${i * 0.15}`
-		);
+		tl.to(el, { x: slot.x, y: slot.y, z: slot.z, duration: cfg.durMove, ease: cfg.ease }, `promote+=${i * 0.15}`);
 	});
 
 	const nextIdx = rest[0];
@@ -140,23 +131,14 @@ const swap = (
 	const backSlot = makeSlot(cardsLen - 1, distX, distY, cardsLen);
 	tl.addLabel('return', `promote+=${cfg.durMove * cfg.returnDelay}`);
 	tl.call(() => gsap.set(elFront, { zIndex: backSlot.zIndex }), undefined, 'return');
-	tl.to(
-		elFront,
-		{ x: backSlot.x, y: backSlot.y, z: backSlot.z, duration: cfg.durReturn, ease: cfg.ease },
-		'return'
-	);
+	tl.to(elFront, { x: backSlot.x, y: backSlot.y, z: backSlot.z, duration: cfg.durReturn, ease: cfg.ease }, 'return');
 
 	tl.call(() => {
 		order = [...rest, front];
 	});
 };
 
-async function initDesktop(
-	cards: AboutCard[],
-	container: HTMLElement,
-	titleEl: HTMLElement,
-	contentEl: HTMLElement
-): Promise<void> {
+async function initDesktop(cards: AboutCard[], container: HTMLElement, titleEl: HTMLElement, contentEl: HTMLElement): Promise<void> {
 	const inner = document.createElement('div');
 	inner.className = 'cs-container';
 	container.appendChild(inner);
@@ -174,9 +156,7 @@ async function initDesktop(
 	const refs = Array.from(inner.querySelectorAll<HTMLElement>('.cs-card'));
 	const total = refs.length;
 	order = Array.from({ length: total }, (_, i) => i);
-	refs.forEach((r, i) =>
-		placeNow(r, makeSlot(i, DEFAULTS.cardDistance, DEFAULTS.verticalDistance, total), DEFAULTS.skewAmount)
-	);
+	refs.forEach((r, i) => placeNow(r, makeSlot(i, DEFAULTS.cardDistance, DEFAULTS.verticalDistance, total), DEFAULTS.skewAmount));
 
 	splitChars(titleEl, cards[order[0]].title);
 	contentEl.innerHTML = cards[order[0]].content;
@@ -184,8 +164,7 @@ async function initDesktop(
 	if (initChars.length) gsap.set(initChars, { y: 0 });
 	gsap.set(contentEl, { y: 0, opacity: 1 });
 
-	const doSwap = () =>
-		swap(refs, cards, total, DEFAULTS.skewAmount, DEFAULTS.cardDistance, DEFAULTS.verticalDistance, DEFAULTS, titleEl, contentEl);
+	const doSwap = () => swap(refs, cards, total, DEFAULTS.skewAmount, DEFAULTS.cardDistance, DEFAULTS.verticalDistance, DEFAULTS, titleEl, contentEl);
 	doSwap();
 	intervalRef = window.setInterval(doSwap, DEFAULTS.delay);
 
@@ -204,12 +183,7 @@ async function initDesktop(
 	inner.addEventListener('mouseleave', resume);
 }
 
-function initMobile(
-	cards: AboutCard[],
-	container: HTMLElement,
-	titleEl: HTMLElement,
-	contentEl: HTMLElement
-): void {
+function initMobile(cards: AboutCard[], container: HTMLElement, titleEl: HTMLElement, contentEl: HTMLElement): void {
 	const inner = document.createElement('div');
 	inner.className = 'cs-container';
 	container.appendChild(inner);
@@ -326,10 +300,14 @@ function initMobile(
 		clearInterval(intervalRef);
 	});
 
-	container.addEventListener('touchmove', (e) => {
-		if (!tracking) return;
-		e.preventDefault();
-	}, { passive: false });
+	container.addEventListener(
+		'touchmove',
+		(e) => {
+			if (!tracking) return;
+			e.preventDefault();
+		},
+		{ passive: false }
+	);
 
 	container.addEventListener('touchend', (e) => {
 		if (!tracking) return;

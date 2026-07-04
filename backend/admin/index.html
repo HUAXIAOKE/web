@@ -218,20 +218,20 @@
 				return fileUploadHTML(fid, url, dir, { accept: 'audio/*', label: '音频' });
 			}
 
-		function onPathInput(fieldId, value) {
-			document.getElementById(fieldId).value = value;
-			const preview = document.getElementById(fieldId + '_preview');
-			if (preview) {
-				if (preview.tagName === 'IMG') {
-					preview.src = value;
-					preview.style.display = value ? 'block' : 'none';
-				} else if (preview.tagName === 'AUDIO') {
-					preview.src = value;
-					preview.style.display = value ? 'block' : 'none';
+			function onPathInput(fieldId, value) {
+				document.getElementById(fieldId).value = value;
+				const preview = document.getElementById(fieldId + '_preview');
+				if (preview) {
+					if (preview.tagName === 'IMG') {
+						preview.src = value;
+						preview.style.display = value ? 'block' : 'none';
+					} else if (preview.tagName === 'AUDIO') {
+						preview.src = value;
+						preview.style.display = value ? 'block' : 'none';
+					}
 				}
+				if (fieldId === 'f_dthumb' && value) initCropper('f_dthumb', value);
 			}
-			if (fieldId === 'f_dthumb' && value) initCropper('f_dthumb', value);
-		}
 
 			function initDropZone(fieldId, dir) {
 				const zone = document.getElementById(fieldId + '_drop');
@@ -264,16 +264,16 @@
 				try {
 					const res = await authFetch('/api/upload', { method: 'POST', body: fd });
 					if (!res.ok) throw new Error(await res.text());
-				const data = await res.json();
-				document.getElementById(fieldId).value = data.url;
-				document.getElementById(fieldId + '_path').value = data.url;
-				const preview = document.getElementById(fieldId + '_preview');
-				if (preview) {
-					preview.src = data.url;
-					preview.style.display = 'block';
-				}
-				if (fieldId === 'f_dthumb') initCropper('f_dthumb', data.url);
-				if (zone) {
+					const data = await res.json();
+					document.getElementById(fieldId).value = data.url;
+					document.getElementById(fieldId + '_path').value = data.url;
+					const preview = document.getElementById(fieldId + '_preview');
+					if (preview) {
+						preview.src = data.url;
+						preview.style.display = 'block';
+					}
+					if (fieldId === 'f_dthumb') initCropper('f_dthumb', data.url);
+					if (zone) {
 						zone.textContent = '上传成功，点击或拖拽替换';
 						zone.classList.remove('uploading');
 					}
@@ -283,212 +283,215 @@
 						zone.textContent = '上传失败，点击或拖拽重试';
 						zone.classList.remove('uploading');
 					}
-			toast('上传失败: ' + e.message, 'error');
+					toast('上传失败: ' + e.message, 'error');
+				}
 			}
-		}
 
-		const cropState = {};
+			const cropState = {};
 
-		function initCropper(fieldId, src) {
-			const wrap = document.getElementById(fieldId + '_crop');
-			const img = document.getElementById(fieldId + '_crop_img');
-			const stage = document.getElementById(fieldId + '_crop_stage');
-			if (!wrap || !img || !stage) return;
-			wrap.style.display = 'flex';
-			cropState[fieldId] = null;
+			function initCropper(fieldId, src) {
+				const wrap = document.getElementById(fieldId + '_crop');
+				const img = document.getElementById(fieldId + '_crop_img');
+				const stage = document.getElementById(fieldId + '_crop_stage');
+				if (!wrap || !img || !stage) return;
+				wrap.style.display = 'flex';
+				cropState[fieldId] = null;
 
-			img.onload = () => {
-				const stageW = stage.clientWidth;
-				const stageH = stage.clientHeight;
-				const boxSize = Math.min(stageW, stageH) - 32;
-				const fitScale = Math.min(stageW / img.naturalWidth, stageH / img.naturalHeight);
-				const scale = fitScale;
-				const drawW = img.naturalWidth * scale;
-				const drawH = img.naturalHeight * scale;
-				cropState[fieldId] = {
-					nw: img.naturalWidth,
-					nh: img.naturalHeight,
-					scale,
-					minScale: fitScale * 0.5,
-					maxScale: fitScale * 6,
-					x: (stageW - drawW) / 2,
-					y: (stageH - drawH) / 2,
-					stageW,
-					stageH,
-					boxSize,
-					boxX: (stageW - boxSize) / 2,
-					boxY: (stageH - boxSize) / 2,
-					src,
+				img.onload = () => {
+					const stageW = stage.clientWidth;
+					const stageH = stage.clientHeight;
+					const boxSize = Math.min(stageW, stageH) - 32;
+					const fitScale = Math.min(stageW / img.naturalWidth, stageH / img.naturalHeight);
+					const scale = fitScale;
+					const drawW = img.naturalWidth * scale;
+					const drawH = img.naturalHeight * scale;
+					cropState[fieldId] = {
+						nw: img.naturalWidth,
+						nh: img.naturalHeight,
+						scale,
+						minScale: fitScale * 0.5,
+						maxScale: fitScale * 6,
+						x: (stageW - drawW) / 2,
+						y: (stageH - drawH) / 2,
+						stageW,
+						stageH,
+						boxSize,
+						boxX: (stageW - boxSize) / 2,
+						boxY: (stageH - boxSize) / 2,
+						src,
+					};
+					document.getElementById(fieldId + '_crop_box').style.width = boxSize + 'px';
+					document.getElementById(fieldId + '_crop_box').style.height = boxSize + 'px';
+					renderCrop(fieldId);
 				};
-				document.getElementById(fieldId + '_crop_box').style.width = boxSize + 'px';
-				document.getElementById(fieldId + '_crop_box').style.height = boxSize + 'px';
-				renderCrop(fieldId);
-			};
-			img.src = src;
+				img.src = src;
 
-			let dragging = false,
-				sx = 0,
-				sy = 0,
-				ox = 0,
-				oy = 0;
-			stage.onmousedown = (e) => {
-				if (!cropState[fieldId]) return;
-				dragging = true;
-				sx = e.clientX;
-				sy = e.clientY;
-				ox = cropState[fieldId].x;
-				oy = cropState[fieldId].y;
-				e.preventDefault();
-			};
-			stage.onmousemove = (e) => {
-				if (!dragging || !cropState[fieldId]) return;
-				cropState[fieldId].x = ox + (e.clientX - sx);
-				cropState[fieldId].y = oy + (e.clientY - sy);
-				renderCrop(fieldId);
-			};
-			stage.onmouseup = () => {
-				dragging = false;
-			};
-			stage.onmouseleave = () => {
-				dragging = false;
-			};
-			stage.onwheel = (e) => {
-				if (!cropState[fieldId]) return;
-				e.preventDefault();
+				let dragging = false,
+					sx = 0,
+					sy = 0,
+					ox = 0,
+					oy = 0;
+				stage.onmousedown = (e) => {
+					if (!cropState[fieldId]) return;
+					dragging = true;
+					sx = e.clientX;
+					sy = e.clientY;
+					ox = cropState[fieldId].x;
+					oy = cropState[fieldId].y;
+					e.preventDefault();
+				};
+				stage.onmousemove = (e) => {
+					if (!dragging || !cropState[fieldId]) return;
+					cropState[fieldId].x = ox + (e.clientX - sx);
+					cropState[fieldId].y = oy + (e.clientY - sy);
+					renderCrop(fieldId);
+				};
+				stage.onmouseup = () => {
+					dragging = false;
+				};
+				stage.onmouseleave = () => {
+					dragging = false;
+				};
+				stage.onwheel = (e) => {
+					if (!cropState[fieldId]) return;
+					e.preventDefault();
+					const s = cropState[fieldId];
+					const delta = e.deltaY < 0 ? 1.12 : 0.89;
+					s.scale = Math.max(s.minScale, Math.min(s.maxScale, s.scale * delta));
+					renderCrop(fieldId);
+				};
+			}
+
+			function renderCrop(fieldId) {
 				const s = cropState[fieldId];
-				const delta = e.deltaY < 0 ? 1.12 : 0.89;
-				s.scale = Math.max(s.minScale, Math.min(s.maxScale, s.scale * delta));
-				renderCrop(fieldId);
-			};
-		}
+				if (!s) return;
+				const img = document.getElementById(fieldId + '_crop_img');
+				const preview = document.getElementById(fieldId + '_crop_preview');
+				img.style.transform = `translate(${s.x}px, ${s.y}px) scale(${s.scale})`;
+				img.style.width = s.nw + 'px';
+				img.style.height = s.nh + 'px';
 
-		function renderCrop(fieldId) {
-			const s = cropState[fieldId];
-			if (!s) return;
-			const img = document.getElementById(fieldId + '_crop_img');
-			const preview = document.getElementById(fieldId + '_crop_preview');
-			img.style.transform = `translate(${s.x}px, ${s.y}px) scale(${s.scale})`;
-			img.style.width = s.nw + 'px';
-			img.style.height = s.nh + 'px';
-
-			const previewSize = preview.parentElement?.clientWidth || 48;
-			const ratio = previewSize / s.boxSize;
-			preview.src = s.src;
-			preview.style.width = s.nw * s.scale * ratio + 'px';
-			preview.style.height = s.nh * s.scale * ratio + 'px';
-			preview.style.transform = `translate(${(s.x - s.boxX) * ratio}px, ${(s.y - s.boxY) * ratio}px)`;
-		}
-
-		async function applyCrop(fieldId) {
-			const s = cropState[fieldId];
-			if (!s) {
-				toast('请先上传图片', 'error');
-				return;
+				const previewSize = preview.parentElement?.clientWidth || 48;
+				const ratio = previewSize / s.boxSize;
+				preview.src = s.src;
+				preview.style.width = s.nw * s.scale * ratio + 'px';
+				preview.style.height = s.nh * s.scale * ratio + 'px';
+				preview.style.transform = `translate(${(s.x - s.boxX) * ratio}px, ${(s.y - s.boxY) * ratio}px)`;
 			}
-			const img = document.getElementById(fieldId + '_crop_img');
-			const ratio = s.nw / (s.nw * s.scale);
-			const sx = (s.boxX - s.x) * ratio;
-			const sy = (s.boxY - s.y) * ratio;
-			const sw = s.boxSize * ratio;
-			const sh = s.boxSize * ratio;
 
-			const canvas = document.createElement('canvas');
-			const outSize = 512;
-			canvas.width = outSize;
-			canvas.height = outSize;
-			const ctx = canvas.getContext('2d');
-			try {
-				ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outSize, outSize);
-			} catch (e) {
-				toast('裁剪失败: ' + e.message, 'error');
-				return;
+			async function applyCrop(fieldId) {
+				const s = cropState[fieldId];
+				if (!s) {
+					toast('请先上传图片', 'error');
+					return;
+				}
+				const img = document.getElementById(fieldId + '_crop_img');
+				const ratio = s.nw / (s.nw * s.scale);
+				const sx = (s.boxX - s.x) * ratio;
+				const sy = (s.boxY - s.y) * ratio;
+				const sw = s.boxSize * ratio;
+				const sh = s.boxSize * ratio;
+
+				const canvas = document.createElement('canvas');
+				const outSize = 512;
+				canvas.width = outSize;
+				canvas.height = outSize;
+				const ctx = canvas.getContext('2d');
+				try {
+					ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outSize, outSize);
+				} catch (e) {
+					toast('裁剪失败: ' + e.message, 'error');
+					return;
+				}
+				canvas.toBlob(
+					async (blob) => {
+						if (!blob) {
+							toast('生成图片失败', 'error');
+							return;
+						}
+						const fd = new FormData();
+						fd.append('file', blob, 'thumb.webp');
+						fd.append('dir', 'img/downloads');
+						try {
+							const res = await authFetch('/api/upload', { method: 'POST', body: fd });
+							if (!res.ok) throw new Error(await res.text());
+							const data = await res.json();
+							document.getElementById(fieldId).value = data.url;
+							document.getElementById(fieldId + '_path').value = data.url;
+							const preview = document.getElementById(fieldId + '_preview');
+							preview.src = data.url;
+							preview.style.display = 'block';
+							toast('裁剪并上传成功');
+						} catch (e) {
+							toast('裁剪上传失败: ' + e.message, 'error');
+						}
+					},
+					'image/webp',
+					0.9
+				);
 			}
-			canvas.toBlob(
-				async (blob) => {
-					if (!blob) {
-						toast('生成图片失败', 'error');
-						return;
-					}
-					const fd = new FormData();
-					fd.append('file', blob, 'thumb.webp');
-					fd.append('dir', 'img/downloads');
-					try {
-						const res = await authFetch('/api/upload', { method: 'POST', body: fd });
-						if (!res.ok) throw new Error(await res.text());
-						const data = await res.json();
-						document.getElementById(fieldId).value = data.url;
-						document.getElementById(fieldId + '_path').value = data.url;
-						const preview = document.getElementById(fieldId + '_preview');
-						preview.src = data.url;
-						preview.style.display = 'block';
-						toast('裁剪并上传成功');
-					} catch (e) {
-						toast('裁剪上传失败: ' + e.message, 'error');
-					}
-				},
-				'image/webp',
-				0.9
-			);
-		}
 
 			function val(id) {
 				return document.getElementById(id)?.value?.trim() || '';
 			}
 
-function toggleCustomSelect(id) {
-			document.querySelectorAll('.custom-select-panel.show').forEach(p => { if (!p.closest('#'+id)) p.classList.remove('show'); });
-			document.querySelector('#'+id+' .custom-select-panel').classList.toggle('show');
-		}
-		function selectCustomOption(selectId, value, label) {
-			const sel = document.getElementById(selectId);
-			const trigger = sel.querySelector('.custom-select-trigger');
-			trigger.querySelector('.custom-select-label').textContent = label;
-			sel.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('active'));
-			sel.querySelector('.custom-select-option[data-value="'+value+'"]').classList.add('active');
-			sel.querySelector('input[type=hidden]').value = value;
-			sel.querySelector('.custom-select-panel').classList.remove('show');
-		}
-		function toggleMultiOption(selectId, value) {
-			const sel = document.getElementById(selectId);
-			const hidden = sel.querySelector('input[type=hidden]');
-			const selected = hidden.value ? hidden.value.split(',') : [];
-			const idx = selected.indexOf(value);
-			if (idx >= 0) selected.splice(idx, 1); else selected.push(value);
-			hidden.value = selected.join(',');
-			const trigger = sel.querySelector('.custom-select-trigger');
-			const label = trigger.querySelector('.custom-select-label');
-			label.textContent = selected.length ? selected.join(' / ') : '未选择';
-			sel.querySelectorAll('.custom-select-option').forEach(o => {
-				o.classList.toggle('active', selected.includes(o.dataset.value));
-			});
-		}
-function setCustomMonth(name, yr, mo) {
-			document.getElementById(name + '_yr').value = yr;
-			document.getElementById(name + '_mo').value = mo;
-			document.getElementById(name).value = yr + '-' + mo;
-		}
-		function syncCustomMonth(name) {
-			const yr = (document.getElementById(name+'_yr')?.value || '').padStart(2,'0');
-			const mo = (document.getElementById(name+'_mo')?.value || '').padStart(2,'0');
-			document.getElementById(name).value = (yr && mo) ? yr + '-' + mo : '';
-		}
-		function syncCustomDate(name) {
-			const yr = (document.getElementById(name+'_yr')?.value || '').padStart(2,'0');
-			const mo = (document.getElementById(name+'_mo')?.value || '').padStart(2,'0');
-			const dy = (document.getElementById(name+'_dy')?.value || '').padStart(2,'0');
-			document.getElementById(name).value = (yr && mo && dy) ? yr + '-' + mo + '-' + dy : '';
-		}
-		function syncCustomDatetime(name) {
-			const yr = (document.getElementById(name+'_yr')?.value || '').padStart(2,'0');
-			const mo = (document.getElementById(name+'_mo')?.value || '').padStart(2,'0');
-			const dy = (document.getElementById(name+'_dy')?.value || '').padStart(2,'0');
-			const hr = (document.getElementById(name+'_hr')?.value || '').padStart(2,'0');
-			const mi = (document.getElementById(name+'_mi')?.value || '').padStart(2,'0');
-			document.getElementById(name).value = (yr && mo && dy && hr && mi) ? yr + '-' + mo + '-' + dy + 'T' + hr + ':' + mi : '';
-		}
+			function toggleCustomSelect(id) {
+				document.querySelectorAll('.custom-select-panel.show').forEach((p) => {
+					if (!p.closest('#' + id)) p.classList.remove('show');
+				});
+				document.querySelector('#' + id + ' .custom-select-panel').classList.toggle('show');
+			}
+			function selectCustomOption(selectId, value, label) {
+				const sel = document.getElementById(selectId);
+				const trigger = sel.querySelector('.custom-select-trigger');
+				trigger.querySelector('.custom-select-label').textContent = label;
+				sel.querySelectorAll('.custom-select-option').forEach((o) => o.classList.remove('active'));
+				sel.querySelector('.custom-select-option[data-value="' + value + '"]').classList.add('active');
+				sel.querySelector('input[type=hidden]').value = value;
+				sel.querySelector('.custom-select-panel').classList.remove('show');
+			}
+			function toggleMultiOption(selectId, value) {
+				const sel = document.getElementById(selectId);
+				const hidden = sel.querySelector('input[type=hidden]');
+				const selected = hidden.value ? hidden.value.split(',') : [];
+				const idx = selected.indexOf(value);
+				if (idx >= 0) selected.splice(idx, 1);
+				else selected.push(value);
+				hidden.value = selected.join(',');
+				const trigger = sel.querySelector('.custom-select-trigger');
+				const label = trigger.querySelector('.custom-select-label');
+				label.textContent = selected.length ? selected.join(' / ') : '未选择';
+				sel.querySelectorAll('.custom-select-option').forEach((o) => {
+					o.classList.toggle('active', selected.includes(o.dataset.value));
+				});
+			}
+			function setCustomMonth(name, yr, mo) {
+				document.getElementById(name + '_yr').value = yr;
+				document.getElementById(name + '_mo').value = mo;
+				document.getElementById(name).value = yr + '-' + mo;
+			}
+			function syncCustomMonth(name) {
+				const yr = (document.getElementById(name + '_yr')?.value || '').padStart(2, '0');
+				const mo = (document.getElementById(name + '_mo')?.value || '').padStart(2, '0');
+				document.getElementById(name).value = yr && mo ? yr + '-' + mo : '';
+			}
+			function syncCustomDate(name) {
+				const yr = (document.getElementById(name + '_yr')?.value || '').padStart(2, '0');
+				const mo = (document.getElementById(name + '_mo')?.value || '').padStart(2, '0');
+				const dy = (document.getElementById(name + '_dy')?.value || '').padStart(2, '0');
+				document.getElementById(name).value = yr && mo && dy ? yr + '-' + mo + '-' + dy : '';
+			}
+			function syncCustomDatetime(name) {
+				const yr = (document.getElementById(name + '_yr')?.value || '').padStart(2, '0');
+				const mo = (document.getElementById(name + '_mo')?.value || '').padStart(2, '0');
+				const dy = (document.getElementById(name + '_dy')?.value || '').padStart(2, '0');
+				const hr = (document.getElementById(name + '_hr')?.value || '').padStart(2, '0');
+				const mi = (document.getElementById(name + '_mi')?.value || '').padStart(2, '0');
+				document.getElementById(name).value = yr && mo && dy && hr && mi ? yr + '-' + mo + '-' + dy + 'T' + hr + ':' + mi : '';
+			}
 
 			document.addEventListener('click', () => {
-				document.querySelectorAll('.custom-select-panel.show').forEach(p => p.classList.remove('show'));
+				document.querySelectorAll('.custom-select-panel.show').forEach((p) => p.classList.remove('show'));
 			});
 
 			let activityPollTimer = null;
@@ -507,8 +510,8 @@ function setCustomMonth(name, yr, mo) {
 				const statusClasses = { active: 'active', not_started: 'not-started', expired: 'expired', not_enabled: '' };
 				main.innerHTML = `<div class="page-header"><h2>当期活动</h2><div class="page-actions"><button class="btn btn-primary" onclick="editActivity()">+ 新增</button></div></div>
 									<div class="card-grid">${list
-								.map(
-									(a) => `<div class="card">
+										.map(
+											(a) => `<div class="card">
 							<img class="card-img" src="${a.image}" onerror="cardImgFallback(this)">
 							<div class="card-body">
 										<div class="meta">${a.tags
@@ -876,25 +879,25 @@ function setCustomMonth(name, yr, mo) {
 				loadTimeline();
 			}
 
-		function markImgMissing(imgEl) {
-			const src = imgEl.dataset.src || imgEl.getAttribute('src') || '';
-			const ph = document.createElement('div');
-			ph.className = 'img-missing card-img';
-			const label = document.createElement('span');
-			label.textContent = '图片缺失';
-			const code = document.createElement('code');
-			code.textContent = src;
-			ph.appendChild(label);
-			ph.appendChild(code);
-			imgEl.replaceWith(ph);
-		}
+			function markImgMissing(imgEl) {
+				const src = imgEl.dataset.src || imgEl.getAttribute('src') || '';
+				const ph = document.createElement('div');
+				ph.className = 'img-missing card-img';
+				const label = document.createElement('span');
+				label.textContent = '图片缺失';
+				const code = document.createElement('code');
+				code.textContent = src;
+				ph.appendChild(label);
+				ph.appendChild(code);
+				imgEl.replaceWith(ph);
+			}
 
-		function cardImgFallback(imgEl) {
-			const ph = document.createElement('div');
-			ph.className = 'card-img-empty';
-			ph.textContent = '无图片';
-			imgEl.replaceWith(ph);
-		}
+			function cardImgFallback(imgEl) {
+				const ph = document.createElement('div');
+				ph.className = 'card-img-empty';
+				ph.textContent = '无图片';
+				imgEl.replaceWith(ph);
+			}
 
 			async function loadGallery() {
 				const res = await authFetch('/api/gallery');
@@ -959,10 +962,10 @@ function setCustomMonth(name, yr, mo) {
 				const data = await res.json();
 				const cards = data.cards || [];
 				const main = document.getElementById('main-content');
-			main.innerHTML = `<div class="page-header"><h2>关于我们</h2><div class="page-actions"><button class="btn btn-primary" onclick="editAbout()">+ 新增</button></div></div>
+				main.innerHTML = `<div class="page-header"><h2>关于我们</h2><div class="page-actions"><button class="btn btn-primary" onclick="editAbout()">+ 新增</button></div></div>
 <div class="card-grid">${cards
-		.map(
-			(c) => `<div class="card">
+					.map(
+						(c) => `<div class="card">
 					<img class="card-img" src="${c.image}" onerror="cardImgFallback(this)">
 					<div class="card-body">
 						<p class="card-subtitle">${c.smallTitle}</p>
@@ -970,8 +973,8 @@ function setCustomMonth(name, yr, mo) {
 					<div class="card-actions">
 						<button class="btn btn-ghost" onclick='editAbout(${JSON.stringify(c).replace(/'/g, '&#39;')})'>编辑</button>
 						<button class="btn btn-danger" onclick="delAbout(${c.id})">删除</button></div></div>`
-			)
-			.join('')}</div>`;
+					)
+					.join('')}</div>`;
 			}
 
 			function editAbout(c) {
@@ -1003,26 +1006,28 @@ function setCustomMonth(name, yr, mo) {
 				);
 			}
 
-		async function delAbout(id) {
-			if (!(await customConfirm('确定删除？'))) return;
-			const res = await authFetch('/api/about/' + id, { method: 'DELETE', headers: authHeaders() });
-			if (!res.ok) {
-				toast('删除失败', 'error');
-				return;
+			async function delAbout(id) {
+				if (!(await customConfirm('确定删除？'))) return;
+				const res = await authFetch('/api/about/' + id, { method: 'DELETE', headers: authHeaders() });
+				if (!res.ok) {
+					toast('删除失败', 'error');
+					return;
+				}
+				toast('已删除');
+				loadAbout();
 			}
-			toast('已删除');
-			loadAbout();
-		}
 
-		const dlCategoryLabels = { wallpaper: '壁纸', emoji: '表情包', other: '其他' };
+			const dlCategoryLabels = { wallpaper: '壁纸', emoji: '表情包', other: '其他' };
 
-		async function loadDownload() {
-			const res = await authFetch('/api/downloads');
-			const list = await res.json();
-			const main = document.getElementById('main-content');
-		main.innerHTML = `<div class="page-header"><h2>下载资源</h2><div class="page-actions"><button class="btn btn-primary" onclick="editDownload()">+ 新增</button></div></div><div class="card-grid">${(list || [])
-			.map(
-				(d) => `<div class="card">
+			async function loadDownload() {
+				const res = await authFetch('/api/downloads');
+				const list = await res.json();
+				const main = document.getElementById('main-content');
+				main.innerHTML = `<div class="page-header"><h2>下载资源</h2><div class="page-actions"><button class="btn btn-primary" onclick="editDownload()">+ 新增</button></div></div><div class="card-grid">${(
+					list || []
+				)
+					.map(
+						(d) => `<div class="card">
 		<img class="card-img" src="${d.thumbUrl}" onerror="cardImgFallback(this)">
 		<div class="card-body">
 			<p class="card-subtitle">${dlCategoryLabels[d.category] || d.category}</p>
@@ -1032,28 +1037,28 @@ function setCustomMonth(name, yr, mo) {
 		<div class="card-actions">
 		<button class="btn btn-ghost" onclick='editDownload(${JSON.stringify(d).replace(/'/g, '&#39;')})'>编辑</button>
 		<button class="btn btn-danger" onclick="delDownload(${d.id})">删除</button></div></div>`
-			)
-			.join('')}</div>`;
-		}
+					)
+					.join('')}</div>`;
+			}
 
-		function editDownload(d) {
-			const isNew = !d;
-			d = d || { name: '', description: '', category: 'other', fileUrl: '', thumbUrl: '', rating: 0, date: '', sortOrder: 0 };
-			openModal(
-				isNew ? '新增下载资源' : '编辑下载资源',
-				`
+			function editDownload(d) {
+				const isNew = !d;
+				d = d || { name: '', description: '', category: 'other', fileUrl: '', thumbUrl: '', rating: 0, date: '', sortOrder: 0 };
+				openModal(
+					isNew ? '新增下载资源' : '编辑下载资源',
+					`
 				<div class="form-row">
 					<div class="form-group"><label>名称</label><input id="f_dname" value="${d.name}"></div>
 					<div class="form-group"><label>分类</label>
 					<div class="custom-select" id="f_dcat_select" data-name="f_dcat">
 						<input type="hidden" id="f_dcat" value="${d.category || 'other'}">
 						<div class="custom-select-trigger" onclick="event.stopPropagation();toggleCustomSelect('f_dcat_select')">
-							<span class="custom-select-label">${{wallpaper:'壁纸',emoji:'表情包',other:'其他'}[d.category||'other']}</span>
+							<span class="custom-select-label">${{ wallpaper: '壁纸', emoji: '表情包', other: '其他' }[d.category || 'other']}</span>
 						</div>
 						<div class="custom-select-panel">
-							<div class="custom-select-option ${{wallpaper:'壁纸',emoji:'表情包',other:'其他'}[d.category||'other']==='壁纸'?'active':''}" data-value="wallpaper" onclick="selectCustomOption('f_dcat_select','wallpaper','壁纸')">壁纸</div>
-							<div class="custom-select-option ${{wallpaper:'壁纸',emoji:'表情包',other:'其他'}[d.category||'other']==='表情包'?'active':''}" data-value="emoji" onclick="selectCustomOption('f_dcat_select','emoji','表情包')">表情包</div>
-							<div class="custom-select-option ${{wallpaper:'壁纸',emoji:'表情包',other:'其他'}[d.category||'other']==='其他'?'active':''}" data-value="other" onclick="selectCustomOption('f_dcat_select','other','其他')">其他</div>
+							<div class="custom-select-option ${{ wallpaper: '壁纸', emoji: '表情包', other: '其他' }[d.category || 'other'] === '壁纸' ? 'active' : ''}" data-value="wallpaper" onclick="selectCustomOption('f_dcat_select','wallpaper','壁纸')">壁纸</div>
+							<div class="custom-select-option ${{ wallpaper: '壁纸', emoji: '表情包', other: '其他' }[d.category || 'other'] === '表情包' ? 'active' : ''}" data-value="emoji" onclick="selectCustomOption('f_dcat_select','emoji','表情包')">表情包</div>
+							<div class="custom-select-option ${{ wallpaper: '壁纸', emoji: '表情包', other: '其他' }[d.category || 'other'] === '其他' ? 'active' : ''}" data-value="other" onclick="selectCustomOption('f_dcat_select','other','其他')">其他</div>
 						</div>
 					</div></div>
 				</div>
@@ -1098,47 +1103,50 @@ function setCustomMonth(name, yr, mo) {
 					</div>
 					<button class="btn btn-primary btn-crop" onclick="applyCrop('f_dthumb')">裁剪并上传</button>
 				</div>`,
-			async () => {
-				const body = {
-					name: val('f_dname'),
-					description: val('f_ddesc'),
-					category: val('f_dcat'),
-					fileUrl: val('f_dfile'),
-					thumbUrl: val('f_dthumb'),
-					rating: 0,
-					date: val('f_ddate'),
-					sortOrder: 0,
-				};
-				const res = await authFetch(isNew ? '/api/downloads' : '/api/downloads/' + d.id, {
-					method: isNew ? 'POST' : 'PUT',
-					headers: authHeaders(),
-					body: JSON.stringify(body),
-				});
+					async () => {
+						const body = {
+							name: val('f_dname'),
+							description: val('f_ddesc'),
+							category: val('f_dcat'),
+							fileUrl: val('f_dfile'),
+							thumbUrl: val('f_dthumb'),
+							rating: 0,
+							date: val('f_ddate'),
+							sortOrder: 0,
+						};
+						const res = await authFetch(isNew ? '/api/downloads' : '/api/downloads/' + d.id, {
+							method: isNew ? 'POST' : 'PUT',
+							headers: authHeaders(),
+							body: JSON.stringify(body),
+						});
+						if (!res.ok) {
+							toast('操作失败', 'error');
+							return;
+						}
+						closeModal();
+						toast(isNew ? '创建成功' : '保存成功');
+						loadDownload();
+					},
+					[
+						{ id: 'f_dthumb', dir: 'img/downloads' },
+						{ id: 'f_dfile', dir: 'img/downloads' },
+					]
+				);
+				setTimeout(() => {
+					if (d.thumbUrl) initCropper('f_dthumb', d.thumbUrl);
+				}, 0);
+			}
+
+			async function delDownload(id) {
+				if (!(await customConfirm('确定删除？'))) return;
+				const res = await authFetch('/api/downloads/' + id, { method: 'DELETE', headers: authHeaders() });
 				if (!res.ok) {
-					toast('操作失败', 'error');
+					toast('删除失败', 'error');
 					return;
 				}
-				closeModal();
-				toast(isNew ? '创建成功' : '保存成功');
+				toast('已删除');
 				loadDownload();
-			},
-			[{ id: 'f_dthumb', dir: 'img/downloads' }, { id: 'f_dfile', dir: 'img/downloads' }]
-		);
-		setTimeout(() => {
-			if (d.thumbUrl) initCropper('f_dthumb', d.thumbUrl);
-		}, 0);
-	}
-
-		async function delDownload(id) {
-			if (!(await customConfirm('确定删除？'))) return;
-			const res = await authFetch('/api/downloads/' + id, { method: 'DELETE', headers: authHeaders() });
-			if (!res.ok) {
-				toast('删除失败', 'error');
-				return;
 			}
-			toast('已删除');
-			loadDownload();
-		}
 
 			let bilibiliPollTimer = null;
 
@@ -1248,18 +1256,18 @@ function setCustomMonth(name, yr, mo) {
 				return m ? m[1] : '';
 			}
 
-		function toggleSidebar(force) {
-			/* no-op: topbar nav scrolls horizontally on mobile */
-		}
+			function toggleSidebar(force) {
+				/* no-op: topbar nav scrolls horizontally on mobile */
+			}
 
-		const loaders = {
-			activity: loadActivity,
-			timeline: loadTimeline,
-			gallery: loadGallery,
-			about: loadAbout,
-			download: loadDownload,
-			bilibili: loadBilibili,
-		};
+			const loaders = {
+				activity: loadActivity,
+				timeline: loadTimeline,
+				gallery: loadGallery,
+				about: loadAbout,
+				download: loadDownload,
+				bilibili: loadBilibili,
+			};
 
 			function stopActivityPoll() {
 				if (activityPollTimer) {

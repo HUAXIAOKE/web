@@ -65,9 +65,7 @@ class SPANavigation {
 	private navLinks: NodeListOf<HTMLAnchorElement>;
 
 	constructor() {
-		this.navLinks = document.querySelectorAll(
-			'.nav-sidebar a[data-page], .sm-panel a[data-page]'
-		);
+		this.navLinks = document.querySelectorAll('.nav-sidebar a[data-page], .sm-panel a[data-page]');
 		const path = normalizePath(window.location.pathname);
 		const parentPath = findSubRouteParent(path);
 		if (parentPath) {
@@ -90,9 +88,7 @@ class SPANavigation {
 	}
 
 	private bindSubRouteNav(): void {
-		const links = document.querySelectorAll<HTMLAnchorElement>(
-			'.nav-sidebar a[data-page], .sm-panel a[data-page]'
-		);
+		const links = document.querySelectorAll<HTMLAnchorElement>('.nav-sidebar a[data-page], .sm-panel a[data-page]');
 		links.forEach((link) => {
 			link.addEventListener('click', (e) => {
 				const isExternal = link.hasAttribute('target') && link.getAttribute('target') === '_blank';
@@ -212,11 +208,9 @@ class SPANavigation {
 		this.updatePageTitle(targetPage);
 		this.initializePage(targetPage);
 
-		const link = document.querySelector<HTMLAnchorElement>(
-			`.nav-sidebar a[data-page="${targetPage}"]`
-		) || document.querySelector<HTMLAnchorElement>(
-			`.sm-panel a[data-page="${targetPage}"]`
-		);
+		const link =
+			document.querySelector<HTMLAnchorElement>(`.nav-sidebar a[data-page="${targetPage}"]`) ||
+			document.querySelector<HTMLAnchorElement>(`.sm-panel a[data-page="${targetPage}"]`);
 		if (link) this.updateNavState(link, targetPage);
 	}
 
