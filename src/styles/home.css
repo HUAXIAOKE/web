@@ -1,0 +1,185 @@
+.box-main {
+	position: relative;
+	width: 20%;
+	height: 100%;
+	overflow: hidden;
+	transition: 0.5s;
+	color: #fff;
+}
+
+.box-main:hover {
+	width: 80%;
+}
+
+.box-main:hover .box-maintext {
+	opacity: 1;
+	transform: translateY(0);
+	transition-delay: 200ms;
+}
+
+.box-main img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.box-maintitle {
+	position: absolute;
+	top: 0;
+	font-size: 1.5rem;
+	z-index: 2;
+	text-align: center;
+	width: 100%;
+	padding: 1rem 0 1.5rem;
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), transparent);
+}
+
+.box-maintext {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	font-size: 1.5rem;
+	padding: 1rem 1rem 1.5rem;
+	text-align: center;
+	z-index: 2;
+	opacity: 0;
+	transform: translateY(100%);
+	transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+	background: linear-gradient(to top, rgba(190, 198, 244, 0.8), transparent);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.box-main::before {
+	content: '';
+	position: absolute;
+	background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), transparent 25%, transparent 50%, rgba(0, 0, 0, 0.25));
+	inset: 0;
+	z-index: 1;
+}
+
+#blackboard {
+	position: relative;
+	isolation: isolate;
+	background: var(--bb-bg);
+	border: 8px solid var(--bb-border);
+	box-shadow: var(--bb-drop-1), var(--bb-drop-2), var(--bb-inner);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	transition:
+		background 0.35s ease,
+		border-color 0.35s ease,
+		box-shadow 0.35s ease;
+	margin: 0 auto;
+	width: 1320px;
+	height: 700px;
+	display: flex;
+	border-radius: 20px;
+	overflow: hidden;
+	flex-direction: row;
+	user-select: none;
+}
+
+#blackboard::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: 10px;
+	pointer-events: none;
+	background: var(--bb-rim);
+	mix-blend-mode: soft-light;
+	opacity: 0.9;
+	transition: opacity 0.35s ease;
+	z-index: 0;
+}
+
+#blackboard::after {
+	content: '';
+	position: absolute;
+	inset: -1px;
+	border-radius: 12px;
+	pointer-events: none;
+	background:
+		radial-gradient(120% 120% at 0% 0%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.08) 35%, rgba(255, 255, 255, 0) 60%),
+		radial-gradient(120% 120% at 100% 100%, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.12) 35%, rgba(0, 0, 0, 0) 60%);
+	opacity: 0.7;
+	transition: opacity 0.35s ease;
+	z-index: 0;
+}
+
+#blackboard:hover {
+	box-shadow:
+		0 12px 24px rgba(0, 0, 0, 0.3),
+		0 4px 10px rgba(0, 0, 0, 0.22),
+		inset 0 1px 0 rgba(255, 255, 255, 0.6),
+		inset 0 -2px 12px rgba(0, 0, 0, 0.16);
+}
+
+html.dark #blackboard:hover {
+	box-shadow:
+		0 12px 24px rgba(0, 0, 0, 0.65),
+		0 6px 16px rgba(0, 0, 0, 0.5),
+		inset 0 1px 0 rgba(255, 255, 255, 0.12),
+		inset 0 -2px 14px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 1400px) {
+	#blackboard {
+		width: 95%;
+		height: 60vh;
+	}
+	.box-main {
+		width: 20%;
+	}
+	.box-main:hover {
+		width: 70%;
+	}
+	.box-maintitle {
+		font-size: 1.2rem;
+	}
+	.box-maintext {
+		font-size: 1.1rem;
+	}
+}
+
+@media (max-width: 900px) {
+	#blackboard {
+		width: 90%;
+		height: auto;
+		flex-direction: column;
+		padding: 16px;
+		gap: 12px;
+	}
+	.box-main {
+		width: 100%;
+		height: 120px;
+		flex-shrink: 0;
+		border-radius: 8px;
+	}
+	.box-main:hover {
+		width: 100%;
+		height: 280px;
+	}
+	.box-main img {
+		object-fit: cover;
+	}
+	.box-maintitle {
+		font-size: 1rem;
+		top: 0;
+		padding-top: 0.5rem;
+	}
+	.box-maintext {
+		font-size: 0.9rem;
+	}
+}
+
+@media (max-width: 480px) {
+	.box-main {
+		height: 90px;
+	}
+	.box-main:hover {
+		height: 200px;
+	}
+}

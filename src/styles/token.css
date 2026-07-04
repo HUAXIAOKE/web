@@ -1,0 +1,27 @@
+:root {
+	--hxk-accent: #4664b4;
+	--hxk-accent-weak: rgba(70, 100, 180, 0.12);
+	--hxk-accent-faint: rgba(70, 100, 180, 0.08);
+	--hxk-text: #1b1f29;
+	--hxk-text-secondary: rgba(70, 100, 180, 0.55);
+	--hxk-muted: #5d6b88;
+	--hxk-surface: rgba(255, 255, 255, 0.35);
+	--hxk-surface-light: rgba(255, 255, 255, 0.45);
+	--hxk-border: rgba(70, 100, 180, 0.28);
+	--hxk-shadow-1: 0 8px 4px rgba(0, 0, 0, 0.18);
+	--hxk-shadow-2: 0 6px 8px rgba(0, 0, 0, 0.12);
+}
+
+html.dark {
+	--hxk-accent: #a9c1ff;
+	--hxk-accent-weak: rgba(169, 193, 255, 0.1);
+	--hxk-accent-faint: rgba(255, 255, 255, 0.1);
+	--hxk-text: #eaeefb;
+	--hxk-text-secondary: rgba(169, 193, 255, 0.45);
+	--hxk-muted: #a9b4d6;
+	--hxk-surface: rgba(25, 25, 25, 0.4);
+	--hxk-surface-light: rgba(25, 25, 25, 0.45);
+	--hxk-border: rgba(169, 193, 255, 0.2);
+	--hxk-shadow-1: 0 2px 2px rgba(0, 0, 0, 0.55);
+	--hxk-shadow-2: 0 2px 2px rgba(0, 0, 0, 0.45);
+}

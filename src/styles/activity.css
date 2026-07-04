@@ -1,23 +1,23 @@
 :root {
-	--news-accent: #4664b4;
-	--news-accent-weak: rgba(70, 100, 180, 0.15);
-	--news-surface: rgba(255, 255, 255, 0.45);
-	--news-border: rgba(70, 100, 180, 0.28);
-	--news-text: #1b1f29;
-	--news-muted: #5d6b88;
-	--news-shadow-1: 0 8px 4px rgba(0, 0, 0, 0.18);
-	--news-shadow-2: 0 6px 8px rgba(0, 0, 0, 0.12);
+	--news-accent: var(--hxk-accent);
+	--news-accent-weak: var(--hxk-accent-weak);
+	--news-surface: var(--hxk-surface-light);
+	--news-border: var(--hxk-border);
+	--news-text: var(--hxk-text);
+	--news-muted: var(--hxk-muted);
+	--news-shadow-1: var(--hxk-shadow-1);
+	--news-shadow-2: var(--hxk-shadow-2);
 }
 
 html.dark {
-	--news-accent: #a9c1ff;
-	--news-accent-weak: rgba(169, 193, 255, 0.12);
-	--news-surface: rgba(25, 25, 25, 0.45);
-	--news-border: rgba(169, 193, 255, 0.22);
-	--news-text: #eaeefb;
-	--news-muted: #a9b4d6;
-	--news-shadow-1: 0 2px 2px rgba(0, 0, 0, 0.55);
-	--news-shadow-2: 0 2px 2px rgba(0, 0, 0, 0.45);
+	--news-accent: var(--hxk-accent);
+	--news-accent-weak: var(--hxk-accent-weak);
+	--news-surface: var(--hxk-surface-light);
+	--news-border: var(--hxk-border);
+	--news-text: var(--hxk-text);
+	--news-muted: var(--hxk-muted);
+	--news-shadow-1: var(--hxk-shadow-1);
+	--news-shadow-2: var(--hxk-shadow-2);
 }
 
 /* 容器 */
@@ -633,4 +633,83 @@ html.dark .news-tabs .tab.active {
 		font-size: 0.9rem;
 		line-height: 1.55;
 	}
+}
+
+.activity-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 4000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.45);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+	animation: overlay-fade-in 0.25s ease;
+}
+
+@keyframes overlay-fade-in {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+.activity-overlay-card {
+	width: 90vw;
+	max-width: 820px;
+	max-height: 90vh;
+	overflow-y: auto;
+	scrollbar-width: none;
+	padding: 1.5rem;
+	border-radius: 18px;
+	background: rgba(255, 255, 255, 0.65);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	box-shadow:
+		0 20px 60px rgba(0, 0, 0, 0.3),
+		0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+	animation: overlay-card-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes overlay-card-in {
+	from { opacity: 0; transform: scale(0.95) translateY(10px); }
+	to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes overlay-fade-out {
+	from { opacity: 1; }
+	to { opacity: 0; }
+}
+
+@keyframes overlay-card-out {
+	from { opacity: 1; transform: scale(1) translateY(0); }
+	to { opacity: 0; transform: scale(0.95) translateY(10px); }
+}
+
+.activity-overlay.closing {
+	animation: overlay-fade-out 0.2s ease forwards;
+}
+
+.activity-overlay-card.closing {
+	animation: overlay-card-out 0.2s ease forwards;
+}
+
+.activity-overlay-card::-webkit-scrollbar {
+	display: none;
+}
+
+html.dark .activity-overlay-card {
+	background: rgba(20, 20, 30, 0.75);
+	border-color: rgba(255, 255, 255, 0.08);
+}
+
+.activity-overlay-card .detail-actions,
+.activity-overlay-card .signup-actions {
+	justify-content: center;
+	gap: 1rem;
+}
+
+.activity-overlay-card .overlay-close-btn,
+.activity-overlay-card .detail-back {
+	cursor: pointer;
 }

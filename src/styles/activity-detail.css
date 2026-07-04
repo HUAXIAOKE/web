@@ -1,19 +1,19 @@
 :root {
-	--detail-accent: #4664b4;
-	--detail-accent-weak: rgba(70, 100, 180, 0.12);
-	--detail-surface: rgba(255, 255, 255, 0.35);
-	--detail-border: rgba(70, 100, 180, 0.28);
-	--detail-text: #1b1f29;
-	--detail-muted: #5d6b88;
+	--detail-accent: var(--hxk-accent);
+	--detail-accent-weak: var(--hxk-accent-weak);
+	--detail-surface: var(--hxk-surface);
+	--detail-border: var(--hxk-border);
+	--detail-text: var(--hxk-text);
+	--detail-muted: var(--hxk-muted);
 }
 
 html.dark {
-	--detail-accent: #a9c1ff;
-	--detail-accent-weak: rgba(169, 193, 255, 0.1);
-	--detail-surface: rgba(25, 25, 25, 0.4);
-	--detail-border: rgba(169, 193, 255, 0.2);
-	--detail-text: #eaeefb;
-	--detail-muted: #a9b4d6;
+	--detail-accent: var(--hxk-accent);
+	--detail-accent-weak: var(--hxk-accent-weak);
+	--detail-surface: var(--hxk-surface);
+	--detail-border: var(--hxk-border);
+	--detail-text: var(--hxk-text);
+	--detail-muted: var(--hxk-muted);
 }
 
 .activity-detail-page {

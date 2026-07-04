@@ -6,21 +6,21 @@
 
 :root {
 	--dl-bg: #f0f0eb;
-	--dl-ink: #1b1f29;
-	--dl-accent: #4664b4;
+	--dl-ink: var(--hxk-text);
+	--dl-accent: var(--hxk-accent);
 	--dl-accent2: #e8180a;
 	--dl-online: #00c853;
-	--dl-muted: #6b7894;
+	--dl-muted: var(--hxk-muted);
 	--dl-banner: #5a7ec0;
 }
 
 html.dark {
 	--dl-bg: #1a1a1a;
-	--dl-ink: #eaeefb;
-	--dl-accent: #a9c1ff;
+	--dl-ink: var(--hxk-text);
+	--dl-accent: var(--hxk-accent);
 	--dl-accent2: #ff5a4d;
 	--dl-online: #00c853;
-	--dl-muted: #8a95b4;
+	--dl-muted: var(--hxk-muted);
 	--dl-banner: #8aa4e0;
 }
 

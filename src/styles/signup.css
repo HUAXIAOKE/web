@@ -1,23 +1,23 @@
 :root {
-	--signup-accent: #4664b4;
-	--signup-accent-weak: rgba(70, 100, 180, 0.12);
-	--signup-surface: rgba(255, 255, 255, 0.35);
-	--signup-border: rgba(70, 100, 180, 0.28);
-	--signup-text: #1b1f29;
-	--signup-muted: #5d6b88;
 	--signup-input-bg: rgba(255, 255, 255, 0.55);
 	--signup-error: #e05555;
+	--signup-accent: var(--hxk-accent);
+	--signup-accent-weak: var(--hxk-accent-weak);
+	--signup-surface: var(--hxk-surface);
+	--signup-border: var(--hxk-border);
+	--signup-text: var(--hxk-text);
+	--signup-muted: var(--hxk-muted);
 }
 
 html.dark {
-	--signup-accent: #a9c1ff;
-	--signup-accent-weak: rgba(169, 193, 255, 0.1);
-	--signup-surface: rgba(25, 25, 25, 0.4);
-	--signup-border: rgba(169, 193, 255, 0.2);
-	--signup-text: #eaeefb;
-	--signup-muted: #a9b4d6;
 	--signup-input-bg: rgba(35, 35, 45, 0.65);
 	--signup-error: #ff7b7b;
+	--signup-accent: var(--hxk-accent);
+	--signup-accent-weak: var(--hxk-accent-weak);
+	--signup-surface: var(--hxk-surface);
+	--signup-border: var(--hxk-border);
+	--signup-text: var(--hxk-text);
+	--signup-muted: var(--hxk-muted);
 }
 
 .signup-page {
