@@ -52,6 +52,8 @@ const placeNow = (el: HTMLElement, slot: Slot, skew: number): void => {
 let tlRef: gsap.core.Timeline | null = null;
 let intervalRef: number = 0;
 let order: number[] = [];
+let pauseCarousel: (() => void) | null = null;
+let resumeCarousel: (() => void) | null = null;
 
 function splitChars(container: HTMLElement, text: string): void {
 	const sanitized = text.replace(/\n/g, ' ');
@@ -78,9 +80,10 @@ function animateTextIn(
 	contentEl.innerHTML = textContent;
 
 	const chars = Array.from(titleEl.querySelectorAll('.char'));
-	gsap.set(chars, { y: '100%' });
-
-	tl.fromTo(chars, { y: '100%' }, { y: 0, duration: 0.5, stagger: 0.05, ease: 'power3.out' }, label);
+	if (chars.length) {
+		gsap.set(chars, { y: '100%' });
+		tl.fromTo(chars, { y: '100%' }, { y: 0, duration: 0.5, stagger: 0.05, ease: 'power3.out' }, label);
+	}
 	tl.fromTo(contentEl, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out' }, `${label}+=0.15`);
 }
 
@@ -91,7 +94,9 @@ function animateTextOut(
 	label: string
 ): void {
 	const chars = Array.from(titleEl.querySelectorAll('.char'));
-	tl.to(chars, { y: '-100%', duration: 0.35, stagger: 0.04, ease: 'power3.in' }, label);
+	if (chars.length) {
+		tl.to(chars, { y: '-100%', duration: 0.35, stagger: 0.04, ease: 'power3.in' }, label);
+	}
 	tl.to(contentEl, { y: -15, opacity: 0, duration: 0.2, ease: 'power2.in' }, label);
 }
 
@@ -173,8 +178,11 @@ async function initDesktop(
 		placeNow(r, makeSlot(i, DEFAULTS.cardDistance, DEFAULTS.verticalDistance, total), DEFAULTS.skewAmount)
 	);
 
-	titleEl.textContent = cards[order[0]].title;
+	splitChars(titleEl, cards[order[0]].title);
 	contentEl.innerHTML = cards[order[0]].content;
+	const initChars = Array.from(titleEl.querySelectorAll('.char'));
+	if (initChars.length) gsap.set(initChars, { y: 0 });
+	gsap.set(contentEl, { y: 0, opacity: 1 });
 
 	const doSwap = () =>
 		swap(refs, cards, total, DEFAULTS.skewAmount, DEFAULTS.cardDistance, DEFAULTS.verticalDistance, DEFAULTS, titleEl, contentEl);
@@ -186,9 +194,12 @@ async function initDesktop(
 		clearInterval(intervalRef);
 	};
 	const resume = (): void => {
+		clearInterval(intervalRef);
 		tlRef?.play();
 		intervalRef = window.setInterval(doSwap, DEFAULTS.delay);
 	};
+	pauseCarousel = pause;
+	resumeCarousel = resume;
 	inner.addEventListener('mouseenter', pause);
 	inner.addEventListener('mouseleave', resume);
 }
@@ -240,15 +251,16 @@ function initMobile(
 		contentEl.innerHTML = card.content;
 
 		const chars = Array.from(titleEl.querySelectorAll('.char'));
-		gsap.set(chars, { y: '100%' });
+		if (chars.length) {
+			gsap.set(chars, { y: '100%' });
+			gsap.to(chars, {
+				y: 0,
+				duration: 0.35,
+				stagger: 0.035,
+				ease: 'power3.out',
+			});
+		}
 		gsap.set(contentEl, { y: 20, opacity: 0 });
-
-		gsap.to(chars, {
-			y: 0,
-			duration: 0.35,
-			stagger: 0.035,
-			ease: 'power3.out',
-		});
 		gsap.to(contentEl, {
 			y: 0,
 			opacity: 1,
@@ -336,8 +348,12 @@ function initMobile(
 		intervalRef = window.setInterval(goNext, DEFAULTS.delay);
 	};
 
-	titleEl.textContent = cards[0].title;
-	contentEl.innerHTML = cards[0].content;
+	const pause = (): void => clearInterval(intervalRef);
+	const resume = (): void => scheduleAdvance();
+	pauseCarousel = pause;
+	resumeCarousel = resume;
+
+	updateText(cards[0]);
 	scheduleAdvance();
 }
 
@@ -362,6 +378,21 @@ async function initCardSwap(): Promise<void> {
 		initMobile(cards, container, titleEl, contentEl);
 	} else {
 		initDesktop(cards, container, titleEl, contentEl);
+	}
+
+	const aboutPage = document.getElementById('page-about');
+	if (aboutPage && pauseCarousel && resumeCarousel) {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) resumeCarousel!();
+					else pauseCarousel!();
+				});
+			},
+			{ threshold: 0 }
+		);
+		observer.observe(aboutPage);
+		if (getComputedStyle(aboutPage).display === 'none') pauseCarousel!();
 	}
 }
 

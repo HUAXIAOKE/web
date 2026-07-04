@@ -242,6 +242,9 @@ class SPANavigation {
 				}, 50);
 				break;
 			case 'download':
+				setTimeout(() => {
+					document.dispatchEvent(new CustomEvent('download-page-shown'));
+				}, 50);
 				break;
 		}
 	}

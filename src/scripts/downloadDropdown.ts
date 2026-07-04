@@ -28,7 +28,14 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 	const pageInfo = document.querySelector<HTMLSpanElement>('.dl-page-info');
 
 	const API = (window as unknown as { API_BASE?: string }).API_BASE || '';
-	const PER_PAGE = 6;
+	const MIN_COL_WIDTH = 240;
+	const MIN_ROW_HEIGHT = 220;
+
+	let perPage = 8;
+	let animating = false;
+
+	const EXIT_MS = 200;
+	const ENTER_MS = 280;
 
 	let currentFilter = 'all';
 	let currentSort = 'new';
@@ -173,24 +180,87 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 	};
 
 	const isMobile = (): boolean => window.matchMedia('(max-width: 900px)').matches;
+	const prefersReducedMotion = (): boolean => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-	const render = (): void => {
+	const setPagerLocked = (locked: boolean): void => {
+		if (prevBtn) prevBtn.disabled = locked;
+		if (nextBtn) nextBtn.disabled = locked;
+	};
+
+	const clearAnimateState = (): void => {
+		grid.removeAttribute('data-animate');
+		animating = false;
+		setPagerLocked(false);
+	};
+
+	const computeGridLayout = (): number => {
+		if (isMobile()) return perPage;
+
+		const w = grid.clientWidth;
+		const h = grid.clientHeight;
+		if (!w || !h) return perPage;
+
+		const gap = parseFloat(getComputedStyle(grid).gap) || 16;
+		const cols = Math.max(1, Math.floor((w + gap) / (MIN_COL_WIDTH + gap)));
+		const rows = Math.max(1, Math.floor((h + gap) / (MIN_ROW_HEIGHT + gap)));
+
+		grid.style.setProperty('--dl-cols', String(cols));
+		grid.style.setProperty('--dl-rows', String(rows));
+
+		return cols * rows;
+	};
+
+	const updateLayout = (): void => {
+		if (isMobile()) return;
+		const next = computeGridLayout();
+		if (next === perPage) return;
+		perPage = next;
+		const totalPages = Math.max(1, Math.ceil(getFiltered().length / perPage));
+		if (currentPage > totalPages) currentPage = totalPages;
+		render();
+	};
+
+	const render = (options?: { animate?: boolean }): void => {
+		const shouldAnimate = (options?.animate ?? false) && !isMobile() && !prefersReducedMotion();
+
 		const filtered = getFiltered();
 		let pageItems = filtered;
 
 		if (!isMobile()) {
-			const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+			const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
 			if (currentPage > totalPages) currentPage = totalPages;
 			if (currentPage < 1) currentPage = 1;
-			const start = (currentPage - 1) * PER_PAGE;
-			pageItems = filtered.slice(start, start + PER_PAGE);
+			const start = (currentPage - 1) * perPage;
+			pageItems = filtered.slice(start, start + perPage);
 			if (pageInfo) pageInfo.innerHTML = `<b>${currentPage}</b> / ${totalPages}`;
 			if (prevBtn) prevBtn.style.visibility = currentPage <= 1 ? 'hidden' : 'visible';
 			if (nextBtn) nextBtn.style.visibility = currentPage >= totalPages ? 'hidden' : 'visible';
 		}
 
-		grid.innerHTML = pageItems.length ? pageItems.map(cardHTML).join('') : '<div class="dl-empty">暂无资源</div>';
-		bindCardButtons();
+		const html = pageItems.length ? pageItems.map(cardHTML).join('') : '<div class="dl-empty">暂无资源</div>';
+
+		const mount = (): void => {
+			grid.innerHTML = html;
+			bindCardButtons();
+			if (shouldAnimate && pageItems.length) {
+				animating = true;
+				setPagerLocked(true);
+				grid.setAttribute('data-animate', 'in');
+				window.setTimeout(clearAnimateState, ENTER_MS + 20);
+			} else {
+				clearAnimateState();
+			}
+		};
+
+		if (shouldAnimate && grid.querySelector('.dl-card') && !animating) {
+			animating = true;
+			setPagerLocked(true);
+			grid.setAttribute('data-animate', 'out');
+			window.setTimeout(mount, EXIT_MS);
+			return;
+		}
+
+		mount();
 	};
 
 	const progressHTML = (): string => {
@@ -335,12 +405,12 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 		}
 	};
 
-	const fetchList = async (): Promise<void> => {
+	const fetchList = async (animate = false): Promise<void> => {
 		try {
 			const res = await fetch(`${API}/api/downloads?category=all&sort=${currentSort}`);
 			if (!res.ok) return;
 			cache = await res.json();
-			render();
+			render(animate ? { animate: true } : undefined);
 		} catch {
 			/* ignore */
 		}
@@ -353,39 +423,53 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 
 	items.forEach((item) => {
 		item.addEventListener('click', () => {
+			if (animating) return;
 			items.forEach((i) => i.classList.remove('active'));
 			item.classList.add('active');
 			if (label) label.textContent = item.textContent;
 			currentSort = item.dataset.value || 'new';
 			currentPage = 1;
 			toggle(false);
-			fetchList();
+			fetchList(true);
 		});
 	});
 
 	chips.forEach((chip) => {
 		chip.addEventListener('click', () => {
+			if (animating) return;
 			chips.forEach((c) => c.classList.remove('active'));
 			chip.classList.add('active');
 			currentFilter = chip.dataset.filter || 'all';
 			currentPage = 1;
-			render();
+			render({ animate: true });
 		});
 	});
 
 	prevBtn?.addEventListener('click', () => {
-		if (currentPage > 1) {
-			currentPage--;
-			render();
-		}
+		if (animating || currentPage <= 1) return;
+		currentPage--;
+		render({ animate: true });
 	});
 
 	nextBtn?.addEventListener('click', () => {
-		const totalPages = Math.max(1, Math.ceil(getFiltered().length / PER_PAGE));
+		if (animating) return;
+		const totalPages = Math.max(1, Math.ceil(getFiltered().length / perPage));
 		if (currentPage < totalPages) {
 			currentPage++;
-			render();
+			render({ animate: true });
 		}
+	});
+
+	const layoutObserver = new ResizeObserver(() => updateLayout());
+	layoutObserver.observe(grid);
+	document.addEventListener('download-page-shown', updateLayout);
+	window.matchMedia('(max-width: 900px)').addEventListener('change', () => {
+		if (isMobile()) {
+			currentPage = 1;
+		} else {
+			updateLayout();
+		}
+		render();
 	});
 
 	document.addEventListener('click', (e) => {
