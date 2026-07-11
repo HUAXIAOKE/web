@@ -100,6 +100,11 @@ function initStaggeredMenu(): void {
 		openTimeline = null;
 		closeTween?.kill();
 
+		const activeEl = document.activeElement;
+		if (activeEl && panel?.contains(activeEl)) {
+			(activeEl as HTMLElement).blur();
+		}
+
 		const all = [...prelayers, panel] as HTMLElement[];
 		closeTween = gsap.to(all, {
 			xPercent: offscreen,

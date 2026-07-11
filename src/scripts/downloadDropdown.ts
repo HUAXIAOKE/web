@@ -28,8 +28,7 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 	const pageInfo = document.querySelector<HTMLSpanElement>('.dl-page-info');
 
 	const API = (window as unknown as { API_BASE?: string }).API_BASE || '';
-	const MIN_COL_WIDTH = 240;
-	const MIN_ROW_HEIGHT = 220;
+const MIN_COL_WIDTH = 240;
 
 	let perPage = 8;
 	let animating = false;
@@ -191,22 +190,19 @@ const STAR_PATH = 'M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8
 		setPagerLocked(false);
 	};
 
-	const computeGridLayout = (): number => {
-		if (isMobile()) return perPage;
+const computeGridLayout = (): number => {
+  if (isMobile()) return perPage;
 
-		const w = grid.clientWidth;
-		const h = grid.clientHeight;
-		if (!w || !h) return perPage;
+  const w = grid.clientWidth;
+  if (!w) return perPage;
 
-		const gap = parseFloat(getComputedStyle(grid).gap) || 16;
-		const cols = Math.max(1, Math.floor((w + gap) / (MIN_COL_WIDTH + gap)));
-		const rows = Math.max(1, Math.floor((h + gap) / (MIN_ROW_HEIGHT + gap)));
+  const gap = parseFloat(getComputedStyle(grid).gap) || 16;
+  const cols = Math.max(1, Math.floor((w + gap) / (MIN_COL_WIDTH + gap)));
 
-		grid.style.setProperty('--dl-cols', String(cols));
-		grid.style.setProperty('--dl-rows', String(rows));
+  grid.style.setProperty('--dl-cols', String(cols));
 
-		return cols * rows;
-	};
+  return cols * 2;
+};
 
 	const updateLayout = (): void => {
 		if (isMobile()) return;

@@ -203,6 +203,10 @@ canvas {
 		align-items: flex-start;
 		overflow-y: auto;
 		overflow-x: hidden;
+		scrollbar-width: none;
+	}
+	#page-download::-webkit-scrollbar {
+		display: none;
 	}
 	#page-gallery {
 		height: 100dvh;
