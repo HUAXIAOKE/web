@@ -588,7 +588,7 @@ table {
 th,
 td {
 	padding: 12px 14px;
-	text-align: left;
+	text-align: center;
 	font-family: var(--font-zh);
 	font-size: 13px;
 	border-bottom: 2px solid var(--ink);
@@ -1459,7 +1459,6 @@ td img {
 	max-width: 320px;
 	font-family: var(--font-zh);
 	font-size: 12px;
-	text-align: left;
 	word-break: break-all;
 	line-height: 1.6;
 	color: var(--ink);
