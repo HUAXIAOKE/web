@@ -49,7 +49,6 @@ import "../../styles/activity-now.css";
     document.addEventListener('DOMContentLoaded', () => {
       const waves = document.getElementById('waves');
       if (waves) {
-        // 完整动画周期 5s 后移除 tide-enter class，恢复纯漂移动画
         setTimeout(() => {
           waves.classList.remove('tide-enter');
         }, 5500);
