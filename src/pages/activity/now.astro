@@ -1,6 +1,19 @@
 ---
 import activity001 from "../../assets/img/activity001.png";
+import activity002 from "../../assets/img/activity002.png";
+import signupArt from "../../assets/img/signup.svg";
 import "../../styles/activity-now.css";
+
+const maskStyle = `-webkit-mask-image: url('${signupArt.src}'); mask-image: url('${signupArt.src}');`;
+const waveLayers = ['se-w1', 'se-w2', 'se-w3', 'se-w4'];
+const chunks = [
+	{ left: 0, right: 83.33 },
+	{ left: 16.67, right: 66.67 },
+	{ left: 33.33, right: 50 },
+	{ left: 50, right: 33.33 },
+	{ left: 66.67, right: 16.67 },
+	{ left: 83.33, right: 0 },
+];
 ---
 
 <!doctype html>
@@ -20,6 +33,21 @@ import "../../styles/activity-now.css";
       <p class="activity-now-kicker">Activity Registration</p>
       <h1 class="activity-now-title">新生歌会</h1>
     </div>
+
+    <button class="signup-entry" id="signup-entry" type="button" aria-label="立即报名">
+      <span class="se-layer se-outline" style={maskStyle}></span>
+      {chunks.map((c) => (
+        <span class="se-chunk" style={`clip-path: inset(-10% ${c.right}% -10% ${c.left}%);`}>
+          {waveLayers.map((layerCls) => (
+            <span class={`se-layer ${layerCls}`} style={maskStyle}></span>
+          ))}
+          <span class="se-layer se-liquid" style={maskStyle}>
+            <span class="se-liquid-wave se-liquid-wave-a"></span>
+            <span class="se-liquid-wave se-liquid-wave-b"></span>
+          </span>
+        </span>
+      ))}
+    </button>
 
     <div class="waves tide-enter" id="waves" aria-hidden="true">
       <div class="wave wave-1">
@@ -43,17 +71,61 @@ import "../../styles/activity-now.css";
         </svg>
       </div>
     </div>
+
+    <div class="waves-side" id="waves-side" aria-hidden="true">
+      <div class="wave-side wave-side-1">
+        <svg viewBox="0 0 320 1440" preserveAspectRatio="none">
+          <path d="M40,0 C0,120 80,240 40,360 C0,480 80,600 40,720 C0,840 80,960 40,1080 C0,1200 80,1320 40,1440 L320,1440 L320,0 Z" />
+        </svg>
+      </div>
+      <div class="wave-side wave-side-2">
+        <svg viewBox="0 0 320 1440" preserveAspectRatio="none">
+          <path d="M40,0 C80,120 0,240 40,360 C80,480 0,600 40,720 C80,840 0,960 40,1080 C80,1200 0,1320 40,1440 L320,1440 L320,0 Z" />
+        </svg>
+      </div>
+      <div class="wave-side wave-side-3">
+        <svg viewBox="0 0 320 1440" preserveAspectRatio="none">
+          <path d="M40,0 C0,120 80,240 40,360 C0,480 80,600 40,720 C0,840 80,960 40,1080 C0,1200 80,1320 40,1440 L320,1440 L320,0 Z" />
+        </svg>
+      </div>
+      <div class="wave-side wave-side-4">
+        <svg viewBox="0 0 320 1440" preserveAspectRatio="none">
+          <path d="M40,0 C80,120 0,240 40,360 C80,480 0,600 40,720 C80,840 0,960 40,1080 C80,1200 0,1320 40,1440 L320,1440 L320,0 Z" />
+        </svg>
+      </div>
+    </div>
+
+    <div class="signup-panel" id="signup-panel">
+      <button class="signup-panel-close" id="signup-close" type="button" aria-label="关闭">×</button>
+      <h2 class="signup-panel-title">新生歌会</h2>
+      <p class="signup-panel-subtitle">提交前请先阅读注意事项哦~</p>
+      <form class="signup-panel-form" id="now-signup-form">
+        <div id="now-form-fields"></div>
+        <div id="now-attachment-field" class="signup-field" style="display:none">
+          <label>附件<span class="required">*</span></label>
+          <div class="signup-file-wrap" id="now-file-wrap">
+            <input type="file" id="now-attachment" name="attachment" accept=".zip,.rar,.7z,.tar,.bz2,.tar.xz,.tar.gz,.tgz,application/zip,application/x-rar-compressed,application/x-7z-compressed" />
+            <label for="now-attachment" class="signup-file-trigger">
+              <span class="signup-file-icon">⇪</span>
+              <span class="signup-file-text">点击或拖拽上传压缩包</span>
+            </label>
+            <div class="signup-file-list" id="now-file-list"></div>
+          </div>
+        </div>
+        <div id="now-instructions" class="signup-panel-instructions" style="display:none">
+          <h3>递交须知</h3>
+          <div id="now-instructions-content"></div>
+        </div>
+        <button type="submit" class="signup-panel-submit">提交报名</button>
+      </form>
+      <p class="signup-panel-error" id="signup-panel-error" style="display:none">未获取到活动信息，无法报名</p>
+    </div>
+
+    <img class="signup-character" id="signup-character" src={activity002.src} alt="" draggable="false" />
   </div>
 
-  <script is:inline>
-    document.addEventListener('DOMContentLoaded', () => {
-      const waves = document.getElementById('waves');
-      if (waves) {
-        setTimeout(() => {
-          waves.classList.remove('tide-enter');
-        }, 5500);
-      }
-    });
+  <script>
+    import "../../scripts/activity-now";
   </script>
 </body>
 </html>
