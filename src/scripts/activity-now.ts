@@ -91,6 +91,7 @@ function initActivityNow(): void {
 		isOpen = true;
 		entered = false;
 		entry.classList.remove('is-on');
+		character?.classList.remove('is-out');
 		overlay?.classList.add('is-deep');
 		wavesSide?.classList.add('rise');
 		setTimeout(() => panel?.classList.add('is-in'), 1000);
@@ -102,10 +103,12 @@ function initActivityNow(): void {
 		isOpen = false;
 		panel?.classList.remove('is-in');
 		character?.classList.remove('is-in');
+		character?.classList.add('is-out');
 		setTimeout(() => {
+			character?.classList.remove('is-out');
 			wavesSide?.classList.remove('rise');
 			overlay?.classList.remove('is-deep');
-		}, 300);
+		}, 700);
 		setTimeout(() => playEnter(), 1300);
 	}
 
