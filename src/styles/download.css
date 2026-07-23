@@ -36,7 +36,6 @@ html.dark {
 	flex-direction: column;
 	padding: 1.5rem 2rem;
 	overflow: hidden;
-	max-width: 1320px;
 	width: 100%;
 	min-height: 0;
 	align-self: stretch;
