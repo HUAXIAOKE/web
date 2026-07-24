@@ -74,9 +74,11 @@ const MIN_COL_WIDTH = 240;
 				<span class="dl-card-status">● HOT</span>
 			</div>
 			<div class="dl-card-body">
-				<div class="dl-card-handle">@huaxiaoke</div>
-				<h3 class="dl-card-name">${d.name}</h3>
-				<p class="dl-card-bio">${d.description}</p>
+				<div class="dl-card-body-left">
+					<div class="dl-card-handle">@huaxiaoke</div>
+					<h3 class="dl-card-name">${d.name}</h3>
+				</div>
+				<p class="dl-card-bio"><span class="dl-card-bio-text">${d.description}</span></p>
 			</div>
 			<div class="dl-card-stats">
 				<div class="dl-stat"><span class="dl-stat-v">${formatDownloads(d.downloads)}</span><span class="dl-stat-l">下载</span></div>
