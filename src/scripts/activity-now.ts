@@ -23,6 +23,7 @@ function initActivityNow(): void {
 	const character = document.getElementById('signup-character');
 	const overlay = document.querySelector('.activity-now-overlay');
 	const closeBtn = document.getElementById('signup-close');
+	const pageBack = document.getElementById('page-back');
 
 	document.addEventListener('selectstart', (e) => e.preventDefault());
 	document.addEventListener('dragstart', (e) => e.preventDefault());
@@ -82,6 +83,7 @@ function initActivityNow(): void {
 	setTimeout(() => {
 		if (waves) waves.classList.remove('tide-enter');
 		playEnter();
+		pageBack?.classList.add('is-visible');
 	}, 5500);
 
 	let isOpen = false;
@@ -114,6 +116,7 @@ function initActivityNow(): void {
 
 	entry?.addEventListener('click', openSignup);
 	closeBtn?.addEventListener('click', closeSignup);
+	pageBack?.addEventListener('click', closeSignup);
 
 	const API = (window as unknown as { API_BASE?: string }).API_BASE || '';
 	const activityId = new URLSearchParams(window.location.search).get('activityId');

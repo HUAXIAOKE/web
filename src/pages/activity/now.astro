@@ -1,7 +1,8 @@
 ---
-import activity001 from "../../assets/img/activity001.png";
-import activity002 from "../../assets/img/activity002.png";
+import activity001 from "../../assets/img/activity001.webp";
+import activity002 from "../../assets/img/activity002.webp";
 import signupArt from "../../assets/img/signup.svg";
+import arrowBack from "../../assets/img/arrow-back.svg";
 import "../../styles/activity-now.css";
 
 const maskStyle = `-webkit-mask-image: url('${signupArt.src}'); mask-image: url('${signupArt.src}');`;
@@ -96,8 +97,11 @@ const chunks = [
     </div>
 
     <div class="signup-panel" id="signup-panel">
-      <button class="signup-panel-close" id="signup-close" type="button" aria-label="关闭">×</button>
     </div>
+
+    <button class="page-back" id="page-back" type="button" aria-label="关闭">
+      <img src={arrowBack.src} alt="" draggable="false" />
+    </button>
 
     <img class="signup-character" id="signup-character" src={activity002.src} alt="" draggable="false" />
   </div>
