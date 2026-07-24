@@ -73,8 +73,9 @@
 		border-color 0.35s ease,
 		box-shadow 0.35s ease;
 	margin: 0 auto;
-	width: 1320px;
-	height: 700px;
+	width: min(100%, calc((100vh - 4rem) * 1.8857));
+	height: auto;
+	aspect-ratio: 1320 / 700;
 	display: flex;
 	border-radius: 20px;
 	overflow: hidden;
