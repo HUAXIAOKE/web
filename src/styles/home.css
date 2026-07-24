@@ -149,6 +149,7 @@ html.dark #blackboard:hover {
 	#blackboard {
 		width: 90%;
 		height: auto;
+		aspect-ratio: unset;
 		flex-direction: column;
 		padding: 16px;
 		gap: 12px;

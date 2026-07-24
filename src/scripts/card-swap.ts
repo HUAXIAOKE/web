@@ -9,15 +9,15 @@ interface AboutCard {
 }
 
 interface Slot {
-	x: number;
-	y: number;
+	x: string;
+	y: string;
 	z: number;
 	zIndex: number;
 }
 
 const DEFAULTS = {
-	cardDistance: 60,
-	verticalDistance: 100,
+	cardDistance: 4,
+	verticalDistance: 6,
 	delay: 7000,
 	skewAmount: 6,
 	durDrop: 2,
@@ -29,8 +29,8 @@ const DEFAULTS = {
 };
 
 const makeSlot = (i: number, distX: number, distY: number, total: number): Slot => ({
-	x: i * distX,
-	y: -i * distY,
+	x: `${i * distX}vw`,
+	y: `${10 - i * distY}vh`,
 	z: -i * distX * 1.5,
 	zIndex: total - i,
 });

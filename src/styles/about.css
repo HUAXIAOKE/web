@@ -12,7 +12,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	padding: 2rem;
+	padding: 2rem 6%;
 	box-sizing: border-box;
 	gap: 5%;
 }
@@ -29,7 +29,7 @@ button {
 .about-intro {
 	flex: 0 0 38%;
 	max-width: 38%;
-	padding-left: 6%;
+	padding-left: 0;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -74,10 +74,10 @@ html.dark .about-text-content {
 
 .cs-container {
 	position: absolute;
-	top: 64%;
-	right: 50%;
-	transform: translate(5%, -50%);
-	transform-origin: center right;
+	top: 50%;
+	right: 60%;
+	transform: translate(60%, -50%);
+	transform-origin: center center;
 	perspective: 900px;
 	overflow: visible;
 }
@@ -86,8 +86,8 @@ html.dark .about-text-content {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	width: 40vw;
-	height: 55vh;
+	width: min(40vw, 480px);
+	height: min(55vh, 600px);
 	border-radius: 12px;
 	border: 1px solid rgba(255, 255, 255, 0.18);
 	background: rgba(255, 255, 255, 0.6);
