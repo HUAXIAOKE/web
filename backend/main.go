@@ -112,6 +112,7 @@ func main() {
 	mux.Handle("DELETE /api/", protected)
 
 	staticDir := handler.StaticDir
+	mux.Handle("/img/signups/", handler.RequireAuth(http.FileServer(http.Dir(staticDir))))
 	mux.Handle("/img/", cacheStatic(http.FileServer(http.Dir(staticDir)), 30*24*time.Hour))
 	mux.Handle("/audio/", cacheStatic(http.FileServer(http.Dir(staticDir)), 7*24*time.Hour))
 	mux.Handle("/font/", cacheStatic(http.FileServer(http.Dir(staticDir)), 30*24*time.Hour))

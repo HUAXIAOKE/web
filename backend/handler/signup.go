@@ -193,7 +193,7 @@ func ExportSubmissions(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	zipPath := filepath.Join(StaticDir, "signups", id+"_export.zip")
+	zipPath := filepath.Join(StaticDir, "img", "signups", id+"_export.zip")
 	os.MkdirAll(filepath.Dir(zipPath), 0755)
 	zipFile, err := os.Create(zipPath)
 	if err != nil {
@@ -253,7 +253,7 @@ func isSignupArchive(filename string) bool {
 }
 
 func UploadSignupFile(w http.ResponseWriter, r *http.Request) {
-	r.Body = http.MaxBytesReader(w, r.Body, 500<<20+4096)
+	r.Body = http.MaxBytesReader(w, r.Body, 300<<20+4096)
 
 	file, header, err := r.FormFile("file")
 	if err != nil {
@@ -262,8 +262,8 @@ func UploadSignupFile(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	if header.Size > 500<<20 {
-		http.Error(w, "文件过大，最大允许 500 MB", http.StatusBadRequest)
+	if header.Size > 300<<20 {
+		http.Error(w, "文件过大，最大允许 300 MB", http.StatusBadRequest)
 		return
 	}
 
@@ -278,7 +278,7 @@ func UploadSignupFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newName := fmt.Sprintf("%d%s", time.Now().UnixMilli(), ext)
-	destDir := filepath.Join(StaticDir, "signups")
+	destDir := filepath.Join(StaticDir, "img", "signups")
 	if err := os.MkdirAll(destDir, 0755); err != nil {
 		http.Error(w, "创建目录失败: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -298,6 +298,6 @@ func UploadSignupFile(w http.ResponseWriter, r *http.Request) {
 	}
 	out.Close()
 
-	urlPath := "/signups/" + newName
+	urlPath := "/img/signups/" + newName
 	writeJSON(w, map[string]string{"url": urlPath})
 }

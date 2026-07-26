@@ -9,6 +9,7 @@ import "../styles/activity.css";
 import "../styles/activity-detail.css";
 
 import Navigation from "../components/Navigation.astro";
+import iconUrl from "../assets/icon.ico";
 
 const { title, description = "Huaxiaoke" } = Astro.props;
 ---
@@ -18,7 +19,7 @@ const { title, description = "Huaxiaoke" } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/x-icon" sizes="32x32" href="/img/icon.ico" />
+    <link rel="icon" type="image/x-icon" sizes="32x32" href={iconUrl} />
     <link rel="preload" as="style" href="/vendor/fontawesome/all.min.css" />
     <link rel="stylesheet" href="/vendor/fontawesome/all.min.css" />
     <title>{title}</title>
