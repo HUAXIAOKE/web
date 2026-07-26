@@ -3,12 +3,22 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"sort"
 	"strconv"
 	"time"
 
 	"huaxiaoke-backend/model"
 	"huaxiaoke-backend/store"
 )
+
+func parseActivityDate(s string) time.Time {
+	for _, layout := range []string{"2006-01-02", "2006-1-2"} {
+		if t, err := time.ParseInLocation(layout, s, time.Local); err == nil {
+			return t
+		}
+	}
+	return time.Time{}
+}
 
 func calcSignupStatus(isSignup int, start, end string) string {
 	if isSignup == 0 {
@@ -32,7 +42,7 @@ func calcSignupStatus(isSignup int, start, end string) string {
 
 func GetActivities(w http.ResponseWriter, r *http.Request) {
 	rows, err := store.DB.Query(
-		`SELECT id, tags, date, image, headline, excerpt, href, is_signup, signup_start, signup_end FROM activity ORDER BY date DESC`,
+		`SELECT id, tags, date, image, headline, excerpt, href, is_signup, signup_start, signup_end FROM activity`,
 	)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -50,6 +60,9 @@ func GetActivities(w http.ResponseWriter, r *http.Request) {
 		a.SignupStatus = calcSignupStatus(a.IsSignup, a.SignupStart, a.SignupEnd)
 		list = append(list, a)
 	}
+	sort.SliceStable(list, func(i, j int) bool {
+		return parseActivityDate(list[i].Date).After(parseActivityDate(list[j].Date))
+	})
 	writeJSON(w, list)
 }
 

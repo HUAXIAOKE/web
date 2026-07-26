@@ -99,7 +99,7 @@ async function initActivity(): Promise<void> {
 			document.dispatchEvent(new CustomEvent('activity-cards-loaded'));
 		}
 
-		const latest = activities.reduce((a, b) => (a.date > b.date ? a : b));
+		const latest = activities[0];
 		const homeBlock = document.getElementById('home-latest-activity');
 		if (homeBlock && latest) {
 			const img = homeBlock.querySelector<HTMLImageElement>('img');
