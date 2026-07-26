@@ -15,7 +15,7 @@ import SubLayout from "../../layouts/SubLayout.astro";
     </div>
 
     <div class="detail-content-card">
-      <div id="detail-content"></div>
+      <div id="detail-content" class="detail-content"></div>
 
       <div class="detail-actions" id="detail-actions">
         <a href="/activity" class="detail-back" onclick="event.preventDefault();document.querySelector('.activity-detail-page').classList.add('fade-out');setTimeout(()=>{location.href='/activity'},250)">
@@ -80,7 +80,7 @@ import SubLayout from "../../layouts/SubLayout.astro";
         const actionsEl = document.getElementById('detail-actions');
         if (activity.signupStatus === 'active') {
           const signupLink = document.createElement('a');
-          signupLink.href = `/activity/signup?activityId=${activity.id}`;
+          signupLink.href = `/activity/now?activityId=${activity.id}`;
           signupLink.className = 'detail-signup-link';
           signupLink.innerHTML = '<i class="fas fa-pen-to-square"></i> 立即报名';
           actionsEl.insertBefore(signupLink, actionsEl.firstChild);

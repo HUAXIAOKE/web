@@ -48,54 +48,6 @@ func UpdateActivityDetail(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, map[string]string{"status": "ok"})
 }
 
-const defaultSignupFields = `[{"name":"name","label":"昵称","placeholder":"该如何称呼呢～","required":true},{"name":"qq","label":"QQ 号","placeholder":"留个QQ让我们联系你！","required":true},{"name":"department","label":"院系","placeholder":"Where are you from?","required":true},{"name":"remark","label":"备注","type":"textarea","placeholder":"还有什么想告诉我们的？"}]`
-
-const defaultSignupInstructions = `<ul>
-<li>请确保填写信息真实有效</li>
-<li>请递交至少包含完整视频文件的压缩包</li>
-<li>压缩包命名需要包含歌名</li>
-<li>报名成功后我们可以重复提交来覆盖</li>
-<li>会根据报名情况与作品质量甄选，会尽可能让每一份稿件都被看到</li>
-<li>如有疑问请通过 B 站私信或在 QQ 相关群聊内联系我们</li>
-</ul>`
-
-func GetSignupForm(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
-	row := store.DB.QueryRow(
-		`SELECT id, activity_id, fields, instructions, attachment, attachment_dir FROM signup_form WHERE activity_id=? LIMIT 1`, id,
-	)
-	var form model.SignupForm
-	if err := row.Scan(&form.ID, &form.ActivityID, &form.Fields, &form.Instructions, &form.Attachment, &form.AttachmentDir); err != nil {
-		form.Fields = defaultSignupFields
-		form.Instructions = defaultSignupInstructions
-		form.Attachment = 1
-		form.ActivityID, _ = strconv.Atoi(id)
-	}
-	writeJSON(w, form)
-}
-
-func UpdateSignupForm(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
-	var req model.SignupForm
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	if req.AttachmentDir == "" {
-		req.AttachmentDir = "signups/" + id
-	}
-	exists := 0
-	store.DB.QueryRow(`SELECT COUNT(*) FROM signup_form WHERE activity_id=?`, id).Scan(&exists)
-	if exists > 0 {
-		store.DB.Exec(`UPDATE signup_form SET fields=?, instructions=?, attachment=?, attachment_dir=? WHERE activity_id=?`,
-			req.Fields, req.Instructions, req.Attachment, req.AttachmentDir, id)
-	} else {
-		store.DB.Exec(`INSERT INTO signup_form (activity_id, fields, instructions, attachment, attachment_dir) VALUES (?, ?, ?, ?, ?)`,
-			id, req.Fields, req.Instructions, req.Attachment, req.AttachmentDir)
-	}
-	writeJSON(w, map[string]string{"status": "ok"})
-}
-
 func parseQQFromDataJSON(data string) string {
 	var raw map[string]json.RawMessage
 	if json.Unmarshal([]byte(data), &raw) != nil {

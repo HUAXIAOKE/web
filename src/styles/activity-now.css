@@ -11,6 +11,7 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	-webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -21,6 +22,10 @@ body {
 	background: var(--wave-bg);
 	user-select: none;
 	-webkit-user-select: none;
+}
+
+html.now-guarding .activity-now-page {
+	visibility: hidden;
 }
 
 .activity-now-page {
@@ -419,13 +424,23 @@ body {
 		drop-shadow(0 18px 40px rgba(10, 22, 40, 0.7));
 }
 
+@supports (bottom: env(safe-area-inset-bottom)) {
+	.signup-entry {
+		bottom: calc(18vh + env(safe-area-inset-bottom));
+	}
+}
+
 @media (max-width: 768px) {
 	.signup-entry {
-		left: 8vw;
-		top: auto;
-		bottom: 20vh;
+		left: auto;
+		right: 4%;
+		top: 2.5%;
+		bottom: auto;
+		transform: none;
 		width: 200px;
 		min-width: 0;
+		perspective: none;
+		perspective-origin: initial;
 	}
 }
 
@@ -516,9 +531,9 @@ body {
 .signup-panel {
 	position: absolute;
 	top: 50%;
-	left: 4vw;
+	left: 2vw;
 	transform: translate(-40px, -50%);
-	width: min(40vw, 460px);
+	width: min(35vw, 420px);
 	min-width: 340px;
 	max-height: 86vh;
 	overflow-y: auto;
@@ -537,6 +552,789 @@ body {
 	opacity: 1;
 	pointer-events: auto;
 	transform: translate(0, -50%);
+}
+
+/* ── submit button ── */
+.signup-panel-submit {
+	display: block;
+	position: relative;
+	overflow: hidden;
+	width: 88%;
+	height: clamp(2.5rem, 6vh, 3.5rem);
+	margin: clamp(2.5rem, 6vh, 4.5rem) auto 0;
+	padding: 0 2rem;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 50px;
+	background: rgba(0, 30, 60, 0.4);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	color: #fff;
+	font-size: 1rem;
+	font-weight: 600;
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	letter-spacing: 0.1em;
+	cursor: pointer;
+	transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.submit-fill {
+	position: absolute;
+	inset: 0;
+	clip-path: inset(0 100% 0 0);
+	transition:
+		clip-path var(--fill-duration, 5s) cubic-bezier(0.4, 0, 0.2, 1),
+		background 1s ease;
+	z-index: 0;
+	overflow: hidden;
+	background: linear-gradient(135deg, var(--wave-3), var(--wave-4));
+}
+
+.signup-panel-submit.is-filling .submit-fill {
+	clip-path: inset(0 0% 0 0);
+}
+
+.signup-panel-submit.is-success .submit-fill {
+	background: linear-gradient(135deg, #a8d8f0, #7ec8e3);
+	transition:
+		clip-path var(--fill-duration, 5s) cubic-bezier(0.4, 0, 0.2, 1),
+		background 1.5s ease;
+}
+
+.signup-panel-submit.is-error .submit-fill {
+	background: linear-gradient(135deg, #e74c3c, #c0392b);
+	transition:
+		clip-path var(--fill-duration, 5s) cubic-bezier(0.4, 0, 0.2, 1),
+		background 1.5s ease;
+}
+
+.liquid {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: inherit;
+	box-shadow:
+		inset 5px -5px 25px rgba(0, 30, 60, 0.3),
+		inset -5px 0px 25px rgba(0, 30, 60, 0.3);
+}
+
+.liquid::before,
+.liquid::after {
+	content: '';
+	position: absolute;
+	width: 450px;
+	height: 400px;
+	left: -110px;
+	top: -380px;
+	border-radius: 40%;
+	animation: liquid-rotate 5s linear infinite;
+}
+
+.liquid::before {
+	background: rgba(0, 30, 60, 0.4);
+	border-radius: 45%;
+	animation: liquid-rotate 5s linear 1.8s infinite;
+}
+
+.liquid::after {
+	background: rgba(255, 255, 255, 0.2);
+	animation: liquid-rotate 5s linear 2s infinite;
+}
+
+@keyframes liquid-rotate {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.submit-svg {
+	display: none;
+}
+
+.submit-path {
+	display: none;
+}
+
+.submit-text {
+	position: relative;
+	z-index: 1;
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.st {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.st-loading {
+	display: none;
+	position: absolute;
+	inset: 0;
+	align-items: center;
+	justify-content: center;
+}
+
+.st-done {
+	display: none;
+}
+
+.signup-panel-submit.is-filling .st-default {
+	display: none;
+}
+
+.signup-panel-submit.is-filling .st-loading {
+	display: flex;
+}
+
+.signup-panel-submit.is-filling .st-loading .st-letter {
+	opacity: 0;
+	animation: st-slideDown 0.6s ease forwards calc(var(--i) * 0.05s);
+}
+
+.signup-panel-submit.is-success .st-loading {
+	display: none;
+}
+
+.st-letter {
+	display: block;
+	opacity: 0;
+	animation: st-slideDown 0.8s ease forwards calc(var(--i) * 0.03s);
+}
+
+.signup-panel-submit:hover .st-letter {
+	animation: st-wave 0.5s ease forwards calc(var(--i) * 0.02s);
+}
+
+.signup-panel-submit.is-filling .st-default .st-letter {
+	animation: st-disapear 0.6s ease forwards calc(var(--i) * 0.03s);
+}
+
+.signup-panel-submit.is-success .st-default {
+	display: none;
+}
+
+.signup-panel-submit.is-success .st-done {
+	display: flex;
+}
+
+.signup-panel-submit.is-success .st-done .st-letter {
+	opacity: 0;
+	animation: st-slideDown 0.8s ease forwards calc(var(--i) * 0.1s);
+}
+
+@keyframes st-slideDown {
+	0% {
+		opacity: 0;
+		transform: translateY(-20px) translateX(5px) rotate(-90deg);
+		filter: blur(5px);
+	}
+	30% {
+		opacity: 1;
+		transform: translateY(4px) translateX(0) rotate(0);
+		filter: blur(0);
+	}
+	50% {
+		opacity: 1;
+		transform: translateY(-3px) translateX(0) rotate(0);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0) translateX(0) rotate(0);
+	}
+}
+
+@keyframes st-wave {
+	30% {
+		opacity: 1;
+		transform: translateY(4px) translateX(0) rotate(0);
+	}
+	50% {
+		opacity: 1;
+		transform: translateY(-3px) translateX(0) rotate(0);
+		color: var(--wave-2);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0) translateX(0) rotate(0);
+	}
+}
+
+@keyframes st-disapear {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+		transform: translateX(5px) translateY(20px);
+		filter: blur(5px);
+	}
+}
+
+.signup-panel-submit:hover {
+	background: rgba(0, 30, 60, 0.6);
+	border-color: rgba(255, 255, 255, 0.5);
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.sf-submit-tilt {
+	transform: rotate(-1.5deg) translateX(-0.3vw);
+}
+
+.sf-submit-tilt:hover {
+	transform: rotate(-1.5deg) translateX(-0.3vw);
+}
+
+/* ── sidebar ── */
+.signup-sidebar {
+	position: absolute;
+	top: 44%;
+	left: calc(2vw + min(35vw, 420px) + 5vw);
+	transform: translateY(-50%);
+	width: min(25vw, 300px);
+	z-index: 5;
+	opacity: 0;
+	pointer-events: none;
+	transition:
+		opacity 0.5s ease,
+		transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.signup-sidebar.is-in {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* ── attachment ── */
+.signup-attachment-label {
+	display: block;
+	margin-bottom: 0.5rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	color: #fff;
+	text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+	letter-spacing: 0.05em;
+}
+
+.signup-attachment-label .required {
+	color: var(--wave-2);
+	margin-left: 0.2rem;
+}
+
+.signup-attachment {
+	width: 100%;
+	height: clamp(8rem, 20vh, 12rem);
+	margin-bottom: clamp(2.5rem, 6vh, 4.5rem);
+}
+
+.signup-attachment .sf-orb {
+	height: 100%;
+}
+
+.signup-attachment .sf-blob-a { background: linear-gradient(135deg, var(--wave-2), var(--wave-3)); }
+.signup-attachment .sf-blob-b { background: linear-gradient(135deg, var(--wave-3), var(--wave-2)); }
+.signup-attachment .sf-blob-bridge { background: var(--wave-2); }
+
+.signup-file-wrap {
+	position: relative;
+	z-index: 10;
+	width: 88%;
+	height: calc(100% - 1.5rem);
+	margin: clamp(0.75rem, 2vh, 1rem) auto 0;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	border-radius: clamp(1rem, 2.75vh, 1.625rem);
+	background: rgba(0, 30, 60, 0.35);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.signup-file-wrap:hover {
+	background: rgba(0, 30, 60, 0.5);
+	border-color: rgba(255, 255, 255, 0.5);
+	transform: translateY(-3px);
+	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.signup-file-wrap.signup-file-dragover {
+	border-color: var(--wave-1);
+	background: rgba(0, 30, 60, 0.6);
+	transform: scale(1.02);
+}
+
+.signup-attachment:hover .sf-blob-a {
+	transform: scale(1.1) translateX(-8px);
+	filter: brightness(1.15);
+}
+
+.signup-attachment:hover .sf-blob-b {
+	transform: scale(1.1) translateX(8px);
+	filter: brightness(1.15);
+}
+
+.signup-file-input {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.signup-file-text {
+	font-size: 0.85rem;
+	color: rgba(255, 255, 255, 0.7);
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	text-align: center;
+	padding: 0 1rem;
+	transition: opacity 0.3s ease;
+}
+
+.signup-file-wrap.has-value .signup-file-text {
+	display: none;
+}
+
+.signup-file-list {
+	margin-top: 0.35rem;
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	padding: 0 0.75rem;
+}
+
+.signup-file-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	background: rgba(0, 30, 60, 0.4);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 10px;
+	font-size: 0.78rem;
+	max-width: 100%;
+	position: relative;
+	z-index: 15;
+	transition: border-color 0.3s ease;
+}
+
+.signup-file-wrap.is-ready .signup-file-item {
+	border-color: rgba(126, 200, 227, 0.5);
+}
+
+.signup-file-wrap.is-error .signup-file-item {
+	border-color: rgba(231, 76, 60, 0.5);
+}
+
+.signup-file-info {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	min-width: 0;
+}
+
+.signup-file-name {
+	color: #fff;
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	max-width: 12ch;
+}
+
+.signup-file-status {
+	color: rgba(255, 255, 255, 0.65);
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	white-space: nowrap;
+}
+
+.signup-file-status.is-done {
+	color: #7ec8e3;
+}
+
+.signup-file-status.is-error {
+	color: #e74c3c;
+}
+
+.signup-file-remove {
+	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	border: none;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.15);
+	color: rgba(255, 255, 255, 0.8);
+	font-size: 12px;
+	line-height: 1;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	position: relative;
+	z-index: 20;
+	transition: all 0.25s ease;
+}
+
+.signup-file-remove:hover {
+	background: rgba(231, 76, 60, 0.7);
+	color: #fff;
+}
+
+/* ── notice card ── */
+.signup-notice {
+	width: 100%;
+	padding: 1.25rem 1.5rem;
+	border-radius: 16px;
+	background: rgba(10, 40, 80, 0.25);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	overflow: hidden;
+	position: relative;
+	box-shadow: 0px 4px 16px -6px rgba(0, 0, 0, 0.25);
+}
+
+.notice-wave {
+	position: absolute;
+	width: 200%;
+	padding-top: 200%;
+	left: -50%;
+	border-radius: 40%;
+	animation: notice-wave-rotate 45s infinite linear;
+}
+
+.notice-wave-1 {
+	top: 60%;
+	background: var(--wave-2);
+	opacity: 0.45;
+	animation-duration: 50s;
+}
+
+.notice-wave-2 {
+	top: 66%;
+	background: var(--wave-3);
+	opacity: 0.35;
+	animation-duration: 45s;
+}
+
+.notice-wave-3 {
+	top: 72%;
+	background: var(--wave-4);
+	opacity: 0.3;
+	animation-duration: 55s;
+}
+
+@keyframes notice-wave-rotate {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.notice-content {
+	position: relative;
+	z-index: 1;
+}
+
+.signup-notice-title {
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: #fff;
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	margin-bottom: 0.75rem;
+	letter-spacing: 0.05em;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.signup-notice-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.signup-notice-list li {
+	font-size: 0.75rem;
+	line-height: 1.6;
+	color: rgba(255, 255, 255, 0.9);
+	padding-left: 1em;
+	position: relative;
+	margin-bottom: 0.4em;
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.signup-notice-list li::before {
+	content: '•';
+	position: absolute;
+	left: 0;
+	color: var(--wave-2);
+}
+
+/* ── gooey inputs ── */
+.sf-attach-tilt {
+	transition: transform 0.4s ease;
+}
+
+.sf-attach-tilt:hover .sf-orb-5 {
+	transform: rotate(1.5deg) translateX(0.5vw) translateY(-2px);
+}
+
+.sf-notice-tilt {
+	transform: rotate(-1deg) translateX(0.3vw) translateY(1vh);
+	transition: transform 0.4s ease;
+}
+
+/* ── gooey inputs ── */
+.signup-field {
+	margin-bottom: clamp(1rem, 2.5vh, 1.75rem);
+}
+
+.signup-field label {
+	display: block;
+	margin-bottom: 0.5rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	color: #fff;
+	text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+	letter-spacing: 0.05em;
+}
+
+.signup-field .required {
+	color: var(--wave-2);
+	margin-left: 0.2rem;
+}
+
+.sf-orb {
+	position: relative;
+	width: 100%;
+	height: clamp(3rem, 8vh, 4.5rem);
+	transition: transform 0.4s ease;
+}
+
+.sf-orb-1 { transform: rotate(-2deg) translateX(-0.8vw); }
+.sf-orb-2 { transform: rotate(1.5deg) translateX(1.2vw); }
+.sf-orb-3 { transform: rotate(-1deg) translateX(-0.5vw); }
+.sf-orb-4 { transform: rotate(2deg) translateX(1vw); }
+.sf-orb-5 { transform: rotate(1.5deg) translateX(0.5vw); transition: transform 0.4s ease; }
+
+.sf-orb-4 {
+	height: clamp(5rem, 14vh, 8rem);
+}
+
+.sf-orb-4 .sf-overlay {
+	height: calc(100% - 1.5rem);
+	margin-top: clamp(0.75rem, 2vh, 1rem);
+}
+
+.sf-goo {
+	position: absolute;
+	inset: 0;
+	filter: url(#sf-goo);
+	z-index: 1;
+}
+
+.sf-blob {
+	position: absolute;
+	border-radius: 50%;
+	transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sf-blob-a {
+	width: 55%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	animation: sf-blob-float 6s infinite alternate ease-in-out;
+}
+
+.sf-blob-b {
+	width: 45%;
+	height: 100%;
+	right: 0;
+	top: 0;
+	animation: sf-blob-float 8s infinite alternate-reverse ease-in-out;
+}
+
+.sf-blob-bridge {
+	position: absolute;
+	height: 50%;
+	width: 60%;
+	left: 20%;
+	top: 25%;
+	border-radius: 40px;
+}
+
+.sf-orb-1 .sf-blob-a { background: linear-gradient(135deg, var(--wave-1), var(--wave-2)); }
+.sf-orb-1 .sf-blob-b { background: linear-gradient(135deg, var(--wave-2), var(--wave-1)); }
+.sf-orb-1 .sf-blob-bridge { background: var(--wave-1); }
+
+.sf-orb-2 .sf-blob-a { background: linear-gradient(135deg, var(--wave-2), var(--wave-3)); }
+.sf-orb-2 .sf-blob-b { background: linear-gradient(135deg, var(--wave-3), var(--wave-2)); }
+.sf-orb-2 .sf-blob-bridge { background: var(--wave-2); }
+
+.sf-orb-3 .sf-blob-a { background: linear-gradient(135deg, var(--wave-3), var(--wave-4)); }
+.sf-orb-3 .sf-blob-b { background: linear-gradient(135deg, var(--wave-4), var(--wave-3)); }
+.sf-orb-3 .sf-blob-bridge { background: var(--wave-3); }
+
+.sf-orb-4 .sf-blob-a { background: linear-gradient(135deg, var(--wave-4), var(--wave-3)); }
+.sf-orb-4 .sf-blob-b { background: linear-gradient(135deg, var(--wave-3), var(--wave-4)); }
+.sf-orb-4 .sf-blob-bridge { background: var(--wave-4); }
+
+.sf-overlay {
+	position: relative;
+	z-index: 10;
+	width: 88%;
+	height: clamp(2rem, 5.5vh, 3.25rem);
+	margin: clamp(0.5rem, 1.25vh, 0.625rem) auto 0;
+	background: rgba(0, 30, 60, 0.35);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	border-radius: clamp(1rem, 2.75vh, 1.625rem);
+	display: flex;
+	align-items: center;
+	padding: 0 18px;
+	transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.sf-overlay input,
+.sf-overlay textarea {
+	background: transparent;
+	border: none;
+	outline: none;
+	width: 100%;
+	color: #fff;
+	font-size: 0.9rem;
+	font-weight: 500;
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	letter-spacing: 0.02em;
+}
+
+.sf-overlay textarea {
+	resize: none;
+	height: 100%;
+	padding: 12px 0;
+}
+
+.sf-overlay input::placeholder,
+.sf-overlay textarea::placeholder {
+	color: rgba(255, 255, 255, 0.55);
+	font-weight: 400;
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+}
+
+.sf-indicator {
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	width: 0%;
+	height: 2px;
+	background: #fff;
+	transform: translateX(-50%);
+	transition: width 0.4s ease;
+	border-radius: 2px;
+	box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+}
+
+.sf-orb:focus-within .sf-overlay {
+	transform: translateY(-3px);
+	background: rgba(0, 30, 60, 0.5);
+	border-color: rgba(255, 255, 255, 0.4);
+	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.sf-orb:focus-within {
+	transform: translateY(-2px);
+}
+
+.sf-orb-1:focus-within { transform: rotate(-2deg) translateX(-0.8vw) translateY(-2px); }
+.sf-orb-2:focus-within { transform: rotate(1.5deg) translateX(1.2vw) translateY(-2px); }
+.sf-orb-3:focus-within { transform: rotate(-1deg) translateX(-0.5vw) translateY(-2px); }
+.sf-orb-4:focus-within { transform: rotate(2deg) translateX(1vw) translateY(-2px); }
+
+.sf-orb:focus-within .sf-indicator {
+	width: 35%;
+}
+
+.sf-orb:focus-within .sf-blob-a {
+	transform: scale(1.1) translateX(-8px);
+	filter: brightness(1.15);
+}
+
+.sf-orb:focus-within .sf-blob-b {
+	transform: scale(1.1) translateX(8px);
+	filter: brightness(1.15);
+}
+
+@keyframes sf-blob-float {
+	0% {
+		border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+		transform: translate(0, 0);
+	}
+	50% {
+		border-radius: 60% 40% 50% 50% / 30% 60% 40% 70%;
+		transform: translate(4px, -4px);
+	}
+	100% {
+		border-radius: 50% 50% 30% 70% / 60% 40% 60% 40%;
+		transform: translate(-4px, 4px);
+	}
+}
+
+/* ── tooltip ── */
+.now-tooltip {
+	position: fixed;
+	z-index: 100;
+	left: 0;
+	top: 0;
+	padding: 0.5em 1em;
+	border-radius: 8px;
+	background: rgba(20, 30, 50, 0.95);
+	color: #e8f4ff;
+	font-size: 0.8rem;
+	font-family: 'AlimamaShuHeiTi-Bold', sans-serif;
+	letter-spacing: 0.03em;
+	white-space: nowrap;
+	box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+	opacity: 0;
+	scale: 0;
+	pointer-events: none;
+	transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1), scale 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.now-tooltip::before {
+	position: absolute;
+	content: '';
+	height: 0.6em;
+	width: 0.6em;
+	bottom: -0.2em;
+	left: 50%;
+	transform: translate(-50%) rotate(45deg);
+	background: rgba(20, 30, 50, 0.95);
+}
+
+.now-tooltip.is-show {
+	opacity: 1;
+	scale: 1;
+	animation: tooltip-shake 0.5s ease-in-out both;
+}
+
+@keyframes tooltip-shake {
+	0% { rotate: 0deg; }
+	25% { rotate: 7deg; }
+	50% { rotate: -7deg; }
+	75% { rotate: 1deg; }
+	100% { rotate: 0deg; }
 }
 
 .page-back {
@@ -642,5 +1440,128 @@ body {
 		opacity: 0;
 		transform: translateX(100px) scale(0.95);
 		filter: blur(3px);
+	}
+}
+
+/* ── mobile responsive ── */
+@media (max-width: 768px) {
+	body {
+		overflow: auto;
+	}
+
+	.activity-now-page {
+		overflow-y: auto;
+		overflow-x: hidden;
+		overscroll-behavior: none;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.activity-now-bg {
+		position: fixed;
+	}
+
+	.waves-side {
+		position: fixed;
+		inset: 0 auto 0 0;
+		height: 100dvh;
+		width: 0;
+	}
+
+	.waves-side.rise {
+		width: 100vw;
+	}
+
+	.signup-panel {
+		position: relative;
+		top: auto;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 92%;
+		min-width: 0;
+		max-width: 420px;
+		max-height: none;
+		overflow-y: visible;
+		margin: 12vh 0 2rem;
+	}
+
+	.signup-panel.is-in {
+		transform: translateX(-50%);
+	}
+
+	.signup-sidebar {
+		position: relative;
+		top: auto;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 92%;
+		max-width: 420px;
+		margin: 0 0 4rem;
+	}
+
+	.signup-attachment {
+		height: clamp(7rem, 18vh, 10rem);
+		margin-bottom: 1.5rem;
+	}
+
+	.signup-form .signup-attachment-label {
+		margin-top: 1rem;
+	}
+
+	.signup-sidebar .signup-panel-submit {
+		margin: 1.5rem auto 2.5rem;
+		width: 100%;
+	}
+
+	.sf-orb-1,
+	.sf-orb-2,
+	.sf-orb-3,
+	.sf-orb-4,
+	.sf-orb-5 {
+		transition: transform 0.4s ease;
+	}
+
+	.sf-orb-1 { transform: rotate(-2deg); }
+	.sf-orb-2 { transform: rotate(1.5deg); }
+	.sf-orb-3 { transform: rotate(-1deg); }
+	.sf-orb-4 { transform: rotate(2deg); }
+	.sf-orb-5 { transform: rotate(1.5deg); }
+
+	.sf-orb-1:focus-within { transform: rotate(-2deg) translateY(-2px); }
+	.sf-orb-2:focus-within { transform: rotate(1.5deg) translateY(-2px); }
+	.sf-orb-3:focus-within { transform: rotate(-1deg) translateY(-2px); }
+	.sf-orb-4:focus-within { transform: rotate(2deg) translateY(-2px); }
+
+	.sf-attach-tilt:hover .sf-orb-5 {
+		transform: rotate(1.5deg) translateY(-2px);
+	}
+
+	.sf-notice-tilt {
+		transform: rotate(-1deg);
+	}
+
+	.sf-submit-tilt,
+	.sf-submit-tilt:hover {
+		transform: rotate(-1.5deg);
+	}
+
+	.signup-panel-submit {
+		width: 100%;
+	}
+
+	.page-back {
+		left: -7%;
+		top: 2.5%;
+		width: 56px;
+		height: 32px;
+	}
+
+	.signup-character {
+		display: none;
+	}
+
+	.now-tooltip {
+		max-width: 80vw;
+		white-space: normal;
+		text-align: center;
 	}
 }

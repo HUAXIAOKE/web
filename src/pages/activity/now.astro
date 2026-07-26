@@ -97,6 +97,146 @@ const chunks = [
     </div>
 
     <div class="signup-panel" id="signup-panel">
+      <form class="signup-form" id="now-signup-form">
+        <div class="signup-field">
+          <label for="now-name">昵称 <span class="required">*</span></label>
+          <div class="sf-orb sf-orb-1">
+            <div class="sf-goo">
+              <div class="sf-blob sf-blob-a"></div>
+              <div class="sf-blob sf-blob-b"></div>
+              <div class="sf-blob-bridge"></div>
+            </div>
+            <div class="sf-overlay">
+              <input type="text" id="now-name" name="name" placeholder="该如何称呼呢～" />
+              <div class="sf-indicator"></div>
+            </div>
+          </div>
+        </div>
+        <div class="signup-field">
+          <label for="now-qq">QQ 号 <span class="required">*</span></label>
+          <div class="sf-orb sf-orb-2">
+            <div class="sf-goo">
+              <div class="sf-blob sf-blob-a"></div>
+              <div class="sf-blob sf-blob-b"></div>
+              <div class="sf-blob-bridge"></div>
+            </div>
+            <div class="sf-overlay">
+              <input type="text" id="now-qq" name="qq" placeholder="留个QQ让我们联系你！" />
+              <div class="sf-indicator"></div>
+            </div>
+          </div>
+        </div>
+        <div class="signup-field">
+          <label for="now-department">院系 <span class="required">*</span></label>
+          <div class="sf-orb sf-orb-3">
+            <div class="sf-goo">
+              <div class="sf-blob sf-blob-a"></div>
+              <div class="sf-blob sf-blob-b"></div>
+              <div class="sf-blob-bridge"></div>
+            </div>
+            <div class="sf-overlay">
+              <input type="text" id="now-department" name="department" placeholder="Where are you from?" />
+              <div class="sf-indicator"></div>
+            </div>
+          </div>
+        </div>
+        <div class="signup-field">
+          <label for="now-remark">备注</label>
+          <div class="sf-orb sf-orb-4">
+            <div class="sf-goo">
+              <div class="sf-blob sf-blob-a"></div>
+              <div class="sf-blob sf-blob-b"></div>
+              <div class="sf-blob-bridge"></div>
+            </div>
+            <div class="sf-overlay">
+              <textarea id="now-remark" name="remark" placeholder="还有什么想要告诉我们的？"></textarea>
+              <div class="sf-indicator"></div>
+            </div>
+          </div>
+        </div>
+        <div class="signup-instructions" id="now-instructions">
+          <div class="signup-instructions-content" id="now-instructions-content"></div>
+        </div>
+        <button type="submit" class="signup-panel-submit sf-submit-tilt">
+          <span class="submit-fill">
+            <span class="liquid"></span>
+          </span>
+          <span class="submit-text">
+            <span class="st st-default">
+              <span class="st-letter" style="--i:0">S</span>
+              <span class="st-letter" style="--i:1">U</span>
+              <span class="st-letter" style="--i:2">B</span>
+              <span class="st-letter" style="--i:3">M</span>
+              <span class="st-letter" style="--i:4">I</span>
+              <span class="st-letter" style="--i:5">T</span>
+              <span class="st-letter" style="--i:6">&nbsp;</span>
+              <span class="st-letter" style="--i:7">N</span>
+              <span class="st-letter" style="--i:8">O</span>
+              <span class="st-letter" style="--i:9">W</span>
+            </span>
+            <span class="st st-loading">
+              <span class="st-letter" style="--i:0">S</span>
+              <span class="st-letter" style="--i:1">U</span>
+              <span class="st-letter" style="--i:2">B</span>
+              <span class="st-letter" style="--i:3">M</span>
+              <span class="st-letter" style="--i:4">I</span>
+              <span class="st-letter" style="--i:5">T</span>
+              <span class="st-letter" style="--i:6">T</span>
+              <span class="st-letter" style="--i:7">I</span>
+              <span class="st-letter" style="--i:8">N</span>
+              <span class="st-letter" style="--i:9">G</span>
+              <span class="st-letter" style="--i:10">.</span>
+              <span class="st-letter" style="--i:11">.</span>
+              <span class="st-letter" style="--i:12">.</span>
+            </span>
+            <span class="st st-done">
+              <span class="st-letter" style="--i:0">A</span>
+              <span class="st-letter" style="--i:1">L</span>
+              <span class="st-letter" style="--i:2">L</span>
+              <span class="st-letter" style="--i:3">&nbsp;</span>
+              <span class="st-letter" style="--i:4">D</span>
+              <span class="st-letter" style="--i:5">O</span>
+              <span class="st-letter" style="--i:6">N</span>
+              <span class="st-letter" style="--i:7">E</span>
+            </span>
+          </span>
+        </button>
+      </form>
+      <div class="signup-panel-error" id="signup-panel-error"></div>
+    </div>
+
+    <div class="signup-sidebar" id="signup-sidebar">
+      <label class="signup-attachment-label">递交作品 <span class="required">*</span></label>
+      <div class="signup-attachment sf-attach-tilt" id="now-attachment-field">
+        <div class="sf-orb sf-orb-5">
+          <div class="sf-goo">
+            <div class="sf-blob sf-blob-a"></div>
+            <div class="sf-blob sf-blob-b"></div>
+            <div class="sf-blob-bridge"></div>
+          </div>
+          <div class="signup-file-wrap" id="now-file-wrap">
+            <input type="file" id="now-attachment" class="signup-file-input" />
+            <div class="signup-file-text">拖拽或点击上传压缩包</div>
+            <div class="signup-file-list" id="now-file-list"></div>
+          </div>
+        </div>
+      </div>
+      <div class="signup-notice sf-notice-tilt" id="signup-notice">
+        <div class="notice-wave notice-wave-1"></div>
+        <div class="notice-wave notice-wave-2"></div>
+        <div class="notice-wave notice-wave-3"></div>
+        <div class="notice-content">
+          <div class="signup-notice-title">注意事项</div>
+          <ul class="signup-notice-list">
+            <li>请确保填写信息真实有效</li>
+            <li>请递交至少包含完整视频文件的压缩包</li>
+            <li>压缩包命名需要包含歌名</li>
+            <li>报名成功后我们可以重复提交来覆盖</li>
+            <li>会根据报名情况与作品质量甄选，会尽可能让每一份稿件都被看到</li>
+            <li>如有疑问请通过 B 站私信或在 QQ 相关群聊内联系我们</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <button class="page-back" id="page-back" type="button" aria-label="关闭">
@@ -104,6 +244,18 @@ const chunks = [
     </button>
 
     <img class="signup-character" id="signup-character" src={activity002.src} alt="" draggable="false" />
+
+    <div class="now-tooltip" id="now-tooltip" role="alert"></div>
+
+    <svg style="position:absolute;width:0;height:0" aria-hidden="true">
+      <defs>
+        <filter id="sf-goo">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="goo"/>
+          <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+        </filter>
+      </defs>
+    </svg>
   </div>
 
   <script>

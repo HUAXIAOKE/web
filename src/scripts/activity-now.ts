@@ -1,32 +1,64 @@
 import { gsap } from 'gsap';
 
-interface SignupField {
-	name: string;
-	label: string;
-	type?: string;
-	placeholder?: string;
-	required?: boolean;
+async function guardNowAccess(): Promise<boolean> {
+	document.documentElement.classList.add('now-guarding');
+	const API = (window as unknown as { API_BASE?: string }).API_BASE || '';
+	const id = new URLSearchParams(location.search).get('activityId');
+	const leave = (): boolean => {
+		location.replace('/activity');
+		return false;
+	};
+	if (!id) return leave();
+	try {
+		const res = await fetch(API + '/api/activities');
+		if (!res.ok) return leave();
+		const list = await res.json();
+		const act = list.find((a: { id: number }) => a.id === parseInt(id));
+		if (!act || act.signupStatus !== 'active') return leave();
+		document.documentElement.classList.remove('now-guarding');
+		return true;
+	} catch {
+		return leave();
+	}
 }
 
-interface SignupFormMeta {
-	fields: string;
-	attachment?: boolean;
-	instructions?: string;
-	__getAttachment?: () => string;
-}
-
-function initActivityNow(): void {
+async function initActivityNow(): Promise<void> {
+	if (!await guardNowAccess()) return;
 	const waves = document.getElementById('waves');
 	const entry = document.getElementById('signup-entry') as HTMLButtonElement | null;
 	const wavesSide = document.getElementById('waves-side');
 	const panel = document.getElementById('signup-panel');
+	const sidebar = document.getElementById('signup-sidebar');
 	const character = document.getElementById('signup-character');
 	const overlay = document.querySelector('.activity-now-overlay');
-	const closeBtn = document.getElementById('signup-close');
 	const pageBack = document.getElementById('page-back');
 
 	document.addEventListener('selectstart', (e) => e.preventDefault());
 	document.addEventListener('dragstart', (e) => e.preventDefault());
+
+	const mobileLayoutQuery = window.matchMedia('(max-width: 768px)');
+	const submitBtn = document.querySelector<HTMLButtonElement>('.signup-panel-submit');
+	const attachmentField = document.getElementById('now-attachment-field');
+	const attachmentLabel = document.querySelector<HTMLElement>('.signup-attachment-label');
+	const signupForm = document.getElementById('now-signup-form');
+	const signupNotice = document.getElementById('signup-notice');
+
+	function applyMobileLayout(isMobile: boolean): void {
+		if (!submitBtn || !attachmentField || !attachmentLabel || !signupForm || !sidebar || !signupNotice) return;
+		if (isMobile) {
+			signupForm.insertBefore(attachmentLabel, submitBtn);
+			signupForm.insertBefore(attachmentField, submitBtn);
+			sidebar.appendChild(submitBtn);
+			sidebar.appendChild(signupNotice);
+		} else {
+			signupForm.appendChild(submitBtn);
+			sidebar.insertBefore(attachmentLabel, signupNotice);
+			sidebar.insertBefore(attachmentField, signupNotice);
+		}
+	}
+
+	applyMobileLayout(mobileLayoutQuery.matches);
+	mobileLayoutQuery.addEventListener('change', (e) => applyMobileLayout(e.matches));
 
 	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 	const chunks = entry ? Array.from(entry.querySelectorAll('.se-chunk')) : [];
@@ -97,6 +129,7 @@ function initActivityNow(): void {
 		overlay?.classList.add('is-deep');
 		wavesSide?.classList.add('rise');
 		setTimeout(() => panel?.classList.add('is-in'), 1000);
+		setTimeout(() => sidebar?.classList.add('is-in'), 1150);
 		setTimeout(() => character?.classList.add('is-in'), 1200);
 	}
 
@@ -104,6 +137,7 @@ function initActivityNow(): void {
 		if (!isOpen || !entry) return;
 		isOpen = false;
 		panel?.classList.remove('is-in');
+		sidebar?.classList.remove('is-in');
 		character?.classList.remove('is-in');
 		character?.classList.add('is-out');
 		setTimeout(() => {
@@ -115,76 +149,53 @@ function initActivityNow(): void {
 	}
 
 	entry?.addEventListener('click', openSignup);
-	closeBtn?.addEventListener('click', closeSignup);
-	pageBack?.addEventListener('click', closeSignup);
+	pageBack?.addEventListener('click', () => {
+		if (isOpen) {
+			closeSignup();
+		} else {
+			window.location.href = '/activity';
+		}
+	});
 
 	const API = (window as unknown as { API_BASE?: string }).API_BASE || '';
 	const activityId = new URLSearchParams(window.location.search).get('activityId');
 	const errorEl = document.getElementById('signup-panel-error');
+	const tooltipEl = document.getElementById('now-tooltip');
+	let tooltipTimer: number | undefined;
+
+	function showTooltip(msg: string, anchor?: HTMLElement | null): void {
+		if (!tooltipEl) return;
+		tooltipEl.textContent = msg;
+		tooltipEl.classList.remove('is-show');
+		const target = anchor || document.querySelector('.signup-panel-submit') as HTMLElement | null;
+		if (target) {
+			const rect = target.getBoundingClientRect();
+			const computed = window.getComputedStyle(target);
+			const rotate = computed.transform === 'none' ? '' : computed.transform;
+			tooltipEl.style.left = (rect.left + rect.width / 2) + 'px';
+			tooltipEl.style.top = (rect.top - 12) + 'px';
+			tooltipEl.style.transform = 'translate(-50%, -100%) ' + rotate;
+		}
+		void tooltipEl.offsetWidth;
+		tooltipEl.classList.add('is-show');
+		if (tooltipTimer) window.clearTimeout(tooltipTimer);
+		tooltipTimer = window.setTimeout(() => tooltipEl.classList.remove('is-show'), 2400);
+	}
 
 	if (!activityId) {
-		if (errorEl) errorEl.style.display = '';
-	} else {
-		loadSignupForm(activityId);
+		if (errorEl) errorEl.textContent = '缺少 activityId';
+		return;
 	}
 
-	async function loadSignupForm(id: string): Promise<void> {
-		try {
-			const res = await fetch(API + '/api/activity/' + id + '/signup-form');
-			if (!res.ok) throw new Error('fail');
-			const form = (await res.json()) as SignupFormMeta;
-			const fields = JSON.parse(form.fields || '[]') as SignupField[];
+	let uploadedUrl = '';
+	let attachmentUploading = false;
 
-			const container = document.getElementById('now-form-fields');
-			if (container) {
-				container.innerHTML = fields
-					.map((f) => {
-						const req = f.required ? '<span class="required">*</span>' : '';
-						const reqAttr = f.required ? 'required' : '';
-						if (f.type === 'textarea') {
-							return (
-								'<div class="signup-field"><label for="now-' + f.name + '">' + f.label + req + '</label>' +
-								'<textarea id="now-' + f.name + '" name="' + f.name + '" placeholder="' + (f.placeholder || '') + '" ' + reqAttr + '></textarea></div>'
-							);
-						}
-						return (
-							'<div class="signup-field"><label for="now-' + f.name + '">' + f.label + req + '</label>' +
-							'<input type="text" id="now-' + f.name + '" name="' + f.name + '" placeholder="' + (f.placeholder || '') + '" ' + reqAttr + ' /></div>'
-						);
-					})
-					.join('');
-			}
-
-			if (form.attachment) {
-				const af = document.getElementById('now-attachment-field');
-				if (af) af.style.display = '';
-			}
-
-			if (form.instructions) {
-				const ins = document.getElementById('now-instructions');
-				const insContent = document.getElementById('now-instructions-content');
-				if (ins) ins.style.display = '';
-				if (insContent) insContent.innerHTML = form.instructions;
-			}
-
-			bindAttachment(form);
-			bindSubmit(form, id, fields);
-		} catch {
-			if (errorEl) {
-				errorEl.textContent = '报名表加载失败';
-				errorEl.style.display = '';
-			}
-		}
-	}
-
-	function bindAttachment(form: SignupFormMeta): void {
-		if (!form.attachment) return;
+	function bindAttachment(): void {
 		const input = document.getElementById('now-attachment') as HTMLInputElement | null;
 		const wrap = document.getElementById('now-file-wrap');
 		const list = document.getElementById('now-file-list');
 		if (!input || !wrap || !list) return;
 
-		let uploadedUrl = '';
 		let currentFile: File | null = null;
 		let uploadState: 'idle' | 'uploading' | 'ready' | 'error' = 'idle';
 		let uploadPct = 0;
@@ -215,7 +226,9 @@ function initActivityNow(): void {
 			rm.type = 'button';
 			rm.className = 'signup-file-remove';
 			rm.textContent = '×';
-			rm.addEventListener('click', () => {
+			rm.addEventListener('click', (e) => {
+				e.preventDefault();
+				e.stopPropagation();
 				uploadedUrl = '';
 				currentFile = null;
 				uploadState = 'idle';
@@ -256,20 +269,23 @@ function initActivityNow(): void {
 
 		async function handle(file: File | undefined): Promise<void> {
 			if (!file) return;
-			if (!isArchive(file)) { alert('仅支持 zip / rar / 7z / tar.gz 等压缩包格式'); return; }
-			if (file.size > 500 * 1024 * 1024) { alert('文件过大，最大允许 500 MB'); return; }
+			if (!isArchive(file)) { showTooltip('注意格式', wrap); return; }
+			if (file.size > 500 * 1024 * 1024) { showTooltip('文件过大，最大 500 MB', wrap); return; }
 			currentFile = file;
 			uploadState = 'uploading';
 			uploadPct = 0;
 			uploadedUrl = '';
+			attachmentUploading = true;
 			render();
 			try {
 				const result = await upload(file);
 				uploadedUrl = result.url;
 				uploadState = 'ready';
+				attachmentUploading = false;
 				render();
 			} catch {
 				uploadState = 'error';
+				attachmentUploading = false;
 				render();
 			}
 		}
@@ -290,59 +306,83 @@ function initActivityNow(): void {
 			const f = e.dataTransfer?.files?.[0];
 			if (f) handle(f);
 		});
-
-		form.__getAttachment = () => uploadedUrl;
 	}
 
-	function bindSubmit(form: SignupFormMeta, id: string, fields: SignupField[]): void {
+	function bindSubmit(): void {
 		const formEl = document.getElementById('now-signup-form') as HTMLFormElement | null;
 		if (!formEl) return;
+
+		const FIELD_NAMES = ['name', 'qq', 'department', 'remark'];
+		const REQUIRED_LABELS: Record<string, string> = { name: '昵称', qq: 'QQ 号', department: '院系' };
+
 		formEl.addEventListener('submit', async (e) => {
 			e.preventDefault();
-			const btn = formEl.querySelector('.signup-panel-submit') as HTMLButtonElement | null;
-			if (!btn) return;
-			btn.disabled = true;
-			btn.textContent = '提交中...';
+		const btn = submitBtn;
+		if (!btn) return;
 
 			const fd = new FormData(formEl);
 			const data: Record<string, string> = {};
-			fields.forEach((f) => { data[f.name] = (fd.get(f.name) as string) || ''; });
+			FIELD_NAMES.forEach((n) => { data[n] = ((fd.get(n) as string) || '').trim(); });
 
-			const attachments: string[] = [];
-			if (form.attachment) {
-				const url = form.__getAttachment ? form.__getAttachment() : '';
-				if (!url) {
-					btn.textContent = '请先上传压缩包';
-					btn.disabled = false;
-					setTimeout(() => { btn.textContent = '提交报名'; }, 2500);
+			for (const n of Object.keys(REQUIRED_LABELS)) {
+				if (!data[n]) {
+					const field = formEl.querySelector('#now-' + n) as HTMLElement | null;
+					showTooltip('请填写' + REQUIRED_LABELS[n], field?.closest('.sf-overlay') as HTMLElement | null);
+					field?.focus();
 					return;
 				}
-				attachments.push(url);
 			}
 
+			if (attachmentUploading) {
+				showTooltip('文件上传中，请稍候', document.getElementById('now-file-wrap'));
+				return;
+			}
+			if (!uploadedUrl) {
+				showTooltip('请上传作品', document.getElementById('now-file-wrap'));
+				return;
+			}
+
+			btn.disabled = true;
+			btn.classList.remove('is-success', 'is-error');
+			btn.classList.add('is-filling');
+
+			const attachments: string[] = [uploadedUrl];
+			const base = window.location.port === '4321' ? 'http://localhost:1037' : (API || '');
+			const MIN_FILL = 1200;
+			const startTime = Date.now();
+
 			try {
-				const res = await fetch(API + '/api/activity/' + id + '/submit', {
+				const res = await fetch(base + '/api/activity/' + activityId + '/submit', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({ data: JSON.stringify(data), attachments: JSON.stringify(attachments) }),
 				});
-				if (res.ok) {
-					btn.textContent = '提交成功！';
+				if (!res.ok) throw new Error(await res.text());
+				const elapsed = Date.now() - startTime;
+				const remain = Math.max(0, MIN_FILL - elapsed);
+				if (remain > 0) btn.style.setProperty('--fill-duration', (MIN_FILL / 1000) + 's');
+				setTimeout(() => {
+					btn.classList.add('is-success');
 					btn.disabled = false;
-					setTimeout(() => { btn.textContent = '提交报名'; }, 2500);
-				} else {
-					const err = await res.text();
-					btn.textContent = err || '提交失败';
-					btn.disabled = false;
-					setTimeout(() => { btn.textContent = '提交报名'; }, 3000);
-				}
+					setTimeout(() => {
+						btn.classList.remove('is-filling', 'is-success');
+						btn.style.removeProperty('--fill-duration');
+					}, 2500);
+				}, remain);
 			} catch {
-				btn.textContent = '网络错误';
+				btn.classList.add('is-error');
 				btn.disabled = false;
-				setTimeout(() => { btn.textContent = '提交报名'; }, 3000);
+				showTooltip('提交失败，请稍后重试', btn);
+				setTimeout(() => {
+					btn.classList.remove('is-filling', 'is-error');
+					btn.style.removeProperty('--fill-duration');
+				}, 3000);
 			}
 		});
 	}
+
+	bindAttachment();
+	bindSubmit();
 }
 
 document.addEventListener('DOMContentLoaded', initActivityNow);

@@ -46,7 +46,9 @@ func RequireAuth(next http.Handler) http.Handler {
 		auth := r.Header.Get("Authorization")
 		token := strings.TrimPrefix(auth, "Bearer ")
 		if token == "" || !validateToken(token) {
-			http.Error(w, "未授权", http.StatusUnauthorized)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte(`{"error":"unauthorized"}`))
 			return
 		}
 		next.ServeHTTP(w, r)

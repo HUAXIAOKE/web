@@ -16,13 +16,13 @@ func calcSignupStatus(isSignup int, start, end string) string {
 	}
 	now := time.Now()
 	if start != "" {
-		t, err := time.Parse("2006-01-02T15:04", start)
+		t, err := time.ParseInLocation("2006-01-02T15:04", start, time.Local)
 		if err == nil && now.Before(t) {
 			return "not_started"
 		}
 	}
 	if end != "" {
-		t, err := time.Parse("2006-01-02T15:04", end)
+		t, err := time.ParseInLocation("2006-01-02T15:04", end, time.Local)
 		if err == nil && now.After(t) {
 			return "expired"
 		}

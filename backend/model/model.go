@@ -78,16 +78,6 @@ type ActivityDetail struct {
 	UpdatedAt  string `json:"updatedAt"`
 }
 
-// SignupForm 报名表单配置
-type SignupForm struct {
-	ID            int    `json:"id"`
-	ActivityID    int    `json:"activityId"`
-	Fields        string `json:"fields"`
-	Instructions  string `json:"instructions"`
-	Attachment    int    `json:"attachment"`
-	AttachmentDir string `json:"attachmentDir"`
-}
-
 // SignupSubmission 报名提交数据
 type SignupSubmission struct {
 	ID          int    `json:"id"`

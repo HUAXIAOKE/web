@@ -80,9 +80,21 @@
 				return fetch(API + url, opts).then((res) => {
 					if (res.status === 401) {
 						doLogout();
+						stopActivityPoll();
+						throw new Error('unauthorized');
 					}
 					return res;
 				});
+			}
+
+			function guard(fn) {
+				return async function (...args) {
+					try {
+						return await fn.apply(this, args);
+					} catch (e) {
+						if (e.message !== 'unauthorized') console.error(e);
+					}
+				};
 			}
 
 			async function doLogin() {
@@ -655,46 +667,42 @@
 				loadActivity();
 			}
 
-			async function openActivityConfig(id) {
-				activityConfigId = id;
-				const [detailRes, formRes] = await Promise.all([
-					authFetch('/api/activity/' + id + '/detail'),
-					authFetch('/api/activity/' + id + '/signup-form'),
-				]);
-				const detail = await detailRes.json();
-				const form = await formRes.json();
-				const main = document.getElementById('main-content');
-				main.innerHTML = `
-					<div class="page-header"><h2>活动配置</h2><div class="page-actions"><button class="btn btn-ghost" onclick="loadActivity()">返回活动列表</button></div></div>
-					<div class="config-grid">
-						<div class="config-panel">
-							<h3>详情内容</h3>
-							<textarea id="config_detail_content" class="config-textarea tall">${detail.content || ''}</textarea>
-							<p class="config-hint">支持 HTML 标签</p>
-							<button class="btn btn-primary" onclick="saveDetail(${id})">保存详情</button>
-						</div>
-						<div class="config-panel">
-							<h3>递交须知</h3>
-							<textarea id="config_instructions" class="config-textarea short">${form.instructions || ''}</textarea>
-							<p class="config-hint">支持 HTML 标签</p>
-							<div class="checkbox-group" style="margin-top:12px">
-								<label><input type="checkbox" id="config_attachment" ${form.attachment ? 'checked' : ''}> 需要附件</label>
-							</div>
-							<div class="form-group"><label>表单字段配置 (JSON)</label>
-							<textarea id="config_fields" class="config-textarea mid">${form.fields || '[]'}</textarea></div>
-							<button class="btn btn-primary" onclick="saveFormConfig(${id})">保存表单配置</button>
-						</div>
+		async function openActivityConfig(id) {
+			activityConfigId = id;
+			const detailRes = await authFetch('/api/activity/' + id + '/detail');
+			const detail = await detailRes.json();
+			const main = document.getElementById('main-content');
+			main.innerHTML = `
+				<div class="page-header"><h2>活动配置</h2><div class="page-actions"><button class="btn btn-ghost" onclick="loadActivity()">返回活动列表</button></div></div>
+			<div class="config-grid">
+				<div class="config-panel">
+					<h3>详情内容</h3>
+					<textarea id="config_detail_content" class="config-textarea tall">${detail.content || ''}</textarea>
+					<p class="config-hint">支持 HTML 标签，右侧实时预览</p>
+					<button class="btn btn-primary" onclick="saveDetail(${id})">保存详情</button>
+				</div>
+				<div class="config-panel">
+					<h3>预览</h3>
+					<div id="config_detail_preview" class="detail-preview detail-content"></div>
+				</div>
+			</div>
+				<div class="config-section">
+					<h3>报名数据</h3>
+					<div class="config-toolbar">
+						<button class="btn btn-ghost" onclick="loadSubmissions(${id})">刷新</button>
+						<button class="btn btn-ghost" onclick="exportSubmissions(${id})">打包下载附件</button>
 					</div>
-					<div class="config-section">
-						<h3>报名数据</h3>
-						<div class="config-toolbar">
-							<button class="btn btn-ghost" onclick="loadSubmissions(${id})">刷新</button>
-							<a class="btn btn-ghost" href="/api/activity/${id}/submissions/export" target="_blank">打包下载附件</a>
-						</div>
-						<div id="submissions_list"><p class="config-empty">点击刷新加载数据</p></div>
-					</div>`;
-				loadSubmissions(id);
-			}
+				<div id="submissions_list"><p class="config-empty">点击刷新加载数据</p></div>
+			</div>`;
+			const detailTa = document.getElementById('config_detail_content');
+			const detailPv = document.getElementById('config_detail_preview');
+			const renderDetailPreview = () => {
+				detailPv.innerHTML = detailTa.value || '<p style="color:var(--muted)">暂无内容</p>';
+			};
+			detailTa.addEventListener('input', renderDetailPreview);
+			renderDetailPreview();
+			loadSubmissions(id);
+		}
 
 			async function saveDetail(id) {
 				const content = document.getElementById('config_detail_content').value;
@@ -711,35 +719,58 @@
 				loadSubmissions(id);
 			}
 
-			async function saveFormConfig(id) {
-				const fields = document.getElementById('config_fields').value;
+		async function downloadSubmissionFile(fileUrl) {
 				try {
-					JSON.parse(fields);
+					const res = await authFetch(fileUrl);
+					if (!res.ok) {
+						toast('下载失败', 'error');
+						return;
+					}
+					const blob = await res.blob();
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = fileUrl.split('/').pop() || 'attachment';
+					document.body.appendChild(a);
+					a.click();
+					a.remove();
+					URL.revokeObjectURL(url);
 				} catch (e) {
-					toast('JSON 格式错误: ' + e.message, 'error');
-					return;
+					if (e.message !== 'unauthorized') toast('下载失败', 'error');
 				}
-				const body = {
-					fields,
-					instructions: document.getElementById('config_instructions').value,
-					attachment: document.getElementById('config_attachment').checked ? 1 : 0,
-				};
-				const res = await authFetch('/api/activity/' + id + '/signup-form', {
-					method: 'PUT',
-					headers: authHeaders(),
-					body: JSON.stringify(body),
-				});
-				if (!res.ok) {
-					toast('保存失败', 'error');
-					return;
-				}
-				toast('表单配置已保存');
-				loadSubmissions(id);
 			}
 
-			async function loadSubmissions(id) {
-				const res = await authFetch('/api/activity/' + id + '/submissions');
-				const list = await res.json();
+		async function exportSubmissions(id) {
+				try {
+					const res = await authFetch('/api/activity/' + id + '/submissions/export');
+					if (!res.ok) {
+						toast('导出失败', 'error');
+						return;
+					}
+					const ct = res.headers.get('Content-Type') || '';
+					if (ct.includes('application/json')) {
+						toast('暂无可下载的附件', 'error');
+						return;
+					}
+					const blob = await res.blob();
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = 'submissions_' + id + '.zip';
+					document.body.appendChild(a);
+					a.click();
+					a.remove();
+					URL.revokeObjectURL(url);
+				} catch (e) {
+					if (e.message !== 'unauthorized') toast('导出失败', 'error');
+				}
+			}
+
+		async function loadSubmissions(id) {
+				try {
+					const res = await authFetch('/api/activity/' + id + '/submissions');
+					if (!res.ok) return;
+					const list = await res.json();
 				const container = document.getElementById('submissions_list');
 				if (!list || list.length === 0) {
 					container.innerHTML = '<p class="config-empty">暂无报名数据</p>';
@@ -785,10 +816,13 @@
 							<td>${s.id}</td>
 							<td class="sub-time">${formatSubmitTime(s.submittedAt)}</td>
 							<td class="sub-data">${formatData(s.data)}</td>
-							<td>${files.length ? files.map((f, i) => `<a href="${f}" target="_blank" class="sub-file">附件${files.length > 1 ? i + 1 : ''}</a>`).join('') : '—'}</td>
+							<td>${files.length ? files.map((f, i) => `<a href="javascript:void(0)" onclick="downloadSubmissionFile('${f}')" class="sub-file">附件${files.length > 1 ? i + 1 : ''}</a>`).join('') : '—'}</td>
 						</tr>`;
 						})
-						.join('')}</tbody></table>`;
+							.join('')}</tbody></table>`;
+				} catch (e) {
+					if (e.message !== 'unauthorized') console.error(e);
+				}
 			}
 
 			async function loadTimeline() {
@@ -1261,12 +1295,12 @@
 			}
 
 			const loaders = {
-				activity: loadActivity,
-				timeline: loadTimeline,
-				gallery: loadGallery,
-				about: loadAbout,
-				download: loadDownload,
-				bilibili: loadBilibili,
+				activity: guard(loadActivity),
+				timeline: guard(loadTimeline),
+				gallery: guard(loadGallery),
+				about: guard(loadAbout),
+				download: guard(loadDownload),
+				bilibili: guard(loadBilibili),
 			};
 
 			function stopActivityPoll() {
