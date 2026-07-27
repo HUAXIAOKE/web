@@ -1,4 +1,16 @@
 /* ── activity/now ── */
+@font-face {
+	font-family: 'AlimamaShuHeiTi-Bold';
+	src:
+		url('/font/AlimamaShuHeiTi-Bold.woff2') format('woff2'),
+		url('/font/AlimamaShuHeiTi-Bold.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'BebasNeue';
+	src: url('/font/BebasNeue.woff2') format('woff2');
+}
+
 :root {
 	--wave-1: #bef5ff;
 	--wave-2: #9acfff;

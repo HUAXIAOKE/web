@@ -3,6 +3,7 @@ import activity001 from "../../assets/img/activity001.webp";
 import activity002 from "../../assets/img/activity002.webp";
 import signupArt from "../../assets/img/signup.svg";
 import arrowBack from "../../assets/img/arrow-back.svg";
+import iconUrl from "../../assets/icon.ico";
 import "../../styles/activity-now.css";
 
 const maskStyle = `-webkit-mask-image: url('${signupArt.src}'); mask-image: url('${signupArt.src}');`;
@@ -24,6 +25,7 @@ const chunks = [
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>正在报名 - Huaxiaoke</title>
   <meta name="description" content="华小科活动报名" />
+  <link rel="icon" type="image/x-icon" sizes="32x32" href={iconUrl} />
 </head>
 <body>
   <div class="activity-now-page">
